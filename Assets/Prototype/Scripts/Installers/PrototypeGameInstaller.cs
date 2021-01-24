@@ -1,3 +1,4 @@
+using Prototype.Scripts.Services;
 using UnityEngine;
 using Zenject;
 
@@ -8,7 +9,10 @@ namespace Prototype
     {
         public override void InstallBindings()
         {
-        
+            Container
+                .BindInterfacesAndSelfTo<GameProcessService>()
+                .AsSingle()
+                .NonLazy();
         }
     }
 }
