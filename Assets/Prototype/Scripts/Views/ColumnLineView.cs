@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Prototype.Scripts.Views;
+using UnityEngine;
 
 namespace Prototype.Scripts
 {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Prototype.Scripts
+namespace Prototype.Scripts.Views
 {
     public abstract class BaseLineSlotView : MonoBehaviour, IDropHandler
     {
@@ -19,7 +19,10 @@ namespace Prototype.Scripts
 
         public void OnDrop(PointerEventData eventData)
         {
-            throw new System.NotImplementedException();
+            var onDragObj = eventData.pointerDrag;
+            onDragObj.transform.SetParent(transform);
+            Debug.Log("BaseLineSlotView.OnDrop: "+ onDragObj.name);
+            
         }
     }
 }

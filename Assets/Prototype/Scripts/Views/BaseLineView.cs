@@ -1,9 +1,8 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Prototype.Scripts
+namespace Prototype.Scripts.Views
 {
     public abstract class BaseLineView : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
     {
@@ -25,17 +24,18 @@ namespace Prototype.Scripts
 
         public void OnDrag(PointerEventData eventData)
         {
-            ThisTransform.anchoredPosition += SnapDirection * Vector2.Dot(SnapDirection, eventData.delta) * _canvas.scaleFactor;
+            ThisTransform.anchoredPosition += SnapDirection * Vector2.Dot(SnapDirection, eventData.delta) / _canvas.scaleFactor;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             ThisTransform.localPosition = Vector3.zero;
+            Debug.Log("BaseLineView.OnEndDrag");
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            throw new System.NotImplementedException();
+            Debug.LogWarning("BaseLineView.OnBeginDrag not implemented");
         }
     }
 }
