@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Zenject;
 
 namespace Prototype.Scripts.Views
 {
@@ -9,7 +10,7 @@ namespace Prototype.Scripts.Views
         public BaseLineSlotView LineSlotView { get; private set; }
         public abstract Vector2 SnapDirection { get; protected set; }
         
-        [SerializeField] protected TextMeshProUGUI LineText;
+        [SerializeField] private TextMeshProUGUI LineIndexText;
         private Canvas _canvas;
         private RectTransform _thisTransform;
 
@@ -36,6 +37,16 @@ namespace Prototype.Scripts.Views
         public void OnBeginDrag(PointerEventData eventData)
         {
             Debug.LogWarning("BaseLineView.OnBeginDrag not implemented");
+        }
+
+        public void Initialize(int index)
+        {
+            SetLineIndex(index.ToString());
+        }
+
+        public void SetLineIndex(string lineIndex)
+        {
+            LineIndexText.text = lineIndex;
         }
     }
 }
