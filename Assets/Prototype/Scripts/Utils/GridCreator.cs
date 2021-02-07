@@ -9,8 +9,9 @@ namespace Prototype.Scripts.Utils
         public RectTransform CellSlotPrefab;
 
         public float Offset;
-
+        [Range(4, 7)]
         public int Rows;
+        [Range(4, 7)]
         public int Columns;
         
         public void ClearObjectChildren()
