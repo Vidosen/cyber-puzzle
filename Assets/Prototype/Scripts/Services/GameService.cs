@@ -37,7 +37,7 @@ namespace Prototype.Scripts.Services
         void StartLevel()
         {
             gameMatrix = Object.Instantiate(gameMatrixPrefab, canvas.transform);
-            if (!gameMatrix.MatrixInitialized)
+            if (!gameMatrix.IsInitialized)
                 gameMatrix.InitializeFromLevelSO(LevelPreset);
         }
         

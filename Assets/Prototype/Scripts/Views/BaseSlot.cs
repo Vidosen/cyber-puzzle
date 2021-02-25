@@ -20,5 +20,11 @@ namespace Prototype.Scripts.Views
             Debug.Log("BaseLineSlotView.OnDrop: "+ onDragObj.name);
             
         }
+
+        public BaseSlot<TVector> Initialize(TVector vector)
+        {
+            Vector = vector;
+            return this;
+        }
     }
 }

@@ -22,10 +22,9 @@ namespace Prototype.Scripts.Data
         public RectTransform ThisTransform =>
             _thisTransform == null ? _thisTransform = transform as RectTransform : _thisTransform;
         
-        [SerializeField]
-        private RectTransform rowSnap;
-        [SerializeField]
-        private RectTransform columnSnap;
+        private RectTransform _rowSnap;
+        private RectTransform _columnSnap;
+        
         [SerializeField]
         private TextMeshProUGUI cellValueText;
 
@@ -34,7 +33,12 @@ namespace Prototype.Scripts.Data
         public void Initialize(ColumnVector column, RowVector row)
         {
             Row = row;
+            _rowSnap = row.ThisTransform;
+            
             Column = column;
+            _columnSnap = column.ThisTransform;
+            
+            ThisTransform.localScale = Vector3.one;
         }
 
         public void SetValueText(string value)
@@ -43,18 +47,18 @@ namespace Prototype.Scripts.Data
         }
         private void Update()
         {
-            if (rowSnap == null || columnSnap == null)
+            if (_rowSnap == null || _columnSnap == null)
                 return;
             
-            var rowPos = rowSnap.position;
-            var columnPos = columnSnap.position;
+            var rowPos = _rowSnap.position;
+            var columnPos = _columnSnap.position;
             ThisTransform.position = new Vector3(columnPos.x , rowPos.y,
                 (rowPos.z + columnPos.z) * 0.5f);
         }
         public void SetSnapViews(RectTransform _rowSnap, RectTransform _columnSnap)
         {
-            rowSnap = _rowSnap;
-            columnSnap = _columnSnap;
+            this._rowSnap = _rowSnap;
+            this._columnSnap = _columnSnap;
         }
     }
 }

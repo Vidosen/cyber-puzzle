@@ -26,8 +26,8 @@ namespace Prototype.Scripts.Data
         
         #endregion
 
-        public int VerticalSize => rowVectors.Length;
-        public int HorizonalSize => columnVectors.Length;
+        public int RowsSize => rowVectors.Length;
+        public int ColumnsSize => columnVectors.Length;
         public RowVector[] Rows => rowVectors;
         public ColumnVector[] Columns => columnVectors;
         public RowSlot[] RowSlots => rowSlots;
@@ -35,8 +35,9 @@ namespace Prototype.Scripts.Data
         public RectTransform ThisTransform =>
             _thisTransform == null ? _thisTransform = transform as RectTransform : _thisTransform;
 
-        public bool MatrixInitialized => rowVectors != null && columnVectors != null;
+        public bool IsInitialized => rowVectors != null && columnVectors != null;
         
+
         public void InitializeFromLevelSO(LevelSO level)
         {
             RecalculateMatrixRect(level.ColumnsCount, level.RowsCount);
@@ -44,44 +45,41 @@ namespace Prototype.Scripts.Data
             SetupVectors();
             
             GenerateCells();
-            for (var x = 0; x < level.ColumnsCount; x++)
-            for (int y = 0; y < level.RowsCount; y++)
-                this[x, y].Value = level.MatrixField[x][y];
+            SetupCells(level);
+            
         }
         
         private void GenerateVectors(int columns, int rows)
         {
-            rowVectors = new RowVector[rows];
-            columnVectors = new ColumnVector[columns];
-            
-            rowSlots = new RowSlot[rows];
-            columnSlots = new ColumnSlot[columns];
-
-            for (int i = 0; i < rows; i++)
-            {
-                rowSlots[i] = Instantiate(rowSlotPrefab, transform, true);
-                rowVectors[i] = Instantiate(rowVectorPrefab, rowSlots[i].ThisTransform, true);
-                rowVectors[i].Initialize(columns, i);
-                rowSlots[i].Vector = rowVectors[i];
-            }
-
-            for (int i = 0; i < columns; i++)
-            {
-                columnSlots[i] = Instantiate(columnSlotPrefab, transform, true);
-                columnVectors[i] = Instantiate(columnVectorPrefab, columnSlots[i].ThisTransform, true);
-                columnVectors[i].Initialize(columns, i);
-                columnSlots[i].Vector = columnVectors[i];
-            }
-            
+            GenerateVector(columns, rows, columnSlotPrefab, columnVectorPrefab, out columnSlots, out columnVectors);
+            GenerateVector(rows, columns, rowSlotPrefab, rowVectorPrefab, out rowSlots, out rowVectors);
         }
+
+        private void GenerateVector<TSlot, TVector>(int size, int cellsCount, TSlot slotPrefab, TVector vectorPrefab,
+            out TSlot[] slots, out TVector[] vectors)
+            where TVector : BaseVector
+            where TSlot : BaseSlot<TVector>
+        {
+            slots = new TSlot[size];
+            vectors = new TVector[size];
+            for (int i = 0; i < size; i++)
+            {
+                slots[i] = Instantiate(slotPrefab, transform);
+                vectors[i] = Instantiate(vectorPrefab, slots[i].ThisTransform);
+                
+                slots[i].Initialize(vectors[i]);
+                vectors[i].Initialize(cellsCount, i);
+            }
+        }
+        
 
         private void GenerateCells()
         {
-            for (int row = 0; row < VerticalSize; row++)
+            for (int row = 0; row < RowsSize; row++)
             {
-                for (int column = 0; column < HorizonalSize; column++)
+                for (int column = 0; column < ColumnsSize; column++)
                 {
-                    var newCell = Instantiate(cellPrefab, transform, true);
+                    var newCell = Instantiate(cellPrefab, transform);
                     newCell.Initialize(columnVectors[column], rowVectors[row]);
                     rowVectors[row][column] = newCell;
                     columnVectors[column][row] = newCell;
@@ -92,7 +90,7 @@ namespace Prototype.Scripts.Data
         public void RecalculateMatrixRect()
         {
             ThisTransform.sizeDelta =
-                RectTransformHelper.GetGridContainer(cellPrefab.ThisTransform.rect, VerticalSize + 1, HorizonalSize + 1, Offset);
+                RectTransformHelper.GetGridContainer(cellPrefab.ThisTransform.rect, RowsSize + 1, ColumnsSize + 1, Offset);
         }
         public void RecalculateMatrixRect(int columns, int rows)
         {
@@ -105,13 +103,23 @@ namespace Prototype.Scripts.Data
             for (var i = 0; i < RowSlots.Length; i++)
             {
                 var _transform = RowSlots[i].ThisTransform;
-                _transform.localPosition = RectTransformHelper.GetChildPsotionContainer(_transform.rect, 0, i + 1, Offset);
+                _transform.localPosition = RectTransformHelper.GetChildPositionContainer(_transform.rect, 0, i + 1, Offset);
             }
             for (var i = 0; i < ColumnSlots.Length; i++)
             {
                 var _transform = ColumnSlots[i].ThisTransform;
-                _transform.localPosition = RectTransformHelper.GetChildPsotionContainer(_transform.rect, i + 1, 0, Offset);
+                _transform.localPosition = RectTransformHelper.GetChildPositionContainer(_transform.rect, i + 1, 0, Offset);
             }
+        }
+
+        private void SetupCells(LevelSO level)
+        {
+            for (var x = 0; x < level.ColumnsCount; x++)
+            for (int y = 0; y < level.RowsCount; y++)
+            {
+                this[x, y].Value = level.MatrixField[x][y];
+            }
+
         }
 
         private void OnDestroy()
@@ -135,7 +143,7 @@ namespace Prototype.Scripts.Data
 
         public Cell GetCellByRowColumnIndices(int columnIndex, int rowIndex)
         {
-            if (rowIndex >= VerticalSize)
+            if (rowIndex >= RowsSize)
             {
                 Debug.LogError("[Data] GameMatrix.GetCellByRowColumnIndices: rowIndex is out of range");
                 return default;

@@ -41,12 +41,12 @@ namespace Prototype.Scripts.Utils
             for (int i = 1; i < Columns; i++)
             {
                 var child = Instantiate(RowsSlotPrefab, transform, false);
-                child.localPosition = RectTransformHelper.GetChildPsotionContainer(child.rect, 0, i, Offset);
+                child.localPosition = RectTransformHelper.GetChildPositionContainer(child.rect, 0, i, Offset);
             }
             for (int i = 1; i < Rows; i++)
             {
                 var child = Instantiate(ColumnsSlotPrefab, transform, false);
-                child.localPosition = RectTransformHelper.GetChildPsotionContainer(child.rect, i, 0, Offset);
+                child.localPosition = RectTransformHelper.GetChildPositionContainer(child.rect, i, 0, Offset);
             }
             
             for (int row = 1; row < Rows; row++)
@@ -54,7 +54,7 @@ namespace Prototype.Scripts.Utils
                 for (int column = 1; column < Columns; column++)
                 {
                     var child = Instantiate(CellSlotPrefab, transform, false);
-                    child.localPosition = RectTransformHelper.GetChildPsotionContainer(child.rect, row, column, Offset);
+                    child.localPosition = RectTransformHelper.GetChildPositionContainer(child.rect, row, column, Offset);
                 }
             }
             

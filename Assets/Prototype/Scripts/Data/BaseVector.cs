@@ -4,6 +4,7 @@ using ModestTree;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Prototype.Scripts.Data
 {
@@ -20,6 +21,11 @@ namespace Prototype.Scripts.Data
         [SerializeField]
         private TextMeshProUGUI LineIndexText;
         private RectTransform _thisTransform;
+        private Canvas _canvas;
+        private void Awake()
+        {
+            _canvas = GetComponentInParent<Canvas>();
+        }
 
         private void OnDestroy()
         {
@@ -44,7 +50,7 @@ namespace Prototype.Scripts.Data
             {
                 if (index >= cells.Length)
                     {
-                        Debug.LogError("[Data] BaseVector.this[int index]: index is out of range");
+                        Debug.LogError($"[Data] {GetType().Name}.this[int index]: index is out of range");
                         return;
                     }
                 cells[index] = value;
@@ -65,7 +71,7 @@ namespace Prototype.Scripts.Data
         
         public void OnDrag(PointerEventData eventData)
         {
-            ThisTransform.anchoredPosition += SnapDirection * Vector2.Dot(SnapDirection, eventData.position);
+            ThisTransform.anchoredPosition += SnapDirection * Vector2.Dot(SnapDirection, eventData.delta / _canvas.scaleFactor);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -79,10 +85,13 @@ namespace Prototype.Scripts.Data
             Debug.LogWarning("BaseLineView.OnBeginDrag not implemented");
         }
 
-        public void Initialize(int cellsCount, int index)
+        public BaseVector Initialize(int cellsCount, int index)
         {
             cells = new Cell[cellsCount];
             SetLineIndex(index.ToString());
+            ThisTransform.localScale = Vector3.one;
+            ThisTransform.anchoredPosition = Vector3.zero;
+            return this;
         }
 
         public void SetLineIndex(string lineIndex)
