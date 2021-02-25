@@ -14,7 +14,7 @@ namespace Prototype.Scripts.Utils
         {
             Vector2 resultPosition = Vector2.zero;
             resultPosition.x = childrenOffset * (xIndex + 1) + childRect.width * xIndex;
-            resultPosition.y = childrenOffset * (yIndex + 1) + childRect.height * yIndex;
+            resultPosition.y = -childrenOffset * (yIndex + 1) - childRect.height * yIndex;
             return resultPosition;
         }
         

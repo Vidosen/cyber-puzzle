@@ -34,20 +34,20 @@ namespace Prototype.Scripts.Utils.Editor
 
             int columnIndex;
             GUILayout.Label("Matrix:", EditorStyles.boldLabel);
-            EditorGUILayout.BeginVertical();
+            EditorGUILayout.BeginHorizontal();
             for (columnIndex = 0; columnIndex < levelData.ColumnsCount; columnIndex++)
             {
-                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.BeginVertical();
                 int rowIndex;
                 for (rowIndex = 0; rowIndex < levelData.RowsCount; rowIndex++)
                 {
                     levelData.MatrixField[columnIndex][rowIndex] = EditorGUILayout.IntField(levelData.MatrixField[columnIndex][rowIndex]);
                     EditorGUILayout.Space(5f);
                 }
-                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.EndVertical();
                 EditorGUILayout.Space(5f);
             }
-            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
 
             GUILayout.Space(20f);
             EditorGUILayout.BeginVertical();
@@ -83,6 +83,8 @@ namespace Prototype.Scripts.Utils.Editor
                     EditorGUILayout.Space(5f);
                 }
                 EditorGUILayout.EndHorizontal();
+                codeCombination.HighlightColor =
+                    EditorGUILayout.ColorField(codeCombination.HighlightColor);
                 EditorGUILayout.Space(10f);
             }
 

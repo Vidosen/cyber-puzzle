@@ -1,13 +1,34 @@
-﻿using ModestTree;
+﻿using System;
+using System.Linq;
+using ModestTree;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Prototype.Scripts.Data
 {
-    public abstract class BaseVector {
+    public abstract class BaseVector : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler {
+
+        public int Size => cells.Length;
+        public RectTransform ThisTransform =>
+            _thisTransform == null ? _thisTransform = transform as RectTransform : _thisTransform;
+        public bool VectorInitialized => cells != null;
+        public abstract Vector2 SnapDirection { get; protected set; }
 
         private Cell[] cells;
-        public int Size => cells.Length;
         
+        [SerializeField]
+        private TextMeshProUGUI LineIndexText;
+        private RectTransform _thisTransform;
+
+        private void OnDestroy()
+        {
+            if(cells != null)
+                foreach (var cell in cells)
+                    if (cell != null)
+                        Destroy(cell.gameObject);
+        }
+
         public Cell this[int index]
         {
             get
@@ -29,7 +50,7 @@ namespace Prototype.Scripts.Data
                 cells[index] = value;
             }
         }
-
+        
         public int IndexOfCell(Cell cell)
         {
             for (int i = 0; i < Size; i++)
@@ -41,9 +62,32 @@ namespace Prototype.Scripts.Data
             }
             return -1;
         }
-        protected BaseVector(int cellsCount)
+        
+        public void OnDrag(PointerEventData eventData)
+        {
+            ThisTransform.anchoredPosition += SnapDirection * Vector2.Dot(SnapDirection, eventData.position);
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            ThisTransform.anchoredPosition = Vector3.zero;
+            Debug.Log("BaseLineView.OnEndDrag");
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            Debug.LogWarning("BaseLineView.OnBeginDrag not implemented");
+        }
+
+        public void Initialize(int cellsCount, int index)
         {
             cells = new Cell[cellsCount];
+            SetLineIndex(index.ToString());
+        }
+
+        public void SetLineIndex(string lineIndex)
+        {
+            LineIndexText.text = lineIndex;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Prototype.Scripts.Utils
 {
@@ -13,7 +14,12 @@ namespace Prototype.Scripts.Utils
         public int Rows;
         [Range(4, 7)]
         public int Columns;
-        
+
+        private void Awake()
+        {
+            Destroy(this);
+        }
+
         public void ClearObjectChildren()
         {
             for (int i = transform.childCount - 1; i >= 0; i--)

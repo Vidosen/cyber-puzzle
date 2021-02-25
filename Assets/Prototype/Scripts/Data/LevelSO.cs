@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = System.Random;
 
 namespace Prototype.Scripts.Data
 {
@@ -18,8 +19,15 @@ namespace Prototype.Scripts.Data
         [Serializable]
         public class CodeCombination
         {
+            public Color HighlightColor;
+            
             public List<int> Combination;
-            public CodeCombination() => Combination = new List<int>();
+            public CodeCombination(){
+                
+                Combination = new List<int>();
+                Random random = new Random();
+                HighlightColor = Color.HSVToRGB((float)random.NextDouble(), 1, 1);
+            }
             public int Count => Combination?.Count ?? 0;
             public int this[int key]
             {

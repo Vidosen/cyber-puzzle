@@ -1,8 +1,9 @@
-﻿namespace Prototype.Scripts.Data
+﻿using UnityEngine;
+
+namespace Prototype.Scripts.Data
 {
     public class RowVector : BaseVector
     {
-        public RowVector(int cellsCount) : base(cellsCount)
-        { }
+        public override Vector2 SnapDirection { get; protected set; } = Vector2.up;
     }
 }

@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f94915676842552488732a847fd5c555, type: 3}
   m_Name: PrototypeGameInstaller
   m_EditorClassIdentifier: 
+  gameMatrixPrefab: {fileID: 2990979720828714073, guid: e30feb72803ccba43b04d2cb366f272d,
+    type: 3}
+  combinationPrefab: {fileID: 6865716468384505026, guid: ad820450cd4962d4db04b6e3730b2c74,
+    type: 3}
