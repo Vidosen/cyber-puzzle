@@ -13,20 +13,15 @@ MonoBehaviour:
   m_Name: Level_1
   m_EditorClassIdentifier: 
   RowsCount: 3
-  ColumnsCount: 4
+  ColumnsCount: 3
   MatrixField:
   - Elements: 010000000200000003000000
   - Elements: 040000000500000006000000
   - Elements: 070000000800000009000000
-  - Elements: 000000000000000000000000
   CodeCombinations:
   - HighlightColor: {r: 0, g: 1, b: 0.10626054, a: 1}
-    Combination: 06000000b3010000
+    Combination: 060000000400000002000000
   - HighlightColor: {r: 0, g: 0.91291666, b: 1, a: 1}
-    Combination: 0000000000000000
+    Combination: 0100000002000000
   - HighlightColor: {r: 1, g: 0, b: 0.76008654, a: 1}
-    Combination: 0000000000000000
-  - HighlightColor: {r: 0.2581916, g: 0, b: 1, a: 1}
-    Combination: 0000000000000000
-  - HighlightColor: {r: 1, g: 0.411022, b: 0, a: 1}
-    Combination: 0000000000000000
+    Combination: 0900000005000000

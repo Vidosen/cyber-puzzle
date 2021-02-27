@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4507671411724882043}
   - component: {fileID: 6865716468384505026}
   m_Layer: 5
-  m_Name: CombinationView
+  m_Name: Combination
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,5 +89,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0901273fd84745a3a2ba24f0ff952b6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellPrefab: {fileID: 156353666666107190, guid: 75418a39326b62449993ea82c68a64d5,
+  _combinationCellPrefab: {fileID: 8966257646890637005, guid: 4052c804551eb09418b0a03521db38f2,
     type: 3}

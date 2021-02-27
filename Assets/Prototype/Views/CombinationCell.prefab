@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 156353666666107189}
   - component: {fileID: 156353666666107144}
   - component: {fileID: 156353666666107191}
-  - component: {fileID: 6108454431494155628}
+  - component: {fileID: 8966257646890637005}
   m_Layer: 5
-  m_Name: Cell
+  m_Name: CombinationCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6108454431494155628
+--- !u!114 &8966257646890637005
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,9 +85,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 156353666666107188}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21c9b0b48e0d4671ac833bd289a19b38, type: 3}
+  m_Script: {fileID: 11500000, guid: 56da84f44d484ade98c44d3827ccbbeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Background: {fileID: 156353666666107191}
+  DimColor: {r: 0.7372549, g: 0.7372549, b: 0.7372549, a: 0.8}
   cellValueText: {fileID: 158114184045292965}
 --- !u!1 &7811618385135235661
 GameObject:

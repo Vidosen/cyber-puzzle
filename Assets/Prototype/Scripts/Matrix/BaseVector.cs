@@ -11,20 +11,27 @@ namespace Prototype.Scripts.Data
     public abstract class BaseVector : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler {
 
         public int Size => cells.Length;
+        public MatrixCell[] Cells => cells;
         public RectTransform ThisTransform =>
             _thisTransform == null ? _thisTransform = transform as RectTransform : _thisTransform;
+        public bool IsDragging => _isDragging;
+
         public bool VectorInitialized => cells != null;
         public abstract Vector2 SnapDirection { get; protected set; }
 
-        private Cell[] cells;
+        private MatrixCell[] cells;
         
         [SerializeField]
         private TextMeshProUGUI LineIndexText;
         private RectTransform _thisTransform;
         private Canvas _canvas;
+        private CanvasGroup _canvasGroup;
+        private bool _isDragging;
+
         private void Awake()
         {
             _canvas = GetComponentInParent<Canvas>();
+            _canvasGroup = GetComponentInParent<CanvasGroup>();
         }
 
         private void OnDestroy()
@@ -35,7 +42,7 @@ namespace Prototype.Scripts.Data
                         Destroy(cell.gameObject);
         }
 
-        public Cell this[int index]
+        public MatrixCell this[int index]
         {
             get
             {
@@ -57,11 +64,11 @@ namespace Prototype.Scripts.Data
             }
         }
         
-        public int IndexOfCell(Cell cell)
+        public int IndexOfCell(MatrixCell matrixCell)
         {
             for (int i = 0; i < Size; i++)
             {
-                if (cell.Equals(cells[i]))
+                if (matrixCell.Equals(cells[i]))
                 {
                     return i;
                 }
@@ -71,23 +78,42 @@ namespace Prototype.Scripts.Data
         
         public void OnDrag(PointerEventData eventData)
         {
-            ThisTransform.anchoredPosition += SnapDirection * Vector2.Dot(SnapDirection, eventData.delta / _canvas.scaleFactor);
+            //ThisTransform.anchoredPosition += SnapDirection * Vector2.Dot(SnapDirection, eventData.delta / _canvas.scaleFactor);
+            ThisTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            foreach (var cell in cells)
+                cell.UnpinVector();
+            
+            _isDragging = false;
+            _canvasGroup.blocksRaycasts = !_isDragging;
+            _canvasGroup.alpha = 1f;
+            
+            _canvas.sortingOrder = 10;
+            
             ThisTransform.anchoredPosition = Vector3.zero;
             Debug.Log("BaseLineView.OnEndDrag");
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            
+            _isDragging = true;
+            _canvasGroup.blocksRaycasts = !_isDragging;
+            _canvasGroup.alpha = 0.8f;
+
+            _canvas.sortingOrder = 100;
+            
+            foreach (var cell in cells)
+                cell.PinVector(ThisTransform);
             Debug.LogWarning("BaseLineView.OnBeginDrag not implemented");
         }
 
         public BaseVector Initialize(int cellsCount, int index)
         {
-            cells = new Cell[cellsCount];
+            cells = new MatrixCell[cellsCount];
             SetLineIndex(index.ToString());
             ThisTransform.localScale = Vector3.one;
             ThisTransform.anchoredPosition = Vector3.zero;

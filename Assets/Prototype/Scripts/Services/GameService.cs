@@ -1,44 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Prototype.Scripts.Data;
-using Prototype.Scripts.Utils;
 using Prototype.Scripts.Views;
 using UnityEngine;
-using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Prototype.Scripts.Services
 {
     
-    public class GameService : IService
+    public class GameService : Singleton<GameService>
     {
-        
-        [Inject] private Canvas canvas;
+        [SerializeField] private Transform matrixConatainer;
+        [SerializeField] private Transform combinationsContainer;
+        [SerializeField] private GameMatrix gameMatrixPrefab;
+        [SerializeField] private Combination combinationPrefab;
         
         private LevelSO LevelPreset;
 
-        private GameMatrix gameMatrixPrefab;
-        private Combination combinationPrefab;
-        
         private GameMatrix gameMatrix;
-        private List<Combination> activeCombinations;
+        private List<Combination> combinations = new List<Combination>();
 
-        public GameService(GameMatrix _gameMatrixPrefab, Combination _combination)
+
+        private void Awake()
         {
-            gameMatrixPrefab = _gameMatrixPrefab;
-            combinationPrefab = _combination;
             LevelPreset = Resources.Load<LevelSO>("Levels/Level_1");
         }
-        public void Initialize()
+
+        public void Start()
         {
             StartLevel();
         }
 
         void StartLevel()
         {
-            gameMatrix = Object.Instantiate(gameMatrixPrefab, canvas.transform);
+            gameMatrix = Instantiate(gameMatrixPrefab, matrixConatainer);
+            gameMatrix.ThisTransform.localPosition = Vector2.zero;
             if (!gameMatrix.IsInitialized)
                 gameMatrix.InitializeFromLevelSO(LevelPreset);
+
+            foreach (var codeCombination in LevelPreset.CodeCombinations)
+            {
+                var combination = Instantiate(combinationPrefab, combinationsContainer);
+                combination.Initialize(codeCombination);
+                combinations.Add(combination);   
+            }
+        }
+
+        public void HighlightAllMatchingMatrixCells(int compValue, Color highlightColor)
+        {
+            foreach (var matrixCell in gameMatrix.AllCells.Where(cell => cell.Value == compValue))
+                matrixCell.HighlightCell(highlightColor);
+        }
+
+        public void DimAllMatrixCells(Color dimColor)
+        {
+            foreach (var matrixCell in gameMatrix.AllCells)
+                matrixCell.DimCell(dimColor);
         }
         
     }

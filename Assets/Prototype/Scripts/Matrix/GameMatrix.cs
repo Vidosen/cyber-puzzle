@@ -9,11 +9,12 @@ namespace Prototype.Scripts.Data
     public class GameMatrix : MonoBehaviour
     {
         #region Private Fields
-        [SerializeField] private ColumnSlot columnSlotPrefab;
+        [SerializeField] private Transform Holder;
+        [SerializeField, Space] private ColumnSlot columnSlotPrefab;
         [SerializeField] private RowSlot rowSlotPrefab;
         [SerializeField] private ColumnVector columnVectorPrefab;
         [SerializeField] private RowVector rowVectorPrefab;
-        [SerializeField] private Cell cellPrefab;
+        [SerializeField] private MatrixCell matrixCellPrefab;
         
         [Space, SerializeField] private float Offset = 20f;
         
@@ -32,6 +33,10 @@ namespace Prototype.Scripts.Data
         public ColumnVector[] Columns => columnVectors;
         public RowSlot[] RowSlots => rowSlots;
         public ColumnSlot[] ColumnSlots => columnSlots;
+
+        public MatrixCell[] AllCells =>
+            Rows.Select(r => r.Cells)
+                .Aggregate((one, second) => one.Concat(second).ToArray());
         public RectTransform ThisTransform =>
             _thisTransform == null ? _thisTransform = transform as RectTransform : _thisTransform;
 
@@ -64,7 +69,7 @@ namespace Prototype.Scripts.Data
             vectors = new TVector[size];
             for (int i = 0; i < size; i++)
             {
-                slots[i] = Instantiate(slotPrefab, transform);
+                slots[i] = Instantiate(slotPrefab, Holder);
                 vectors[i] = Instantiate(vectorPrefab, slots[i].ThisTransform);
                 
                 slots[i].Initialize(vectors[i]);
@@ -79,7 +84,7 @@ namespace Prototype.Scripts.Data
             {
                 for (int column = 0; column < ColumnsSize; column++)
                 {
-                    var newCell = Instantiate(cellPrefab, transform);
+                    var newCell = Instantiate(matrixCellPrefab, Holder);
                     newCell.Initialize(columnVectors[column], rowVectors[row]);
                     rowVectors[row][column] = newCell;
                     columnVectors[column][row] = newCell;
@@ -90,12 +95,12 @@ namespace Prototype.Scripts.Data
         public void RecalculateMatrixRect()
         {
             ThisTransform.sizeDelta =
-                RectTransformHelper.GetGridContainer(cellPrefab.ThisTransform.rect, RowsSize + 1, ColumnsSize + 1, Offset);
+                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, RowsSize + 1, ColumnsSize + 1, Offset);
         }
         public void RecalculateMatrixRect(int columns, int rows)
         {
             ThisTransform.sizeDelta =
-                RectTransformHelper.GetGridContainer(cellPrefab.ThisTransform.rect, rows + 1, columns + 1, Offset);
+                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, rows + 1, columns + 1, Offset);
         }
         
         private void SetupVectors()
@@ -139,9 +144,9 @@ namespace Prototype.Scripts.Data
         }
 
 
-        public Cell this[int columnIndex, int rowIndex] => GetCellByRowColumnIndices(columnIndex, rowIndex);
+        public MatrixCell this[int columnIndex, int rowIndex] => GetCellByRowColumnIndices(columnIndex, rowIndex);
 
-        public Cell GetCellByRowColumnIndices(int columnIndex, int rowIndex)
+        public MatrixCell GetCellByRowColumnIndices(int columnIndex, int rowIndex)
         {
             if (rowIndex >= RowsSize)
             {
