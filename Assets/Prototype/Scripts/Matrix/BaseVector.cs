@@ -1,10 +1,6 @@
-﻿using System;
-using System.Linq;
-using ModestTree;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Prototype.Scripts.Data
 {
@@ -16,13 +12,13 @@ namespace Prototype.Scripts.Data
             _thisTransform == null ? _thisTransform = transform as RectTransform : _thisTransform;
         public bool IsDragging => _isDragging;
 
-        public bool VectorInitialized => cells != null;
+        public bool IsInitialized => cells != null;
         public abstract Vector2 SnapDirection { get; protected set; }
 
         private MatrixCell[] cells;
         
-        [SerializeField]
-        private TextMeshProUGUI LineIndexText;
+        [SerializeField] private TextMeshProUGUI LineIndexText;
+        [SerializeField, Range(0, 1)] private float DragAlpha = 1f;
         private RectTransform _thisTransform;
         private Canvas _canvas;
         private CanvasGroup _canvasGroup;
@@ -94,21 +90,19 @@ namespace Prototype.Scripts.Data
             _canvas.sortingOrder = 10;
             
             ThisTransform.anchoredPosition = Vector3.zero;
-            Debug.Log("BaseLineView.OnEndDrag");
+            Debug.Log($"{GetType().Name}.OnEndDrag");
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            
             _isDragging = true;
             _canvasGroup.blocksRaycasts = !_isDragging;
-            _canvasGroup.alpha = 0.8f;
+            _canvasGroup.alpha = DragAlpha;
 
             _canvas.sortingOrder = 100;
             
             foreach (var cell in cells)
                 cell.PinVector(ThisTransform);
-            Debug.LogWarning("BaseLineView.OnBeginDrag not implemented");
         }
 
         public BaseVector Initialize(int cellsCount, int index)
@@ -119,6 +113,7 @@ namespace Prototype.Scripts.Data
             ThisTransform.anchoredPosition = Vector3.zero;
             return this;
         }
+        
 
         public void SetLineIndex(string lineIndex)
         {

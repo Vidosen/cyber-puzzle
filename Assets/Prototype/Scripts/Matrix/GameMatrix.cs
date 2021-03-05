@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ModestTree;
 using Prototype.Scripts.Utils;
 using Prototype.Scripts.Views;
 using UnityEngine;
@@ -47,7 +48,7 @@ namespace Prototype.Scripts.Data
         {
             RecalculateMatrixRect(level.ColumnsCount, level.RowsCount);
             GenerateVectors(level.ColumnsCount, level.RowsCount);
-            SetupVectors();
+            SetupSlots();
             
             GenerateCells();
             SetupCells(level);
@@ -73,6 +74,8 @@ namespace Prototype.Scripts.Data
                 vectors[i] = Instantiate(vectorPrefab, slots[i].ThisTransform);
                 
                 slots[i].Initialize(vectors[i]);
+                slots[i].name += $" {i + 1}";
+                vectors[i].name += $" {i + 1}";
                 vectors[i].Initialize(cellsCount, i);
             }
         }
@@ -88,6 +91,8 @@ namespace Prototype.Scripts.Data
                     newCell.Initialize(columnVectors[column], rowVectors[row]);
                     rowVectors[row][column] = newCell;
                     columnVectors[column][row] = newCell;
+                    
+                    newCell.name += $" C{column + 1}-R{row + 1}";
                 }
             }
         }
@@ -103,7 +108,7 @@ namespace Prototype.Scripts.Data
                 RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, rows + 1, columns + 1, Offset);
         }
         
-        private void SetupVectors()
+        private void SetupSlots()
         {
             for (var i = 0; i < RowSlots.Length; i++)
             {
@@ -146,6 +151,15 @@ namespace Prototype.Scripts.Data
 
         public MatrixCell this[int columnIndex, int rowIndex] => GetCellByRowColumnIndices(columnIndex, rowIndex);
 
+        public (int, int) IndexOf(MatrixCell cell)
+        {
+            for (int i = 0; i < Rows.Length; i++)
+            for (int j = 0; j < Columns.Length; j++)
+                if (Rows[i][j] == cell)
+                    return (j, i);
+
+            return (-1, -1);
+        }
         public MatrixCell GetCellByRowColumnIndices(int columnIndex, int rowIndex)
         {
             if (rowIndex >= RowsSize)
@@ -156,25 +170,45 @@ namespace Prototype.Scripts.Data
             return rowVectors[rowIndex][columnIndex];
         }
 
-        public void SwapRows(int firstIndex, int secondIndex)
+        public void SwapVectors<TVector>(TVector vectorOne, TVector vectorTwo) where TVector : BaseVector
         {
-            SwapVectors(rowVectors, firstIndex, secondIndex);
-        }
-        public void SwapColumns(int firstIndex, int secondIndex)
-        {
-            SwapVectors(columnVectors, firstIndex, secondIndex);
-        }
-
-        private void SwapVectors<TVector>(TVector[] vectorsArray, int firstIndex, int secondIndex) where TVector : BaseVector
-        {
-            if (Math.Max(firstIndex, secondIndex) >= vectorsArray.Length)
+            var vecOneType = vectorOne.GetType();
+            var vecTwoType = vectorTwo.GetType();
+            if (vecOneType != vecTwoType)
             {
-                Debug.LogError("[Data] GameMatrix.SwapVectors: some index is out of range");
+                Debug.LogError("TVector types don't match!");
                 return;
             }
-            var temp = vectorsArray[firstIndex];
-            vectorsArray[firstIndex] = vectorsArray[secondIndex];
-            vectorsArray[secondIndex] = temp;
+            // var tmp = vectorOne;
+            // vectorOne = vectorTwo;
+            // vectorTwo = tmp;
+            if (vectorOne is RowVector rowOne && vectorTwo is RowVector rowTwo)
+            {
+                var rOneIndex = rowVectors.IndexOf(rowOne);
+                var rTwoIndex = rowVectors.IndexOf(rowTwo);
+                rowVectors[rOneIndex] = rowSlots[rOneIndex].Vector = rowTwo;
+                rowVectors[rTwoIndex] = rowSlots[rTwoIndex].Vector = rowOne;
+                
+                foreach (var columnVector in columnVectors)
+                {
+                    var tmp = columnVector.Cells[rOneIndex];
+                    columnVector.Cells[rOneIndex] = columnVector.Cells[rTwoIndex];
+                    columnVector.Cells[rTwoIndex] = tmp;
+                }
+            }
+            else if (vectorOne is ColumnVector columnOne && vectorTwo is ColumnVector columnTwo)
+            {
+                var cOneIndex = columnVectors.IndexOf(columnOne);
+                var cTwoIndex = columnVectors.IndexOf(columnTwo);
+                columnVectors[cOneIndex] = columnSlots[cOneIndex].Vector = columnTwo;
+                columnVectors[cTwoIndex] = columnSlots[cTwoIndex].Vector = columnOne;
+                foreach (var rowVector in rowVectors)
+                {
+                    var tmp = rowVector.Cells[cOneIndex];
+                    rowVector.Cells[cOneIndex] = rowVector.Cells[cTwoIndex];
+                    rowVector.Cells[cTwoIndex] = tmp;
+                }
+            }
         }
     }
 }

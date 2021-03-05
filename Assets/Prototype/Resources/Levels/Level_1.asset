@@ -20,7 +20,7 @@ MonoBehaviour:
   - Elements: 070000000800000009000000
   CodeCombinations:
   - HighlightColor: {r: 0, g: 1, b: 0.10626054, a: 1}
-    Combination: 060000000400000002000000
+    Combination: 06000000040000000700000000000000
   - HighlightColor: {r: 0, g: 0.91291666, b: 1, a: 1}
     Combination: 0100000002000000
   - HighlightColor: {r: 1, g: 0, b: 0.76008654, a: 1}

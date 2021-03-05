@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LineIndexText: {fileID: 6390831174517479519}
+  DragAlpha: 0.75
 --- !u!225 &5834884493373061880
 CanvasGroup:
   m_ObjectHideFlags: 0

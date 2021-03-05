@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Prototype.Scripts.Utils
 {
@@ -16,6 +17,22 @@ namespace Prototype.Scripts.Utils
             resultPosition.x = childrenOffset * (xIndex + 1) + childRect.width * xIndex;
             resultPosition.y = -childrenOffset * (yIndex + 1) - childRect.height * yIndex;
             return resultPosition;
+        }
+
+        public static Color AverageColor(this List<Color> colorList)
+        {
+            float h, s, v;
+            float resH = 0, resS = 0, resV = 0;
+            foreach (var color in colorList)
+            {
+                Color.RGBToHSV(color,out h, out s,out v);
+                resH += h;
+                resS += s;
+                resV += v;
+            }
+
+            var count = colorList.Count;
+            return Color.HSVToRGB(resH / count, resS / count, resV / count);
         }
         
     }

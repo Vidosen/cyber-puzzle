@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Prototype.Scripts.Utils;
 using UnityEngine;
 
 namespace Prototype.Scripts.Data
@@ -9,7 +11,7 @@ namespace Prototype.Scripts.Data
         public RowVector Row { get; protected set; }
         public ColumnVector Column { get; protected set; }
 
-        protected List<Color> highlightColors = new List<Color>();
+        protected Dictionary<HighlightType,List<Color>> highlightColors = new Dictionary<HighlightType,List<Color>>();
 
         public void Initialize(ColumnVector column, RowVector row)
         {
@@ -30,25 +32,34 @@ namespace Prototype.Scripts.Data
                 (rowPos.z + columnPos.z) * 0.5f);
         }
 
-        public override void HighlightCell(Color color)
+        public override void HighlightCell(Color color, HighlightType type)
         {
-            highlightColors.Add(color);
-            float finalH = 0, finalS = 0, finalV = 0;
-            foreach (var _color in highlightColors)
-            {
-                Color.RGBToHSV(_color, out float h, out float s, out float v);
-                finalH += h;
-                finalS += s;
-                finalV += v;
-            }
-
-            var size = highlightColors.Count;
-            Background.color = Color.HSVToRGB(finalH / size, finalS / size, finalV / size);
+            if (!highlightColors.ContainsKey(type))
+                highlightColors.Add(type, new List<Color>());
+            
+            highlightColors[type].Add(color);
+            CalculateColor();
         }
 
-        public override void DimCell(Color color)
+        public override void DimCell(HighlightType type)
         {
-            highlightColors.Clear();
+            if (highlightColors.ContainsKey(type))
+                highlightColors.Remove(type);
+            CalculateColor();
+        }
+
+        private void CalculateColor()
+        {
+            if(highlightColors.ContainsKey(HighlightType.HoverHint))
+            {
+                Background.color = highlightColors[HighlightType.HoverHint].FirstOrDefault();
+                return;
+            }
+            else if (highlightColors.ContainsKey(HighlightType.CombinationSequence))
+            {
+                Background.color = highlightColors[HighlightType.CombinationSequence].AverageColor();
+                return;
+            }
             Background.color = DimColor;
         }
 

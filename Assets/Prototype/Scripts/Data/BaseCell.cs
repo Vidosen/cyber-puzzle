@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,19 +21,29 @@ namespace Prototype.Scripts.Data
         
         
         public Image Background;
-        public Color DimColor;
+        protected Color DimColor;
         
         [SerializeField]
         private TextMeshProUGUI cellValueText;
         private int _value;
         private RectTransform _thisTransform;
         
+        protected virtual void Awake()
+        {
+            DimColor = Background.color;
+        }
         public void SetValueText(string value)
         {
             cellValueText.text = value;
         }
 
-        public abstract void HighlightCell(Color color);
-        public abstract void DimCell(Color color);
+        public abstract void HighlightCell(Color color, HighlightType type);
+        public abstract void DimCell(HighlightType type);
+    }
+
+    public enum HighlightType
+    {
+        HoverHint,
+        CombinationSequence
     }
 }
