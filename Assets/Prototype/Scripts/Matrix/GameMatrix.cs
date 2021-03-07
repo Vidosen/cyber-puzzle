@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
 using ModestTree;
+using Prototype.Scripts.Data;
 using Prototype.Scripts.Utils;
 using Prototype.Scripts.Views;
 using UnityEngine;
 
-namespace Prototype.Scripts.Data
+namespace Prototype.Scripts.Matrix
 {
-    public class GameMatrix : MonoBehaviour
+    public class GameMatrix : MonoBehaviour, IDisposable
     {
         #region Private Fields
         [SerializeField] private Transform Holder;
@@ -209,6 +210,12 @@ namespace Prototype.Scripts.Data
                     rowVector.Cells[cTwoIndex] = tmp;
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            
+            Destroy(gameObject);
         }
     }
 }

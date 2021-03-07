@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Prototype.Scripts.Data;
 using Prototype.Scripts.Services;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Prototype.Scripts.Views
+namespace Prototype.Scripts.Combinations
 {
-    public class CombinationCell : BaseCell, IDisposable, IPointerEnterHandler, IPointerExitHandler
+    public class CombinationCell : BaseCell, IPointerEnterHandler, IPointerExitHandler
     {
         private Combination _combination;
         protected Dictionary<HighlightType, Color> highlightColors = new Dictionary<HighlightType, Color>();
-        public void Dispose()
-        {
-            Destroy(gameObject);
-        }
 
         public void OnPointerEnter(PointerEventData eventData)
         {

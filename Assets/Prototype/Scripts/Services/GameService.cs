@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
-using ModestTree;
+using Prototype.Scripts.Combinations;
 using Prototype.Scripts.Data;
-using Prototype.Scripts.Views;
+using Prototype.Scripts.Matrix;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using UnityEngine.UI;
 
 namespace Prototype.Scripts.Services
 {
@@ -17,19 +17,51 @@ namespace Prototype.Scripts.Services
         [SerializeField] private Transform combinationsContainer;
         [SerializeField] private GameMatrix gameMatrixPrefab;
         [SerializeField] private Combination combinationPrefab;
+        [SerializeField, Space] private GameObject winView;
+        [SerializeField] private GameObject loseView;
+        [SerializeField] private Slider timerSlider;
         
-        private LevelSO LevelPreset;
+        private LevelSO[] Levels;
+
+        private int indexLevel = 0;
+        private LevelSO CurrentLevel;
 
         private GameMatrix gameMatrix;
         private List<Combination> combinations = new List<Combination>();
+
+        public bool AllCombinationsCompleted => combinations.All(c => c.IsCombinationComplete);
+
+        private IEnumerator _timerRoutine;
+        private float _timeLeft;
 
         public event Action MatrixChanged;
 
         private void Awake()
         {
-            LevelPreset = Resources.Load<LevelSO>("Levels/Level_1");
+            Levels = Resources.LoadAll<LevelSO>("Levels/");
+            
+            CurrentLevel = Levels[indexLevel];
             MatrixChanged += CheckCombinations;
-            //MatrixChanged += DebugMatrix;
+#if DEBUG
+            CurrentLevel = Levels.LastOrDefault();
+            MatrixChanged += DebugMatrix;      
+#endif
+        }
+        
+
+        IEnumerator StartTimer()
+        {
+            var delta = 0.1f;
+            var secondDelay = new WaitForSeconds(delta);
+            _timeLeft = CurrentLevel.LevelTimer;
+            while (_timeLeft > 0)
+            {
+                timerSlider.value = Mathf.Max(0, _timeLeft / CurrentLevel.LevelTimer);
+                _timeLeft -= delta;
+                yield return secondDelay;
+            }
+            timerSlider.value = Mathf.Max(0, _timeLeft / CurrentLevel.LevelTimer);
+            EndLevel(AllCombinationsCompleted);
         }
 
         private void DebugMatrix()
@@ -56,22 +88,57 @@ namespace Prototype.Scripts.Services
         public void Start()
         {
             StartLevel();
+        }
+
+        public void StartLevel()
+        {
+            winView.SetActive(false);
+            loseView.SetActive(false);
+            
+            InitMatrix();
+            InitCombinations();
+            
+            StartCoroutine(_timerRoutine = StartTimer());
             MatrixChanged?.Invoke();
         }
 
-        void StartLevel()
+        public void NextLevel()
+        {
+            indexLevel = indexLevel + 1 < Levels.Length ? indexLevel + 1 : 0;
+            CurrentLevel = Levels[indexLevel];
+            RestartLevel();
+        }
+
+        private void InitMatrix()
         {
             gameMatrix = Instantiate(gameMatrixPrefab, matrixConatainer);
             gameMatrix.ThisTransform.localPosition = Vector2.zero;
             if (!gameMatrix.IsInitialized)
-                gameMatrix.InitializeFromLevelSO(LevelPreset);
+                gameMatrix.InitializeFromLevelSO(CurrentLevel);
+        }
 
-            foreach (var codeCombination in LevelPreset.CodeCombinations)
+        private void InitCombinations()
+        {
+            foreach (var codeCombination in CurrentLevel.CodeCombinations)
             {
                 var combination = Instantiate(combinationPrefab, combinationsContainer);
                 combination.Initialize(codeCombination);
-                combinations.Add(combination);   
+                combinations.Add(combination);
             }
+        }
+
+        public void RestartLevel()
+        {
+            ResetGame();
+            StartLevel();
+        }
+        
+        public void ResetGame()
+        {
+            gameMatrix?.Dispose();
+            gameMatrix = null;
+            combinations?.ForEach(c => c.Dispose());
+            combinations?.Clear();
         }
 
         #region Highlight Methods
@@ -102,11 +169,23 @@ namespace Prototype.Scripts.Services
         {
             DimAllMatrixCells(HighlightType.CombinationSequence);
             DimAllCombinationCells(HighlightType.CombinationSequence);
+            
             foreach (var combination in combinations)
-                HighlightCombination(combination, 2);
+                CheckCombination(combination, 2);
+            
+            if (AllCombinationsCompleted)
+                EndLevel(true);
         }
 
-        private void HighlightCombination(Combination combination, int minCount)
+        private void EndLevel(bool isWin)
+        {
+            if (_timerRoutine != null)
+                StopCoroutine(_timerRoutine);
+            winView.SetActive(isWin);
+            loseView.SetActive(!isWin);
+        }
+
+        private void CheckCombination(Combination combination, int minCount)
         {
             var foundCodes= FindBestMatrixCombination(combination.CombinationCodes);
             if (foundCodes.Count >= minCount)
@@ -133,7 +212,9 @@ namespace Prototype.Scripts.Services
                 FindMatrixCombination(cell, codes, 1, ref result);
                 foundCombinations.Add(result);
             }
-            return foundCombinations.Max();
+            return foundCombinations
+                .OrderByDescending(c => c.Count)
+                .FirstOrDefault();
         }
 
         private void FindMatrixCombination(MatrixCell cell, List<CombinationCell> codes, int currentIndex, ref List<MatrixCell> resultCells)

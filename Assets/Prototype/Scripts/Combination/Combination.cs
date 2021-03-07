@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Prototype.Scripts.Data;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Zenject;
 
-namespace Prototype.Scripts.Views
+namespace Prototype.Scripts.Combinations
 {
     public class Combination : MonoBehaviour, IDisposable
     {
@@ -41,6 +38,9 @@ namespace Prototype.Scripts.Views
 
         public void Dispose()
         {
+            if (cells != null)
+                cells.ForEach(c => c.Dispose());
+            cells = null;
             Destroy(gameObject);
         }
     }

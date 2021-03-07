@@ -1,12 +1,14 @@
-﻿using TMPro;
+﻿using System;
+using Prototype.Scripts.Data;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Prototype.Scripts.Data
+namespace Prototype.Scripts.Matrix
 {
-    public abstract class BaseVector : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler {
+    public abstract class BaseVector : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler, IDisposable {
 
-        public int Size => cells.Length;
+        public int Size => cells?.Length ?? 0;
         public MatrixCell[] Cells => cells;
         public RectTransform ThisTransform =>
             _thisTransform == null ? _thisTransform = transform as RectTransform : _thisTransform;
@@ -118,6 +120,13 @@ namespace Prototype.Scripts.Data
         public void SetLineIndex(string lineIndex)
         {
             LineIndexText.text = lineIndex;
+        }
+
+        public void Dispose()
+        {
+            if (cells != null)
+                Array.ForEach(cells, c => c.Dispose());
+            Destroy(gameObject);
         }
     }
 }

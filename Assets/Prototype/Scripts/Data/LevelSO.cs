@@ -9,6 +9,8 @@ namespace Prototype.Scripts.Data
     [CreateAssetMenu(menuName = "Create Level")]
     public class LevelSO : ScriptableObject
     {
+        public float LevelTimer = 30f;
+        
         [Range(3, 6)] public int RowsCount = 3;
         [Range(3, 6)] public int ColumnsCount = 3;
 

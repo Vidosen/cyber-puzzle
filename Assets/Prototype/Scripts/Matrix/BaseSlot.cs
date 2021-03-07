@@ -1,5 +1,6 @@
 ﻿using System;
 using Prototype.Scripts.Data;
+using Prototype.Scripts.Matrix;
 using Prototype.Scripts.Services;
 using TMPro;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace Prototype.Scripts.Views
 {
-    public abstract class BaseSlot<TVector> : MonoBehaviour, IDropHandler where TVector : BaseVector
+    public abstract class BaseSlot<TVector> : MonoBehaviour, IDropHandler, IDisposable where TVector : BaseVector
     {
         private RectTransform _thisTransform;
         private TVector _vector;
@@ -45,6 +46,11 @@ namespace Prototype.Scripts.Views
         {
             Vector = vector;
             return this;
+        }
+
+        public void Dispose()
+        {
+            Destroy(gameObject);
         }
     }
 }

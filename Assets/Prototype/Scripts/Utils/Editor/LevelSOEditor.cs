@@ -18,8 +18,11 @@ namespace Prototype.Scripts.Utils.Editor
             if (levelData == null)
                 return;
             
+            EditorGUILayout.Space(5f);
             GUILayout.Space(20f);
             GUILayout.Label("Level Preset Settings", EditorStyles.boldLabel);
+            GUILayout.Space(10f);
+            levelData.LevelTimer = Mathf.Max(EditorGUILayout.FloatField("Time to finish level (ins sec.):", levelData.LevelTimer), 0f);
             GUILayout.Space(10f);
             EditorGUILayout.BeginVertical();
             levelData.ColumnsCount =

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Prototype.Scripts.Matrix;
 using Vector2 = UnityEngine.Vector2;
 
 namespace Prototype.Scripts.Data

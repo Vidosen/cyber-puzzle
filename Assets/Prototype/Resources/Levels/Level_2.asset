@@ -10,19 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9988eaca16b47c418fbc2fcd41610b3, type: 3}
-  m_Name: Level_1
+  m_Name: Level_2
   m_EditorClassIdentifier: 
   LevelTimer: 10
   RowsCount: 3
-  ColumnsCount: 3
+  ColumnsCount: 4
   MatrixField:
   - Elements: 010000000900000002000000
-  - Elements: 040000000500000006000000
+  - Elements: 020000000300000001000000
   - Elements: 070000000000000004000000
+  - Elements: 000000000000000000000000
   CodeCombinations:
   - HighlightColor: {r: 0, g: 1, b: 0.10626054, a: 1}
-    Combination: 06000000040000000700000000000000
-  - HighlightColor: {r: 0, g: 0.91291666, b: 1, a: 1}
-    Combination: 0100000002000000
-  - HighlightColor: {r: 1, g: 0, b: 0.76008654, a: 1}
-    Combination: 0900000005000000
+    Combination: 090000000000000007000000

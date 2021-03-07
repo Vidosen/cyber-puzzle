@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Prototype.Scripts.Data
 {
-    public abstract class BaseCell : MonoBehaviour
+    public abstract class BaseCell : MonoBehaviour, IDisposable
     {
         public int Value
         {
@@ -39,6 +39,11 @@ namespace Prototype.Scripts.Data
 
         public abstract void HighlightCell(Color color, HighlightType type);
         public abstract void DimCell(HighlightType type);
+
+        public void Dispose()
+        {
+            Destroy(gameObject);
+        }
     }
 
     public enum HighlightType
