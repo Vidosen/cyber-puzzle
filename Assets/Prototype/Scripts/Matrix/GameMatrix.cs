@@ -89,7 +89,7 @@ namespace Prototype.Scripts.Matrix
                 for (int column = 0; column < ColumnsSize; column++)
                 {
                     var newCell = Instantiate(matrixCellPrefab, Holder);
-                    newCell.Initialize(columnVectors[column], rowVectors[row]);
+                    newCell.Initialize(this, columnVectors[column], rowVectors[row]);
                     rowVectors[row][column] = newCell;
                     columnVectors[column][row] = newCell;
                     
@@ -212,6 +212,14 @@ namespace Prototype.Scripts.Matrix
             }
         }
 
+        public RowSlot FindRowSlotByVector(RowVector vector)
+        {
+            return rowSlots.FirstOrDefault(slot => slot.Vector == vector);
+        }
+        public ColumnSlot FindColumnSlotByVector(ColumnVector vector)
+        {
+            return columnSlots.FirstOrDefault(slot => slot.Vector == vector);
+        }
         public void Dispose()
         {
             

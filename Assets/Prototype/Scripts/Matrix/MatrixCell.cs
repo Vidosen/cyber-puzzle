@@ -14,8 +14,9 @@ namespace Prototype.Scripts.Data
 
         protected Dictionary<HighlightType,List<Color>> highlightColors = new Dictionary<HighlightType,List<Color>>();
 
-        public void Initialize(ColumnVector column, RowVector row)
+        public void Initialize(GameMatrix gameMatrix, ColumnVector column, RowVector row)
         {
+            _gameMatrix = gameMatrix;
             Row = row;
             Column = column;
 
@@ -26,11 +27,11 @@ namespace Prototype.Scripts.Data
         {
             if (Row == null || Column == null || Row.IsDragging || Column.IsDragging)
                 return;
-            
-            var rowPos = Row.ThisTransform.position;
-            var columnPos = Column.ThisTransform.position;
-            ThisTransform.position = new Vector3(columnPos.x , rowPos.y,
-                (rowPos.z + columnPos.z) * 0.5f);
+            var rowSlot = _gameMatrix.FindRowSlotByVector(Row);
+            var columnSlot = _gameMatrix.FindColumnSlotByVector(Column);
+            var rowPos = rowSlot.ThisTransform.anchoredPosition;
+            var columnPos = columnSlot.ThisTransform.anchoredPosition;
+            ThisTransform.anchoredPosition = new Vector2(columnPos.x + columnSlot.ThisTransform.rect.width / 2, rowPos.y - rowSlot.ThisTransform.rect.height / 2);
         }
 
         public override void HighlightCell(Color color, HighlightType type)
@@ -65,6 +66,8 @@ namespace Prototype.Scripts.Data
         }
 
         private Transform holder;
+        private GameMatrix _gameMatrix;
+
         public void PinVector(Transform vecTransform)
         {
             if (Row.transform != vecTransform && Column.transform != vecTransform)
@@ -75,6 +78,12 @@ namespace Prototype.Scripts.Data
         public void UnpinVector()
         {
             ThisTransform.SetParent(holder);
+        }
+        public void SetLocalZ(float newZ)
+        {
+            var newPosition = ThisTransform.localPosition;
+            newPosition.z = newZ;
+            ThisTransform.localPosition = newPosition;
         }
     }
 }
