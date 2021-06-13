@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using ModestTree;
 using Prototype.Scripts.Data;
 using Prototype.Scripts.Utils;
 using Prototype.Scripts.Views;
@@ -185,8 +184,9 @@ namespace Prototype.Scripts.Matrix
             // vectorTwo = tmp;
             if (vectorOne is RowVector rowOne && vectorTwo is RowVector rowTwo)
             {
-                var rOneIndex = rowVectors.IndexOf(rowOne);
-                var rTwoIndex = rowVectors.IndexOf(rowTwo);
+                var rowVectorList = rowVectors.ToList();
+                var rOneIndex = rowVectorList.IndexOf(rowOne);
+                var rTwoIndex = rowVectorList.IndexOf(rowTwo);
                 rowVectors[rOneIndex] = rowSlots[rOneIndex].Vector = rowTwo;
                 rowVectors[rTwoIndex] = rowSlots[rTwoIndex].Vector = rowOne;
                 
@@ -199,8 +199,9 @@ namespace Prototype.Scripts.Matrix
             }
             else if (vectorOne is ColumnVector columnOne && vectorTwo is ColumnVector columnTwo)
             {
-                var cOneIndex = columnVectors.IndexOf(columnOne);
-                var cTwoIndex = columnVectors.IndexOf(columnTwo);
+                var columnVectorList = columnVectors.ToList();
+                var cOneIndex = columnVectorList.IndexOf(columnOne);
+                var cTwoIndex = columnVectorList.IndexOf(columnTwo);
                 columnVectors[cOneIndex] = columnSlots[cOneIndex].Vector = columnTwo;
                 columnVectors[cTwoIndex] = columnSlots[cTwoIndex].Vector = columnOne;
                 foreach (var rowVector in rowVectors)
