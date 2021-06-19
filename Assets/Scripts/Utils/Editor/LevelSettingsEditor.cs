@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Prototype.Scripts.Data;
+﻿using System.Collections.Generic;
+using Data;
 using UnityEditor;
 using UnityEngine;
 
-namespace Prototype.Scripts.Utils.Editor
+namespace Utils.Editor
 {
-    [CustomEditor(typeof(LevelSO))]
-    public class LevelSOEditor : UnityEditor.Editor
+    [CustomEditor(typeof(LevelSettings))]
+    public class LevelSettingsEditor : UnityEditor.Editor
     {
 
         public override void OnInspectorGUI()
         {
-            var levelData = target as LevelSO;
+            var levelData = target as LevelSettings;
             
             if (levelData == null)
                 return;
@@ -22,7 +20,7 @@ namespace Prototype.Scripts.Utils.Editor
             GUILayout.Space(20f);
             GUILayout.Label("Level Preset Settings", EditorStyles.boldLabel);
             GUILayout.Space(10f);
-            levelData.LevelTimer = Mathf.Max(EditorGUILayout.FloatField("Time to finish level (ins sec.):", levelData.LevelTimer), 0f);
+            levelData.LevelTimer = Mathf.Max(EditorGUILayout.FloatField("Timer (in sec.):", levelData.LevelTimer), 0f);
             GUILayout.Space(10f);
             EditorGUILayout.BeginVertical();
             levelData.ColumnsCount =
@@ -54,11 +52,11 @@ namespace Prototype.Scripts.Utils.Editor
 
             GUILayout.Space(20f);
             EditorGUILayout.BeginVertical();
-            GUILayout.Label("Combinations:", EditorStyles.boldLabel);
+            GUILayout.Label("Defined Combinations:", EditorStyles.boldLabel);
             GUILayout.Space(10f);
             if (levelData.CombinationsIsNull())
-                levelData.CodeCombinations = new List<LevelSO.CodeCombination>();
-            var combinationsCount = Mathf.Clamp(EditorGUILayout.IntField("Count: ",levelData.CodeCombinations.Count), 1,5);
+                levelData.CodeCombinations = new List<LevelSettings.CodeCombination>();
+            var combinationsCount = Mathf.Clamp(EditorGUILayout.IntField("Count: ",levelData.CodeCombinations.Count), 0,5);
             GUILayout.Space(5f);
             if (combinationsCount < levelData.CodeCombinations.Count)
                 levelData.CodeCombinations.RemoveRange(combinationsCount,
@@ -66,7 +64,7 @@ namespace Prototype.Scripts.Utils.Editor
             else if(combinationsCount > levelData.CodeCombinations.Count)
                 for (var i = 0; i < combinationsCount - levelData.CodeCombinations.Count; i++)
                     levelData.CodeCombinations.Add(
-                        new LevelSO.CodeCombination());
+                        new LevelSettings.CodeCombination());
 
             for (var i = 0; i < levelData.CodeCombinations.Count; i++)
             {
@@ -100,15 +98,16 @@ namespace Prototype.Scripts.Utils.Editor
 
         }
 
-        private static void ResizeMatrixContainer(LevelSO levelData)
+        private static void ResizeMatrixContainer(LevelSettings levelData)
         {
             if (levelData.MatrixIsNull())
             {
-                levelData.MatrixField = new List<LevelSO.Row>();
+                levelData.MatrixField = new List<LevelSettings.Row>();
                 for (int column = 0; column < levelData.ColumnsCount; column++)
                 {
-                    levelData.MatrixField.Add(new LevelSO.Row());
-                    levelData.MatrixField[column].AddRange(new int[levelData.RowsCount]);
+                    levelData.MatrixField.Add(new LevelSettings.Row());
+                    for (int i = 0; i < levelData.RowsCount; i++)
+                        levelData.MatrixField[column].Add(-1);
                 }
             }
             else
@@ -118,15 +117,16 @@ namespace Prototype.Scripts.Utils.Editor
                 {
                     if (column >= levelData.MatrixField.Count)
                     {
-                        levelData.MatrixField.Add(new LevelSO.Row());
-                        levelData.MatrixField[column].AddRange(new int[levelData.RowsCount]);
+                        levelData.MatrixField.Add(new LevelSettings.Row());
+                        for (int i = 0; i < levelData.RowsCount; i++)
+                            levelData.MatrixField[column].Add(-1);
                     }
 
                     int row;
                     for (row = 0; row < levelData.RowsCount; row++)
                     {
                         if (row >= levelData.MatrixField[column].Count)
-                            levelData.MatrixField[column].Add(0);
+                            levelData.MatrixField[column].Add(-1);
                     }
 
                     var rowsCount = levelData.MatrixField[column].Count;

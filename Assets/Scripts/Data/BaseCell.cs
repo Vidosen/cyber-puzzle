@@ -40,7 +40,7 @@ namespace Prototype.Scripts.Data
         public abstract void HighlightCell(Color color, HighlightType type);
         public abstract void DimCell(HighlightType type);
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Destroy(gameObject);
         }

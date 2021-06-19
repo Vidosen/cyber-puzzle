@@ -4,10 +4,10 @@ using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Prototype.Scripts.Data
+namespace Data
 {
-    [CreateAssetMenu(menuName = "Create Level")]
-    public class LevelSO : ScriptableObject
+    [CreateAssetMenu(fileName = "Level_", menuName = "Settings/Create Level")]
+    public class LevelSettings : ScriptableObject
     {
         public float LevelTimer = 30f;
         
@@ -52,7 +52,11 @@ namespace Prototype.Scripts.Data
                 set => Elements[key] = value;
             }
 
-            public Row() => Elements = new List<int>();
+            public Row()
+            {
+                Elements = new List<int>();
+            }
+
             public int Count => Elements?.Count ?? 0;
             public void AddRange(params int[] range) => Elements.AddRange(range);
             public void Add(int value) => Elements.Add(value);

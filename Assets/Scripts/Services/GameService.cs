@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Data;
 using Prototype.Scripts.Combinations;
 using Prototype.Scripts.Data;
+using Services;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,10 +20,10 @@ namespace Prototype.Scripts.Services
         [SerializeField] private MatrixHandler _matrixHandler;
         [SerializeField] private CombinationsHandler _combinationsHandler;
         
-        private LevelSO[] Levels;
+        private LevelSettings[] Levels;
 
         private int indexLevel = 0;
-        private LevelSO CurrentLevel;
+        private LevelSettings CurrentLevel;
 
         private IEnumerator _timerRoutine;
         private float _timeLeft;
@@ -29,7 +31,7 @@ namespace Prototype.Scripts.Services
         private void Awake()
         {
             
-            Levels = Resources.LoadAll<LevelSO>("Levels/");
+            Levels = Resources.LoadAll<LevelSettings>("Levels/");
             
             CurrentLevel = Levels[indexLevel];
             _matrixHandler.MatrixChanged += OnMatrixChanged;

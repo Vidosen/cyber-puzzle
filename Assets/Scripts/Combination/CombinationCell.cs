@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Prototype.Scripts.Data;
 using Prototype.Scripts.Services;
+using Services;
+using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,19 +10,19 @@ namespace Prototype.Scripts.Combinations
 {
     public class CombinationCell : BaseCell, IPointerEnterHandler, IPointerExitHandler
     {
-        private Combination _combination;
         protected Dictionary<HighlightType, Color> highlightColors = new Dictionary<HighlightType, Color>();
+
+        public readonly Subject<CombinationCell> CellHoverEnter = new Subject<CombinationCell>();
+        public readonly Subject<CombinationCell> CellHoverExit = new Subject<CombinationCell>();
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            HighlightCell(_combination.HighlightColor, HighlightType.HoverHint);
-            MatrixHandler.Instance.HighlightAllMatchingMatrixCells(Value, _combination.HighlightColor, HighlightType.HoverHint);
+            CellHoverEnter.OnNext(this);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            DimCell(HighlightType.HoverHint);
-            MatrixHandler.Instance.DimAllMatrixCells(HighlightType.HoverHint);
+            CellHoverExit.OnNext(this);
         }
 
         public override void HighlightCell(Color color, HighlightType type)
@@ -38,10 +40,18 @@ namespace Prototype.Scripts.Combinations
             Background.color = DimColor;
         }
 
-        public void Initialize(int value, Combination combination)
+        public void Initialize(int value)
         {
             Value = value;
-            _combination = combination;
+        }
+
+        public override void Dispose()
+        {
+            CellHoverEnter.OnCompleted();
+            CellHoverExit.OnCompleted();
+            CellHoverEnter.Dispose();
+            CellHoverExit.Dispose();
+            base.Dispose();
         }
     }
 }

@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Linq;
+using Data;
 using Prototype.Scripts.Data;
+using Prototype.Scripts.Matrix;
 using Prototype.Scripts.Utils;
 using Prototype.Scripts.Views;
+using UniRx;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
-namespace Prototype.Scripts.Matrix
+namespace Matrix
 {
     public class GameMatrix : MonoBehaviour, IDisposable
     {
@@ -28,6 +32,7 @@ namespace Prototype.Scripts.Matrix
         
         #endregion
 
+        public IObservable<(BaseVector, BaseVector)> AnyVectorSwapRequest { get; private set; }
         public int RowsSize => rowVectors.Length;
         public int ColumnsSize => columnVectors.Length;
         public RowVector[] Rows => rowVectors;
@@ -44,7 +49,7 @@ namespace Prototype.Scripts.Matrix
         public bool IsInitialized => rowVectors != null && columnVectors != null;
         
 
-        public void InitializeFromLevelSO(LevelSO level)
+        public void InitializeFromLevelSO(LevelSettings level)
         {
             RecalculateMatrixRect(level.ColumnsCount, level.RowsCount);
             GenerateVectors(level.ColumnsCount, level.RowsCount);
@@ -59,6 +64,8 @@ namespace Prototype.Scripts.Matrix
         {
             GenerateVector(columns, rows, columnSlotPrefab, columnVectorPrefab, out columnSlots, out columnVectors);
             GenerateVector(rows, columns, rowSlotPrefab, rowVectorPrefab, out rowSlots, out rowVectors);
+            AnyVectorSwapRequest = Observable.Merge(columnSlots
+                .Select(slots => slots.VectorSwapRequest).Concat(rowSlots.Select(slots => slots.VectorSwapRequest)));
         }
 
         private void GenerateVector<TSlot, TVector>(int size, int cellsCount, TSlot slotPrefab, TVector vectorPrefab,
@@ -122,14 +129,22 @@ namespace Prototype.Scripts.Matrix
             }
         }
 
-        private void SetupCells(LevelSO level)
+        private void SetupCells(LevelSettings level)
         {
             for (var x = 0; x < level.ColumnsCount; x++)
             for (int y = 0; y < level.RowsCount; y++)
             {
-                this[x, y].Value = level.MatrixField[x][y];
+                if (level.MatrixField[x][y] == -1)
+                    this[x, y].Value = ChooseRandomValue();
+                else
+                    this[x, y].Value = level.MatrixField[x][y];
             }
 
+        }
+
+        private int ChooseRandomValue()
+        {
+            return Random.Range(0, 10);
         }
 
         private void OnDestroy()

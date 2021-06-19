@@ -1,4 +1,5 @@
-﻿using Prototype.Scripts.Matrix;
+﻿using Matrix;
+using Prototype.Scripts.Matrix;
 
 namespace Prototype.Scripts.Providers.Mono
 {

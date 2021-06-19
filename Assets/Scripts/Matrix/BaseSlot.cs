@@ -2,7 +2,9 @@
 using Prototype.Scripts.Data;
 using Prototype.Scripts.Matrix;
 using Prototype.Scripts.Services;
+using Services;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,6 +12,8 @@ namespace Prototype.Scripts.Views
 {
     public abstract class BaseSlot<TVector> : MonoBehaviour, IDropHandler, IDisposable where TVector : BaseVector
     {
+        public readonly Subject<(BaseVector, BaseVector)> VectorSwapRequest = new Subject<(BaseVector, BaseVector)>();
+        
         private RectTransform _thisTransform;
         private TVector _vector;
 
@@ -37,7 +41,7 @@ namespace Prototype.Scripts.Views
             else if (oneVector.GetType() == Vector.GetType() && oneVector != Vector)
             {
                 Debug.Log($"{GetType().Name}.OnDrop: " + onDragObj.name);
-                MatrixHandler.Instance.SwapRequest(oneVector, Vector);
+                VectorSwapRequest.OnNext((oneVector, _vector));
             }
 
         }
@@ -50,6 +54,8 @@ namespace Prototype.Scripts.Views
 
         public void Dispose()
         {
+            VectorSwapRequest.OnCompleted();
+            VectorSwapRequest.Dispose();
             Destroy(gameObject);
         }
     }

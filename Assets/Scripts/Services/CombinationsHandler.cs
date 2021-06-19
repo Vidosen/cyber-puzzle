@@ -1,21 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Data;
 using Prototype.Scripts.Combinations;
 using Prototype.Scripts.Data;
 using Prototype.Scripts.Providers.Mono;
+using UniRx;
 using UnityEngine;
 
-namespace Prototype.Scripts.Services
+namespace Services
 {
-    public class CombinationsHandler : Singleton<CombinationsHandler>
+    public class CombinationsHandler : MonoBehaviour
     {
         [SerializeField] private CombinationProvider _combinationProvider;
         [SerializeField] private MatrixHandler _matrixHandler;
         private List<Combination> _combinations = new List<Combination>();
 
+        private CompositeDisposable _compositeDisposable = new CompositeDisposable();
+
         public bool AllCombinationsCompleted => _combinations.All(c => c.IsCombinationComplete);
         
-        public void InitCombinations(LevelSO level)
+        public void InitCombinations(LevelSettings level)
         {
             foreach (var codeCombination in level.CodeCombinations)
             {
@@ -23,12 +28,32 @@ namespace Prototype.Scripts.Services
                 combination.Initialize(codeCombination);
                 _combinations.Add(combination);
             }
+
+            _combinations.Select(combination => combination.AnyCellHoverEnter).Concat()
+                .Subscribe(o => OnCellHoverEnter(o.Item1, o.Item2))
+                .AddTo(_compositeDisposable);
+            _combinations.Select(combination => combination.AnyCellHoverExit).Concat()
+                .Subscribe(o => OnCellHoverExit(o.Item1, o.Item2))
+                .AddTo(_compositeDisposable);
+        }
+
+        private void OnCellHoverEnter(CombinationCell cell, Combination combination)
+        {
+            cell.HighlightCell(combination.HighlightColor, HighlightType.HoverHint);
+            _matrixHandler.HighlightAllMatchingMatrixCells(cell.Value, combination.HighlightColor, HighlightType.HoverHint);
+        }
+        
+        private void OnCellHoverExit(CombinationCell cell, Combination combination)
+        {
+            cell.DimCell(HighlightType.HoverHint);
+            _matrixHandler.DimAllMatrixCells(HighlightType.HoverHint);
         }
 
         public void DisposeCombinations()
         {
             _combinations?.ForEach(c => c.Dispose());
             _combinations?.Clear();
+            _compositeDisposable.Clear();
         }
         #region Highlight Methods
         public void DimAllCombinationCells(HighlightType type)
