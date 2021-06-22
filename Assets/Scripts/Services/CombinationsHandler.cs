@@ -29,12 +29,15 @@ namespace Services
                 _combinations.Add(combination);
             }
 
-            _combinations.Select(combination => combination.AnyCellHoverEnter).Concat()
+            _combinations.Select(combination => combination.AnyCellHoverEnter).Merge()
                 .Subscribe(o => OnCellHoverEnter(o.Item1, o.Item2))
                 .AddTo(_compositeDisposable);
-            _combinations.Select(combination => combination.AnyCellHoverExit).Concat()
+            _combinations.Select(combination => combination.AnyCellHoverExit).Merge()
                 .Subscribe(o => OnCellHoverExit(o.Item1, o.Item2))
                 .AddTo(_compositeDisposable);
+            
+            // _matrixHandler.MatrixChanged.Subscribe(_ => DimAllCombinationCells(HighlightType.CombinationSequence))
+            //     .AddTo(_compositeDisposable);
         }
 
         private void OnCellHoverEnter(CombinationCell cell, Combination combination)
@@ -55,13 +58,7 @@ namespace Services
             _combinations?.Clear();
             _compositeDisposable.Clear();
         }
-        #region Highlight Methods
-        public void DimAllCombinationCells(HighlightType type)
-        {
-            foreach (var matrixCell in _combinations.SelectMany(s=>s.CombinationCodes))
-                matrixCell.DimCell(type);
-        }
-        #endregion
+
 
         public void UpdateCombinations()
         {
@@ -73,6 +70,9 @@ namespace Services
             var foundCodes =
                 _matrixHandler.FindBestMatrixCombination(combination.CombinationCodes.Select(code => code as ICell)
                     .ToList());
+            
+            combination.CombinationCodes.ForEach(code=>code.DimCell(HighlightType.CombinationSequence));
+            
             if (foundCodes.Count >= minCount)
             {
                 for (int i = 0; i < Mathf.Min(foundCodes.Count, combination.CombinationCodes.Count); i++)

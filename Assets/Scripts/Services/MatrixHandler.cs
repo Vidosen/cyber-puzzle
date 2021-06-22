@@ -16,14 +16,8 @@ namespace Services
         [SerializeField] private MatrixProvider _matrixProvider;
         private GameMatrix _gameMatrix;
         private CompositeDisposable _compositeDisposable = new CompositeDisposable();
-        public event Action MatrixChanged;
-
-        private void Awake()
-        {
-#if DEBUG
-            MatrixChanged += DebugMatrix;      
-#endif
-        }
+        public readonly Subject<Unit> MatrixChanged = new Subject<Unit>();
+        
         
 #if DEBUG
         private void DebugMatrix()
@@ -59,7 +53,16 @@ namespace Services
             _gameMatrix.AnyVectorSwapRequest
                 .Subscribe(o => SwapVectors(o.Item1, o.Item2))
                 .AddTo(_compositeDisposable);
-            MatrixChanged?.Invoke();
+            OnMatrixChanged();
+        }
+
+        private void OnMatrixChanged()
+        {
+            DimAllMatrixCells(HighlightType.CombinationSequence);
+            MatrixChanged.OnNext(Unit.Default);
+#if DEBUG
+            DebugMatrix();
+#endif
         }
 
         public void DisposeMatrix()
@@ -88,7 +91,7 @@ namespace Services
         public void SwapVectors(BaseVector oneVector, BaseVector twoVector)
         {
             _gameMatrix.SwapVectors(oneVector, twoVector);
-            MatrixChanged?.Invoke();
+            OnMatrixChanged();
         }
 
         public List<MatrixCell> FindBestMatrixCombination(List<ICell> combination)

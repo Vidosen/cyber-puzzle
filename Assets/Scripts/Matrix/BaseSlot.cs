@@ -1,7 +1,6 @@
 ﻿using System;
 using Prototype.Scripts.Data;
 using Prototype.Scripts.Matrix;
-using Prototype.Scripts.Services;
 using Services;
 using TMPro;
 using UniRx;
