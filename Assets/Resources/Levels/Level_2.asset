@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9988eaca16b47c418fbc2fcd41610b3, type: 3}
-  m_Name: Level_3
+  m_Name: Level_2
   m_EditorClassIdentifier: 
   LevelTimer: 30
-  RowsCount: 5
+  RowsCount: 4
   ColumnsCount: 4
   MatrixField:
-  - Elements: ffffffffffffffffffffffffffffffffffffffff
-  - Elements: ffffffffffffffffffffffffffffffffffffffff
-  - Elements: ffffffffffffffffffffffffffffffffffffffff
-  - Elements: ffffffffffffffffffffffffffffffffffffffff
+  - Elements: ffffffffffffffffffffffffffffffff
+  - Elements: ffffffffffffffffffffffffffffffff
+  - Elements: ffffffffffffffffffffffffffffffff
+  - Elements: ffffffffffffffffffffffffffffffff
   CodeCombinations: []

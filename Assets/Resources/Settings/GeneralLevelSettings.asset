@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d398ec55ac9476e4e97358050c102129, type: 3}
   m_Name: GeneralLevelSettings
   m_EditorClassIdentifier: 
-  HPRequiredForLevel: 0
-  HPRewardForCell: 0
-  HPRewardForDisjointPair: 0
-  HPRewardForNotNeighboringPair: 0
+  _hpRequired: 500
+  _levelTimerDuration: 0
+  _hpRewardForCell: 50
+  _hpRewardForDisjointPair: 10
+  _hpRewardForNotNeighboringPair: 15
+  _combinationsCount: 3
