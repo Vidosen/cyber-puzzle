@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Matrix;
 using Prototype.Scripts.Matrix;
 using Prototype.Scripts.Utils;
@@ -10,6 +11,9 @@ namespace Prototype.Scripts.Data
 {
     public class MatrixCell : BaseCell
     {
+        private Transform holder;
+        private GameMatrix _gameMatrix;
+        private Sequence _animationSequence;
         public RowVector Row { get; protected set; }
         public ColumnVector Column { get; protected set; }
 
@@ -23,7 +27,24 @@ namespace Prototype.Scripts.Data
 
             ThisTransform.localScale = Vector3.one;
         }
-        
+        public override void Dispose()
+        {
+            Hide((() => base.Dispose()));
+        }
+
+        private void Hide(Action callback)
+        {
+            _animationSequence?.Kill();
+            _animationSequence = DOTween.Sequence()
+                .Append(ThisTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutSine))
+                .OnComplete((() => callback?.Invoke()));
+        }
+
+        private void OnDestroy()
+        {
+            _animationSequence?.Kill();
+        }
+
         private void Update()
         {
             if (Row == null || Column == null || Row.IsDragging || Column.IsDragging)
@@ -65,9 +86,6 @@ namespace Prototype.Scripts.Data
             }
             Background.color = DimColor;
         }
-
-        private Transform holder;
-        private GameMatrix _gameMatrix;
 
         public void PinVector(Transform vecTransform)
         {

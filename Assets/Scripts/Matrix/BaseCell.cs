@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ namespace Prototype.Scripts.Data
             {
                 _value = value;
                 SetValueText(value.ToString());
+                Show();
             }
         }
         public RectTransform ThisTransform =>
@@ -27,7 +29,8 @@ namespace Prototype.Scripts.Data
         private TextMeshProUGUI cellValueText;
         private int _value;
         private RectTransform _thisTransform;
-        
+        private Sequence _animationSequence;
+
         protected virtual void Awake()
         {
             DimColor = Background.color;
@@ -40,9 +43,23 @@ namespace Prototype.Scripts.Data
         public abstract void HighlightCell(Color color, HighlightType type);
         public abstract void DimCell(HighlightType type);
 
+        
+        public void Show(Action onShown = null)
+        {
+            _animationSequence?.Kill();
+            ThisTransform.localScale = Vector3.zero;
+            _animationSequence = DOTween.Sequence()
+                .Append(ThisTransform.DOScale(Vector3.one, 0.75f).SetEase(Ease.InOutSine))
+                .OnComplete((() => onShown?.Invoke()));
+        }
         public virtual void Dispose()
         {
             Destroy(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            _animationSequence?.Kill();
         }
     }
 

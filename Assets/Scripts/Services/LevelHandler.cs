@@ -14,40 +14,56 @@ namespace Services
 
         [SerializeField] private MatrixHandler _matrixHandler;
         [SerializeField] private CombinationsHandler _combinationsHandler;
+        [SerializeField] private ProgressHandler _progressHandler;
         private CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private GameTimer _gameTimer = new GameTimer();
 
         public void InitAndStartLevel(LevelSettings levelSettings)
         {
-            winView.SetActive(false);
-            loseView.SetActive(false);
-            _matrixHandler.MatrixChanged.Subscribe(_ => OnMatrixChanged()).AddTo(_compositeDisposable);
+            UpdateView();
+
             _gameTimer.Stop();
             _gameTimer.SetDuration(levelSettings.LevelTimer);
             _gameTimer.IsTimeEndedObservable.Where(isEnded => isEnded).Subscribe(_ => OnTimeEnded())
                 .AddTo(_compositeDisposable);
             _gameTimer.Start();
-            _combinationsHandler.InitCombinations(levelSettings);
             _matrixHandler.InitMatrix(levelSettings);
+            _combinationsHandler.InitCombinations(levelSettings);
+            _progressHandler.InitProgress();
+            
+            _matrixHandler.MatrixChanged
+                .Subscribe(_ => OnMatrixChanged())
+                .AddTo(_compositeDisposable);
+            
+            _progressHandler.ProgressUpdated
+                .Where(_ => _progressHandler.IsProgressFilled)
+                .Subscribe(_ => EndLevel(true))
+                .AddTo(_compositeDisposable);
+            
+            OnMatrixChanged();
             LevelStateReactive.Value = LevelState.InProgress;
+        }
+
+        private void UpdateView()
+        {
+            winView.SetActive(false);
+            loseView.SetActive(false);
         }
 
         private void OnTimeEnded()
         {
-            EndLevel(_combinationsHandler.AllCombinationsCompleted);
+            EndLevel(false);
         }
 
         public void OnMatrixChanged()
         {
             _combinationsHandler.UpdateCombinations();
-            
-            if (_combinationsHandler.AllCombinationsCompleted)
-                EndLevel(true);
         }
         public void StopAndDisposeLevel()
         {
             _matrixHandler.DisposeMatrix();
-            _combinationsHandler.DisposeCombinations();
+            _combinationsHandler.ResetCombinations();
+            _progressHandler.Reset();
             _compositeDisposable.Clear();
             LevelStateReactive.Value = LevelState.Pending;
         }

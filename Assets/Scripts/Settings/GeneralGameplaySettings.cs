@@ -17,6 +17,8 @@ namespace Data
         [SerializeField] protected double _hpRewardForDisjointPair;
         [Tooltip("Hack Points added to the combination for a not neighboring pair of cells")]
         [SerializeField] protected double _hpRewardForNotNeighboringPair;
+        [Tooltip("Number of the simultanious combinations")]
+        [SerializeField] protected int _combinationsCount;
 
 
         public double HPRequired => _hpRequired;
@@ -25,5 +27,6 @@ namespace Data
         public double HPRewardForCell => _hpRewardForCell;
         public double HPRewardForDisjointPair => _hpRewardForDisjointPair;
         public double HPRewardForNotNeighboringPair => _hpRewardForNotNeighboringPair;
+        public int CombinationsCount => _combinationsCount;
     }
 }

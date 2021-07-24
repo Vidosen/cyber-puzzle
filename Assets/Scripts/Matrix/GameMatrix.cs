@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Prototype.Scripts.Data;
@@ -30,9 +31,10 @@ namespace Matrix
         private RowSlot[] rowSlots;
         private ColumnSlot[] columnSlots;
         
+        private Dictionary<int, int> _matrixDictionary = new Dictionary<int, int>();
         #endregion
 
-        public IObservable<(BaseVector, BaseVector)> AnyVectorSwapRequest { get; private set; }
+        public Dictionary<int, int> MatrixValuesMap => _matrixDictionary;
         public int RowsSize => rowVectors.Length;
         public int ColumnsSize => columnVectors.Length;
         public RowVector[] Rows => rowVectors;
@@ -64,8 +66,6 @@ namespace Matrix
         {
             GenerateVector(columns, rows, columnSlotPrefab, columnVectorPrefab, out columnSlots, out columnVectors);
             GenerateVector(rows, columns, rowSlotPrefab, rowVectorPrefab, out rowSlots, out rowVectors);
-            AnyVectorSwapRequest = Observable.Merge(columnSlots
-                .Select(slots => slots.VectorSwapRequest).Concat(rowSlots.Select(slots => slots.VectorSwapRequest)));
         }
 
         private void GenerateVector<TSlot, TVector>(int size, int cellsCount, TSlot slotPrefab, TVector vectorPrefab,
@@ -104,6 +104,20 @@ namespace Matrix
             }
         }
 
+        public void ChangeCell(MatrixCell cell, int newValue = -1)
+        {
+            _matrixDictionary[cell.Value]--;
+            if (newValue == -1)
+                cell.Value = ChooseRandomValue();
+            else
+                cell.Value = newValue;
+
+            if (!_matrixDictionary.ContainsKey(cell.Value))
+                _matrixDictionary.Add(cell.Value, 0);
+            
+            _matrixDictionary[cell.Value]++;
+        }
+        
         public void RecalculateMatrixRect()
         {
             ThisTransform.sizeDelta =
@@ -134,10 +148,15 @@ namespace Matrix
             for (var x = 0; x < level.ColumnsCount; x++)
             for (int y = 0; y < level.RowsCount; y++)
             {
+                var cell = this[x, y];
                 if (level.MatrixField[x][y] == -1)
-                    this[x, y].Value = ChooseRandomValue();
+                    cell.Value = ChooseRandomValue();
                 else
-                    this[x, y].Value = level.MatrixField[x][y];
+                    cell.Value = level.MatrixField[x][y];
+                if (!_matrixDictionary.ContainsKey(cell.Value))
+                    _matrixDictionary.Add(cell.Value, 0);
+
+                _matrixDictionary[cell.Value]++;
             }
 
         }
@@ -166,7 +185,7 @@ namespace Matrix
 
         public MatrixCell this[int columnIndex, int rowIndex] => GetCellByRowColumnIndices(columnIndex, rowIndex);
 
-        public (int, int) IndexOf(MatrixCell cell)
+        public (int x, int y) IndexOf(MatrixCell cell)
         {
             for (int i = 0; i < Rows.Length; i++)
             for (int j = 0; j < Columns.Length; j++)
@@ -238,7 +257,7 @@ namespace Matrix
         }
         public void Dispose()
         {
-            
+            _matrixDictionary.Clear();
             Destroy(gameObject);
         }
     }

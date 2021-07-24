@@ -70,6 +70,7 @@ namespace Utils.Editor
             {
                 var codeCombination = levelData.CodeCombinations[i];
                 var codeSize = Mathf.Clamp(EditorGUILayout.IntField("Code size: ", codeCombination.Count), 2,8);
+                codeCombination.HPForCombination = EditorGUILayout.IntField("HP for Combination: ", codeCombination.HPForCombination);
                 
                 if (codeSize < codeCombination.Count)
                     codeCombination.RemoveRange(codeSize, codeCombination.Count - codeSize);

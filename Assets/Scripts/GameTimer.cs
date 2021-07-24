@@ -7,7 +7,7 @@ public class GameTimer
     public bool IsTimeEnded => TimeLeft.Value <= 0;
     public IObservable<bool> IsTimeEndedObservable { get; }
     public ReactiveProperty<float> TimeLeft { get; } = new ReactiveProperty<float>();
-    public float TimerDuration { get; private set; }
+    public float TimerDuration { get; private set; } = Single.Epsilon;
 
     private IDisposable _timerStream;
     

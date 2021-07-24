@@ -22,7 +22,7 @@ public class LevelTimerView : MonoBehaviour
     private void OnTimeChanged()
     {
         var timer = _levelHandler.LevelTimer;
-        var relativeValue = Mathf.Clamp01((float)(timer.TimeLeft.Value / timer.TimerDuration));
+        var relativeValue = Mathf.Clamp01(timer.TimeLeft.Value / (timer.TimerDuration));
         UpdateBar(relativeValue);
     }
 

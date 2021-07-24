@@ -22,7 +22,7 @@ namespace Data
         public class CodeCombination
         {
             public Color HighlightColor;
-            
+            public int HPForCombination;
             public List<int> Combination;
             public CodeCombination(){
                 

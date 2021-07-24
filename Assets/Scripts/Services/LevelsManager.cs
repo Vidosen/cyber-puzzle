@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Data;
 using UnityEngine;
 
@@ -8,30 +9,29 @@ namespace Services
     {
         [SerializeField] private LevelHandler _levelHandler;
         private LevelSettings[] _levelSettings;
-        private int indexLevel = 0;
-        public LevelSettings CurrentLevel { get; private set; }
+        private int indexLevel;
+        public int CurrentLevel { get; private set; }
+        public LevelSettings CurrentLevelSettings { get; private set; }
 
-        private void Awake()
+        public int LevelIndex => indexLevel;
+
+        private IEnumerator Start()
         {
-            
-            _levelSettings = Resources.LoadAll<LevelSettings>("Levels/");
-            CurrentLevel = _levelSettings[indexLevel];
+            yield return _levelSettings = Resources.LoadAll<LevelSettings>("Levels/");
+            CurrentLevelSettings = _levelSettings[indexLevel];
+            _levelHandler.InitAndStartLevel(CurrentLevelSettings);
         }
 
-        private void Start()
-        {
-            _levelHandler.InitAndStartLevel(CurrentLevel);
-        }
-        
         public void RestartLevel()
         {
             _levelHandler.StopAndDisposeLevel();
-            _levelHandler.InitAndStartLevel(CurrentLevel);
+            _levelHandler.InitAndStartLevel(CurrentLevelSettings);
         }
         public void NextLevel()
         {
             indexLevel = indexLevel + 1 < _levelSettings.Length ? indexLevel + 1 : 0;
-            CurrentLevel = _levelSettings[indexLevel];
+            CurrentLevel++;
+            CurrentLevelSettings = _levelSettings[indexLevel];
         }
     }
 }

@@ -14,5 +14,9 @@
         /// Hack Points added to the combination for a not neighboring pair of cells
         /// </summary>
         double HPRewardForNotNeighboringPair { get; }
+        /// <summary>
+        /// Number of the simultanious combinations
+        /// </summary>
+        int CombinationsCount { get; }
     }
 }

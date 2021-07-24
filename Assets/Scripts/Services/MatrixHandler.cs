@@ -6,6 +6,7 @@ using Matrix;
 using Prototype.Scripts.Data;
 using Prototype.Scripts.Matrix;
 using Prototype.Scripts.Providers.Mono;
+using Signals;
 using UniRx;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace Services
     public class MatrixHandler : MonoBehaviour
     {
         [SerializeField] private MatrixProvider _matrixProvider;
+        [SerializeField] private CombinationsHandler _combinationsHandler;
         private GameMatrix _gameMatrix;
         private CompositeDisposable _compositeDisposable = new CompositeDisposable();
         public readonly Subject<Unit> MatrixChanged = new Subject<Unit>();
@@ -50,8 +52,8 @@ namespace Services
             if (!_gameMatrix.IsInitialized)
                 _gameMatrix.InitializeFromLevelSO(level);
 
-            _gameMatrix.AnyVectorSwapRequest
-                .Subscribe(o => SwapVectors(o.Item1, o.Item2))
+            MessageBroker.Default.Receive<MatrixSignals.VectorSwapRequest>()
+                .Subscribe(request => SwapVectors(request.ActiveVector, request.PassiveVector))
                 .AddTo(_compositeDisposable);
             OnMatrixChanged();
         }
@@ -67,7 +69,8 @@ namespace Services
 
         public void DisposeMatrix()
         {
-            _gameMatrix?.Dispose();
+            if (_gameMatrix != null)
+                _gameMatrix.Dispose();
             _compositeDisposable.Clear();
             _gameMatrix = null;
         }
@@ -113,6 +116,18 @@ namespace Services
                 .FirstOrDefault();
         }
 
+        public void ReplaceCell(MatrixCell cell)
+        {
+            if (_combinationsHandler.CombinationValuesMap.ContainsKey(cell.Value) &&
+                _combinationsHandler.CombinationValuesMap[cell.Value] - _gameMatrix.MatrixValuesMap[cell.Value] > 0)
+            {
+                _gameMatrix.ChangeCell(cell, cell.Value);
+                return;
+            }
+            _gameMatrix.ChangeCell(cell);
+        }
+        
+        
         private void FindMatrixCombination(MatrixCell cell, List<ICell> combination, int currentIndex,
             ref List<MatrixCell> resultCells)
         {
@@ -122,31 +137,77 @@ namespace Services
                 return;
 
             var pos = _gameMatrix.IndexOf(cell);
-            var i = pos.Item1;
-            var j = pos.Item2;
+            var x = pos.x;
+            var y = pos.y;
 
-            if (i + 1 < _gameMatrix.ColumnsSize && _gameMatrix[i + 1, j].Value == combination[currentIndex].Value)
+            if (x + 1 < _gameMatrix.ColumnsSize && _gameMatrix[x + 1, y].Value == combination[currentIndex].Value)
             {
-                FindMatrixCombination(_gameMatrix[i + 1, j], combination, ++currentIndex, ref resultCells);
+                FindMatrixCombination(_gameMatrix[x + 1, y], combination, ++currentIndex, ref resultCells);
                 return;
             }
 
-            if (i - 1 >= 0 && _gameMatrix[i - 1, j].Value == combination[currentIndex].Value)
+            if (x - 1 >= 0 && _gameMatrix[x - 1, y].Value == combination[currentIndex].Value)
             {
-                FindMatrixCombination(_gameMatrix[i - 1, j], combination, ++currentIndex, ref resultCells);
+                FindMatrixCombination(_gameMatrix[x - 1, y], combination, ++currentIndex, ref resultCells);
                 return;
             }
 
-            if (j + 1 < _gameMatrix.RowsSize && _gameMatrix[i, j + 1].Value == combination[currentIndex].Value)
+            if (y + 1 < _gameMatrix.RowsSize && _gameMatrix[x, y + 1].Value == combination[currentIndex].Value)
             {
-                FindMatrixCombination(_gameMatrix[i, j + 1], combination, ++currentIndex, ref resultCells);
+                FindMatrixCombination(_gameMatrix[x, y + 1], combination, ++currentIndex, ref resultCells);
                 return;
             }
 
-            if (j - 1 >= 0 && _gameMatrix[i, j - 1].Value == combination[currentIndex].Value)
+            if (y - 1 >= 0 && _gameMatrix[x, y - 1].Value == combination[currentIndex].Value)
             {
-                FindMatrixCombination(_gameMatrix[i, j - 1], combination, ++currentIndex, ref resultCells);
+                FindMatrixCombination(_gameMatrix[x, y - 1], combination, ++currentIndex, ref resultCells);
             }
+        }
+
+        public int[] GenerateRandomCombination(int numOfCells)
+        {
+            var uniqueCombinations = new List<MatrixCell>();
+            for (int i = 0; i < numOfCells; i++)
+            {
+                var randomCellIndex = UnityEngine.Random.Range(0, _gameMatrix.AllCells.Length);
+                var newCell = _gameMatrix.AllCells[randomCellIndex];
+                if (uniqueCombinations.Contains(newCell))
+                {
+                    i--;
+                }
+                else
+                {
+                    uniqueCombinations.Add(newCell);
+                }
+            }
+            return uniqueCombinations.Select(cell => cell.Value).ToArray();
+        }
+        
+        public int[] GenerateJointCombination(int numOfCells)
+        {
+            if (_gameMatrix.ColumnsSize * _gameMatrix.RowsSize < numOfCells)
+                throw new OverflowException();
+            var uniqueCombinations = new HashSet<MatrixCell>();
+            var randomCellIndex = UnityEngine.Random.Range(0, _gameMatrix.AllCells.Length);
+            var newCell = _gameMatrix.AllCells[randomCellIndex];
+            uniqueCombinations.Add(newCell);
+            while (uniqueCombinations.Count < numOfCells)
+            {
+                var lastCell = uniqueCombinations.Last();
+                var array = UnityEngine.Random.value > 0.5f ? lastCell.Column.Cells : lastCell.Row.Cells;
+                var filteredArray = array.Except(uniqueCombinations).ToArray();
+                if (filteredArray.Length <= 0)
+                {
+                    array = array.Equals(lastCell.Column.Cells) ? lastCell.Row.Cells : lastCell.Column.Cells;
+                    filteredArray =  array.Except(uniqueCombinations).ToArray();
+                    if (filteredArray.Length <= 0)
+                        throw new ArgumentException();
+                }
+                var newElement = array[UnityEngine.Random.Range(0, array.Length)];
+                uniqueCombinations.Add(newElement);
+            }
+            
+            return uniqueCombinations.Select(cell => cell.Value).ToArray();
         }
     }
 }
