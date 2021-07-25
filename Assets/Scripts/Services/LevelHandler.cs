@@ -14,7 +14,7 @@ namespace Services
 
         [SerializeField] private MatrixHandler _matrixHandler;
         [SerializeField] private CombinationsHandler _combinationsHandler;
-        [SerializeField] private ProgressHandler _progressHandler;
+        [SerializeField] private LevelProgressHandler _levelProgressHandler;
         private CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private GameTimer _gameTimer = new GameTimer();
 
@@ -27,16 +27,16 @@ namespace Services
             _gameTimer.IsTimeEndedObservable.Where(isEnded => isEnded).Subscribe(_ => OnTimeEnded())
                 .AddTo(_compositeDisposable);
             _gameTimer.Start();
+            _levelProgressHandler.InitProgress();
             _matrixHandler.InitMatrix(levelSettings);
             _combinationsHandler.InitCombinations(levelSettings);
-            _progressHandler.InitProgress();
-            
+
             _matrixHandler.MatrixChanged
                 .Subscribe(_ => OnMatrixChanged())
                 .AddTo(_compositeDisposable);
             
-            _progressHandler.ProgressUpdated
-                .Where(_ => _progressHandler.IsProgressFilled)
+            _levelProgressHandler.ProgressUpdated
+                .Where(_ => _levelProgressHandler.IsProgressFilled)
                 .Subscribe(_ => EndLevel(true))
                 .AddTo(_compositeDisposable);
             
@@ -63,7 +63,7 @@ namespace Services
         {
             _matrixHandler.DisposeMatrix();
             _combinationsHandler.ResetCombinations();
-            _progressHandler.Reset();
+            _levelProgressHandler.Reset();
             _compositeDisposable.Clear();
             LevelStateReactive.Value = LevelState.Pending;
         }

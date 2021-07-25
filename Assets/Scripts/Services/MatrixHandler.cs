@@ -118,11 +118,16 @@ namespace Services
 
         public void ReplaceCell(MatrixCell cell)
         {
-            if (_combinationsHandler.CombinationValuesMap.ContainsKey(cell.Value) &&
-                _combinationsHandler.CombinationValuesMap[cell.Value] - _gameMatrix.MatrixValuesMap[cell.Value] > 0)
+            int combinationValuesDifference;
+            foreach (var key in _combinationsHandler.CombinationValuesMap.Keys)
             {
-                _gameMatrix.ChangeCell(cell, cell.Value);
-                return;
+                if (_gameMatrix.MatrixValuesMap.ContainsKey(key) &&
+                    (combinationValuesDifference = _combinationsHandler.CombinationValuesMap[key] - _gameMatrix.MatrixValuesMap[key]) > 0)
+                {
+                    _gameMatrix.ChangeCell(cell, key);
+                    //Debug.Log($"Difference of VALUE {key} (combination - matrix) is {combinationValuesDifference}");
+                    return;
+                }
             }
             _gameMatrix.ChangeCell(cell);
         }

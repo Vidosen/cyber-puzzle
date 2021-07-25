@@ -15,25 +15,26 @@ namespace View
         [SerializeField] private Slider _progressBarSlider;
         [SerializeField] private TextMeshProUGUI _goalText;
         [Space]
-        [SerializeField] private ProgressHandler _progressHandler;
+        [SerializeField] private LevelProgressHandler levelProgressHandler;
 
         private Tweener _progressAnimation;
 
         private void Start()
         {
-            _progressHandler.ProgressInited.Subscribe(_ => UpdateGoalView()).AddTo(this);
-            _progressHandler.ProgressUpdated.Subscribe(progress => UpdateProgressView(progress)).AddTo(this);
+            levelProgressHandler.ProgressInited.Subscribe(_ => UpdateGoalView()).AddTo(this);
+            levelProgressHandler.ProgressUpdated.Subscribe(progress => UpdateProgressView(progress)).AddTo(this);
         }
 
         private void UpdateProgressView(float progress)
         {
-            _progressAnimation?.Kill();
+            if (_progressAnimation.IsActive())
+                _progressAnimation.Kill();
             _progressAnimation = _progressBarSlider.DOValue(progress, 0.3f).SetEase(Ease.InOutSine);
         }
 
         private void UpdateGoalView()
         {
-            _goalText.text = _progressHandler.GoalProgress.ToString("0");
+            _goalText.text = levelProgressHandler.GoalProgress.ToString("0");
         }
     }
 }

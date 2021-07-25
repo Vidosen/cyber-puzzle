@@ -4,6 +4,7 @@ using System.Linq;
 using Data;
 using Prototype.Scripts.Data;
 using Signals;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ namespace Prototype.Scripts.Combinations
     {
         [SerializeField] private CombinationCell _combinationCellPrefab;
         [SerializeField] private Transform _codesHolder;
+        [SerializeField] private TextMeshProUGUI _hpForCombinationText;
         [SerializeField] private Image _combinationStatusImg;
         [ColorUsage(true,true)]
         [SerializeField] private Color _incompleteCombination = Color.red;
@@ -33,6 +35,7 @@ namespace Prototype.Scripts.Combinations
         {
             _highlightColor = codeCombination.HighlightColor;
             HPForCombination = codeCombination.HPForCombination;
+            _hpForCombinationText.text = HPForCombination.ToString("0");
             for (int i = 0; i < codeCombination.Count; i++)
             {
                 var newCell = Instantiate(_combinationCellPrefab, _codesHolder);

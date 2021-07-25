@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Services
 {
-    public class ProgressHandler : MonoBehaviour
+    public class LevelProgressHandler : MonoBehaviour
     {
         [SerializeField] private LevelsManager _levelsManager;
 

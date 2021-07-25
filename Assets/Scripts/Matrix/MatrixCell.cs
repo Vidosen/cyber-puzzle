@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Matrix;
+using Prototype.Scripts.Data;
 using Prototype.Scripts.Matrix;
 using Prototype.Scripts.Utils;
 using UnityEngine;
 
-namespace Prototype.Scripts.Data
+namespace Matrix
 {
     public class MatrixCell : BaseCell
     {
@@ -34,7 +34,8 @@ namespace Prototype.Scripts.Data
 
         private void Hide(Action callback)
         {
-            _animationSequence?.Kill();
+            if (_animationSequence.IsActive())
+                _animationSequence.Kill();
             _animationSequence = DOTween.Sequence()
                 .Append(ThisTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutSine))
                 .OnComplete((() => callback?.Invoke()));
@@ -42,7 +43,8 @@ namespace Prototype.Scripts.Data
 
         private void OnDestroy()
         {
-            _animationSequence?.Kill();
+            if (_animationSequence.IsActive())
+                _animationSequence.Kill();
         }
 
         private void Update()

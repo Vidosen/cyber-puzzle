@@ -1,10 +1,11 @@
 ﻿using System;
 using DG.Tweening;
+using Prototype.Scripts.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Prototype.Scripts.Data
+namespace Matrix
 {
     public abstract class BaseCell : MonoBehaviour, ICell, IDisposable
     {
@@ -46,7 +47,10 @@ namespace Prototype.Scripts.Data
         
         public void Show(Action onShown = null)
         {
-            _animationSequence?.Kill();
+
+            if (_animationSequence.IsActive())
+                _animationSequence.Kill();
+            
             ThisTransform.localScale = Vector3.zero;
             _animationSequence = DOTween.Sequence()
                 .Append(ThisTransform.DOScale(Vector3.one, 0.75f).SetEase(Ease.InOutSine))
@@ -59,7 +63,8 @@ namespace Prototype.Scripts.Data
 
         private void OnDestroy()
         {
-            _animationSequence?.Kill();
+            if (_animationSequence.IsActive())
+                _animationSequence.Kill();
         }
     }
 

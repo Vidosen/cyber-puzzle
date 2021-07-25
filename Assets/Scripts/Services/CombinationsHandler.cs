@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Matrix;
 using Prototype.Scripts.Combinations;
 using Prototype.Scripts.Data;
 using Prototype.Scripts.Providers.Mono;
@@ -15,7 +16,7 @@ namespace Services
     {
         [SerializeField] private CombinationProvider _combinationProvider;
         [SerializeField] private MatrixHandler _matrixHandler;
-        [SerializeField] private ProgressHandler _progressHandler;
+        [SerializeField] private LevelProgressHandler levelProgressHandler;
         private List<Combination> _combinations = new List<Combination>();
 
         private CompositeDisposable _compositeDisposable = new CompositeDisposable();
@@ -63,7 +64,7 @@ namespace Services
         private LevelSettings.CodeCombination GenerateDynamicCombination(int complexity)
         {
             var percent = 0.05f * (complexity + 1);
-            var HPRange = _progressHandler.GoalProgress * percent;
+            var HPRange = levelProgressHandler.GoalProgress * percent;
             var offset = 0.2f * HPRange;
             var HPCount = ((int) UnityEngine.Random.Range(HPRange - offset, HPRange + offset) / 10) * 10;
             var numOfCells = complexity + 2;
@@ -161,7 +162,7 @@ namespace Services
                     _matrixHandler.ReplaceCell(cell);
                     //cell.DimCell(HighlightType.CombinationSequence);
                 });
-                _progressHandler.AddProgress(combination);
+                levelProgressHandler.AddProgress(combination);
                 return true;
             }
             return false;
