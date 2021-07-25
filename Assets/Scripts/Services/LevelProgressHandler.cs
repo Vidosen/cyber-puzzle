@@ -10,7 +10,17 @@ namespace Services
     {
         [SerializeField] private LevelsManager _levelsManager;
 
-        public float NormalizedProgress => Mathf.Clamp01(_currentProgress / _goalProgress);
+        public float NormalizedProgress
+        {
+            get
+            {
+                var progress = Mathf.Clamp01(_currentProgress / _goalProgress);
+                if (Single.IsNaN(progress))
+                    return 0;
+                return progress;
+            }
+        }
+
         public bool IsProgressFilled => _currentProgress >= _goalProgress;
 
         public float GoalProgress => _goalProgress;

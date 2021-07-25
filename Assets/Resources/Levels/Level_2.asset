@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9988eaca16b47c418fbc2fcd41610b3, type: 3}
   m_Name: Level_2
   m_EditorClassIdentifier: 
-  LevelTimer: 30
+  LevelTimer: 60
   RowsCount: 4
   ColumnsCount: 4
   MatrixField:
