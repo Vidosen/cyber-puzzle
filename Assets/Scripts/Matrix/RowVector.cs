@@ -1,7 +1,6 @@
-﻿using Prototype.Scripts.Data;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Prototype.Scripts.Matrix
+namespace Matrix
 {
     public class RowVector : BaseVector
     {

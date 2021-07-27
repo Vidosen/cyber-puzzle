@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Prototype.Scripts.Utils
+namespace Utils
 {
     public static class RectTransformHelper
     {

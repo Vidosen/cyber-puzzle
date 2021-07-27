@@ -1,6 +1,6 @@
 using System;
+using Combinations;
 using Data;
-using Prototype.Scripts.Combinations;
 using UniRx;
 using UnityEngine;
 

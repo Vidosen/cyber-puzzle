@@ -1,7 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Prototype.Scripts.Utils
+namespace Utils
 {
     public class GridCreator : MonoBehaviour
     {

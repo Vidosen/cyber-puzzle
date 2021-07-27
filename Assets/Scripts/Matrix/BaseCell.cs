@@ -1,6 +1,5 @@
 ﻿using System;
 using DG.Tweening;
-using Prototype.Scripts.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

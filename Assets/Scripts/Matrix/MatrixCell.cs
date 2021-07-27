@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Prototype.Scripts.Data;
-using Prototype.Scripts.Matrix;
-using Prototype.Scripts.Utils;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using Utils;
 
 namespace Matrix
 {
-    public class MatrixCell : BaseCell
+    public class MatrixCell : BaseCell, IBeginDragHandler, IEndDragHandler, IDragHandler
     {
         private Transform holder;
         private GameMatrix _gameMatrix;
@@ -27,10 +26,6 @@ namespace Matrix
 
             ThisTransform.localScale = Vector3.one;
         }
-        public override void Dispose()
-        {
-            Hide((() => base.Dispose()));
-        }
 
         private void Hide(Action callback)
         {
@@ -45,17 +40,27 @@ namespace Matrix
         {
             if (_animationSequence.IsActive())
                 _animationSequence.Kill();
+            
+            if (_zPosAnimation.IsActive())
+                _zPosAnimation.Kill();
+
         }
 
         private void Update()
         {
             if (Row == null || Column == null || Row.IsDragging || Column.IsDragging)
                 return;
+            //SnapCell();
+        }
+
+        public void SnapCell()
+        {
             var rowSlot = _gameMatrix.FindRowSlotByVector(Row);
             var columnSlot = _gameMatrix.FindColumnSlotByVector(Column);
             var rowPos = rowSlot.ThisTransform.anchoredPosition;
             var columnPos = columnSlot.ThisTransform.anchoredPosition;
-            ThisTransform.anchoredPosition = new Vector2(columnPos.x + columnSlot.ThisTransform.rect.width / 2, rowPos.y - rowSlot.ThisTransform.rect.height / 2);
+            ThisTransform.anchoredPosition = new Vector2(columnPos.x + columnSlot.ThisTransform.rect.width / 2,
+                rowPos.y - rowSlot.ThisTransform.rect.height / 2);
         }
 
         public override void HighlightCell(Color color, HighlightType type)
@@ -100,11 +105,31 @@ namespace Matrix
         {
             ThisTransform.SetParent(holder);
         }
+        private Tween _zPosAnimation;
         public void SetLocalZ(float newZ)
         {
-            var newPosition = ThisTransform.localPosition;
-            newPosition.z = newZ;
-            ThisTransform.localPosition = newPosition;
+            if (_zPosAnimation.IsActive())
+            {
+                _zPosAnimation.Kill();
+            }
+            _zPosAnimation = ThisTransform.DOLocalMoveZ(newZ, 0.2f).Play();
+        }
+
+        private Vector2 _startPos;
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            _startPos = eventData.position;
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            var delta = eventData.position - _startPos;
+            
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            //throw new NotImplementedException();
         }
     }
 }

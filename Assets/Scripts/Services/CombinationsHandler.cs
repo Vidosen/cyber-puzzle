@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Combinations;
 using Data;
 using Matrix;
-using Prototype.Scripts.Combinations;
-using Prototype.Scripts.Data;
-using Prototype.Scripts.Providers.Mono;
+using Providers.Mono;
 using Signals;
 using UniRx;
 using UnityEngine;

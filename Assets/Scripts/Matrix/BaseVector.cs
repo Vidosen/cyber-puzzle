@@ -1,11 +1,10 @@
 ﻿using System;
-using Matrix;
-using Prototype.Scripts.Data;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Prototype.Scripts.Matrix
+namespace Matrix
 {
     public abstract class BaseVector : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler, IDisposable
     {
@@ -81,7 +80,6 @@ namespace Prototype.Scripts.Matrix
         
         public void OnDrag(PointerEventData eventData)
         {
-            //ThisTransform.anchoredPosition += SnapDirection * Vector2.Dot(SnapDirection, eventData.delta / _canvas.scaleFactor);
             ThisTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
         }
 
@@ -100,6 +98,7 @@ namespace Prototype.Scripts.Matrix
             SetSortingOrder(10);
             SetLocalZ(_deafultZ);
             ThisTransform.anchoredPosition = Vector3.zero;
+            Array.ForEach(Cells, cell => cell.SnapCell());
             Debug.Log($"{GetType().Name}.OnEndDrag");
         }
 
@@ -135,16 +134,23 @@ namespace Prototype.Scripts.Matrix
 
         public void Dispose()
         {
+            if (_animationTweener.IsActive())
+            {
+                _animationTweener.Kill();
+            }
             if (cells != null)
                 Array.ForEach(cells, c => c.Dispose());
             Destroy(gameObject);
         }
 
+        private Tween _animationTweener;
         private void SetLocalZ(float newZ)
         {
-            var newPosition = ThisTransform.localPosition;
-            newPosition.z = newZ;
-            ThisTransform.localPosition = newPosition;
+            if (_animationTweener.IsActive())
+            {
+                _animationTweener.Kill();
+            }
+            _animationTweener = ThisTransform.DOLocalMoveZ(newZ, 0.2f).Play();
         }
 
         private void SetSortingOrder(int order) => _canvas.sortingOrder = order;

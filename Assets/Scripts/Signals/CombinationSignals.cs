@@ -1,4 +1,4 @@
-﻿using Prototype.Scripts.Combinations;
+﻿using Combinations;
 
 namespace Signals
 {

@@ -265,7 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 750eec888ea34bb88332d3a03db03447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _HighlightZOffset: 90
+  _HighlightZOffset: 70
   LineIndexText: {fileID: 7624688993699656313}
   DragAlpha: 0.75
 --- !u!225 &8404845820383035058

@@ -1,4 +1,4 @@
-﻿namespace Prototype.Scripts.Data
+﻿namespace Matrix
 {
     public interface ICell
     {

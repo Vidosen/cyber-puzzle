@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using Matrix;
-using Prototype.Scripts.Data;
-using Services;
-using Signals;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Prototype.Scripts.Combinations
+namespace Combinations
 {
     public class CombinationCell : BaseCell, IPointerEnterHandler, IPointerExitHandler
     {

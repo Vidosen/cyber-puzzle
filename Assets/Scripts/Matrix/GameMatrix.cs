@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data;
-using Prototype.Scripts.Data;
-using Prototype.Scripts.Matrix;
-using Prototype.Scripts.Utils;
-using Prototype.Scripts.Views;
-using UniRx;
 using UnityEngine;
+using Utils;
 using Random = UnityEngine.Random;
 
 namespace Matrix
@@ -22,7 +18,8 @@ namespace Matrix
         [SerializeField] private RowVector rowVectorPrefab;
         [SerializeField] private MatrixCell matrixCellPrefab;
         
-        [Space, SerializeField] private float Offset = 20f;
+        [Space, SerializeField] private float Offset = 10f;
+        [Space, SerializeField] private float SlotOffset = 20f;
         
         private RectTransform _thisTransform;
         private RowVector[] rowVectors;
@@ -118,15 +115,10 @@ namespace Matrix
             _matrixDictionary[cell.Value]++;
         }
         
-        public void RecalculateMatrixRect()
-        {
-            ThisTransform.sizeDelta =
-                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, RowsSize + 1, ColumnsSize + 1, Offset);
-        }
         public void RecalculateMatrixRect(int columns, int rows)
         {
             ThisTransform.sizeDelta =
-                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, rows + 1, columns + 1, Offset);
+                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, rows + 1, columns + 1, Offset) + new Vector2(SlotOffset,SlotOffset);
         }
         
         private void SetupSlots()
@@ -134,12 +126,16 @@ namespace Matrix
             for (var i = 0; i < RowSlots.Length; i++)
             {
                 var _transform = RowSlots[i].ThisTransform;
-                _transform.localPosition = RectTransformHelper.GetChildPositionContainer(_transform.rect, 0, i + 1, Offset);
+                _transform.localPosition =
+                    RectTransformHelper.GetChildPositionContainer(_transform.rect, 0, i + 1, Offset) +
+                    new Vector2(0, -SlotOffset);
             }
             for (var i = 0; i < ColumnSlots.Length; i++)
             {
                 var _transform = ColumnSlots[i].ThisTransform;
-                _transform.localPosition = RectTransformHelper.GetChildPositionContainer(_transform.rect, i + 1, 0, Offset);
+                _transform.localPosition =
+                    RectTransformHelper.GetChildPositionContainer(_transform.rect, i + 1, 0, Offset) +
+                    new Vector2(SlotOffset, 0);
             }
         }
 
@@ -156,6 +152,7 @@ namespace Matrix
                 if (!_matrixDictionary.ContainsKey(cell.Value))
                     _matrixDictionary.Add(cell.Value, 0);
 
+                cell.SnapCell();
                 _matrixDictionary[cell.Value]++;
             }
 

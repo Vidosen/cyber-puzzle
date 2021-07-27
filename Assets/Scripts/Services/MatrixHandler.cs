@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Matrix;
-using Prototype.Scripts.Data;
-using Prototype.Scripts.Matrix;
-using Prototype.Scripts.Providers.Mono;
+using Providers.Mono;
 using Signals;
 using UniRx;
 using UnityEngine;
@@ -65,6 +63,7 @@ namespace Services
 #if DEBUG
             DebugMatrix();
 #endif
+            Array.ForEach(_gameMatrix.AllCells, cell => cell.SnapCell());
         }
 
         public void DisposeMatrix()
@@ -118,14 +117,12 @@ namespace Services
 
         public void ReplaceCell(MatrixCell cell)
         {
-            int combinationValuesDifference;
             foreach (var key in _combinationsHandler.CombinationValuesMap.Keys)
             {
                 if (_gameMatrix.MatrixValuesMap.ContainsKey(key) &&
-                    (combinationValuesDifference = _combinationsHandler.CombinationValuesMap[key] - _gameMatrix.MatrixValuesMap[key]) > 0)
+                    (_combinationsHandler.CombinationValuesMap[key] - _gameMatrix.MatrixValuesMap[key]) > 0)
                 {
                     _gameMatrix.ChangeCell(cell, key);
-                    //Debug.Log($"Difference of VALUE {key} (combination - matrix) is {combinationValuesDifference}");
                     return;
                 }
             }

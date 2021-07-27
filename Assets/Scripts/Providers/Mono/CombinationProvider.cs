@@ -1,7 +1,5 @@
-﻿using Prototype.Scripts.Combinations;
-
-namespace Prototype.Scripts.Providers.Mono
+﻿namespace Providers.Mono
 {
-    public class CombinationProvider : MonoProvider<Combination>
+    public class CombinationProvider : MonoProvider<Combinations.Combination>
     { }
 }

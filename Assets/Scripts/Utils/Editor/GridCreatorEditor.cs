@@ -1,9 +1,7 @@
-﻿using System;
-using UniRx;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
-namespace Prototype.Scripts.Utils.Editor
+namespace Utils.Editor
 {
     [CustomEditor(typeof(GridCreator))]
     public class GridCreatorEditor : UnityEditor.Editor

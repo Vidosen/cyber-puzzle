@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Prototype.Scripts.Providers
+namespace Providers
 {
     public abstract class MonoProvider<TMono> : MonoBehaviour, IProvider<TMono> where TMono : MonoBehaviour
     {

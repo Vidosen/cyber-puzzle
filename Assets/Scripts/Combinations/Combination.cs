@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data;
-using Prototype.Scripts.Data;
 using Signals;
 using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Prototype.Scripts.Combinations
+namespace Combinations
 {
     public class Combination : MonoBehaviour, IDisposable
     {

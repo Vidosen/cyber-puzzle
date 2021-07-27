@@ -1,6 +1,4 @@
-﻿using Prototype.Scripts.Views;
-
-namespace Prototype.Scripts.Matrix
+﻿namespace Matrix
 {
     public class RowSlot : BaseSlot<RowVector>
     { }

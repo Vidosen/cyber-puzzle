@@ -1,8 +1,6 @@
-﻿using System.Numerics;
-using Prototype.Scripts.Matrix;
-using Vector2 = UnityEngine.Vector2;
+﻿using Vector2 = UnityEngine.Vector2;
 
-namespace Prototype.Scripts.Data
+namespace Matrix
 {
     public class ColumnVector : BaseVector
     {

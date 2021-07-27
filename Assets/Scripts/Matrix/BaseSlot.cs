@@ -1,11 +1,10 @@
 ﻿using System;
-using Prototype.Scripts.Matrix;
 using Signals;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Prototype.Scripts.Views
+namespace Matrix
 {
     public abstract class BaseSlot<TVector> : MonoBehaviour, IDropHandler, IDisposable where TVector : BaseVector
     {
@@ -37,7 +36,7 @@ namespace Prototype.Scripts.Views
             else if (oneVector.GetType() == Vector.GetType() && oneVector != Vector)
             {
                 Debug.Log($"{GetType().Name}.OnDrop: " + onDragObj.name);
-                MessageBroker.Default.Publish(new MatrixSignals.VectorSwapRequest(){ActiveVector =  oneVector, PassiveVector =  _vector });
+                MessageBroker.Default.Publish(new MatrixSignals.VectorSwapRequest() {ActiveVector =  oneVector, PassiveVector =  _vector });
             }
 
         }
