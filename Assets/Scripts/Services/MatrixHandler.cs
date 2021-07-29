@@ -48,7 +48,7 @@ namespace Services
             _gameMatrix = _matrixProvider.CreateNew();
             _gameMatrix.ThisTransform.localPosition = Vector2.zero;
             if (!_gameMatrix.IsInitialized)
-                _gameMatrix.InitializeFromLevelSO(level);
+                _gameMatrix.InitializeFromLevelSO(level, _matrixProvider.Holder);
 
             MessageBroker.Default.Receive<MatrixSignals.VectorSwapRequest>()
                 .Subscribe(request => SwapVectors(request.ActiveVector, request.PassiveVector))

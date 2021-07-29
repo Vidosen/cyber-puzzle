@@ -1382,6 +1382,7 @@ GameObject:
   m_Component:
   - component: {fileID: 801893240}
   - component: {fileID: 801893241}
+  - component: {fileID: 801893242}
   m_Layer: 5
   m_Name: '[PROVIDER] Matrix'
   m_TagString: Untagged
@@ -1406,7 +1407,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -173.547, y: 0}
+  m_SizeDelta: {x: -160, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &801893241
 MonoBehaviour:
@@ -1422,6 +1423,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _holder: {fileID: 801893240}
   _prefab: {fileID: 2990979720828714073, guid: e30feb72803ccba43b04d2cb366f272d, type: 3}
+--- !u!114 &801893242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801893239}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 882f80536c9da604484f56aa8e5b2fd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rectTrnansform: {fileID: 801893240}
 --- !u!1 &802721439
 GameObject:
   m_ObjectHideFlags: 0
@@ -2779,7 +2793,6 @@ GameObject:
   - component: {fileID: 1314047665}
   - component: {fileID: 1314047664}
   - component: {fileID: 1314047663}
-  - component: {fileID: 1314047666}
   m_Layer: 5
   m_Name: '[PRESENTER] Matrix'
   m_TagString: Untagged
@@ -2834,7 +2847,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314047661}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -2865,19 +2878,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314047661}
   m_CullTransparentMesh: 1
---- !u!114 &1314047666
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1314047661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 882f80536c9da604484f56aa8e5b2fd0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rectTrnansform: {fileID: 1314047662}
 --- !u!1 &1357665620
 GameObject:
   m_ObjectHideFlags: 0
@@ -2967,13 +2967,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374401801}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc68e69b5ed6ab9489e37f4d0de26fcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHorizontalAngle: 15
-  MaxVerticalAngle: 6.25
+  MaxHorizontalAngle: 7.5
+  MaxVerticalAngle: 3.125
 --- !u!223 &1374401804
 Canvas:
   m_ObjectHideFlags: 0

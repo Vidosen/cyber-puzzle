@@ -10,6 +10,7 @@ namespace Providers
         [SerializeField] private TMono _prefab;
 
         private List<TMono> _objects = new List<TMono>();
+        public RectTransform Holder => _holder;
         
         public TMono CreateNew()
         {

@@ -48,24 +48,32 @@ namespace Matrix
         public bool IsInitialized => rowVectors != null && columnVectors != null;
         
 
-        public void InitializeFromLevelSO(LevelSettings level)
+        public void InitializeFromLevelSO(LevelSettings level, RectTransform holder)
         {
-            RecalculateMatrixRect(level.ColumnsCount, level.RowsCount);
-            GenerateVectors(level.ColumnsCount, level.RowsCount);
+            var gridRatio = RecalculateMatrixRect(level.ColumnsCount, level.RowsCount, holder);
+            GenerateVectors(level.ColumnsCount, level.RowsCount, gridRatio);
             SetupSlots();
             
-            GenerateCells();
+            GenerateCells(gridRatio);
             SetupCells(level);
             
         }
-        
-        private void GenerateVectors(int columns, int rows)
+        public float RecalculateMatrixRect(int columns, int rows, RectTransform holder)
         {
-            GenerateVector(columns, rows, columnSlotPrefab, columnVectorPrefab, out columnSlots, out columnVectors);
-            GenerateVector(rows, columns, rowSlotPrefab, rowVectorPrefab, out rowSlots, out rowVectors);
+            var unscaledGridSize =
+                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, rows + 1, columns + 1,
+                    Offset) + new Vector2(SlotOffset, SlotOffset);
+            var gridRatio = RectTransformHelper.GetGridContainerRatio(holder, unscaledGridSize);
+            ThisTransform.sizeDelta = unscaledGridSize * gridRatio;
+            return gridRatio;
+        }
+        private void GenerateVectors(int columns, int rows, float gridRatio)
+        {
+            GenerateVector(columns, rows, gridRatio, columnSlotPrefab, columnVectorPrefab, out columnSlots, out columnVectors);
+            GenerateVector(rows, columns, gridRatio, rowSlotPrefab, rowVectorPrefab, out rowSlots, out rowVectors);
         }
 
-        private void GenerateVector<TSlot, TVector>(int size, int cellsCount, TSlot slotPrefab, TVector vectorPrefab,
+        private void GenerateVector<TSlot, TVector>(int size, int cellsCount, float gridRatio, TSlot slotPrefab, TVector vectorPrefab,
             out TSlot[] slots, out TVector[] vectors)
             where TVector : BaseVector
             where TSlot : BaseSlot<TVector>
@@ -79,13 +87,16 @@ namespace Matrix
                 
                 slots[i].Initialize(vectors[i]);
                 slots[i].name += $" {i + 1}";
-                vectors[i].name += $" {i + 1}";
+                slots[i].MultiplyScale(gridRatio);
+                
                 vectors[i].Initialize(cellsCount, i);
+                vectors[i].name += $" {i + 1}";
+                vectors[i].MultiplyScale(gridRatio);
             }
         }
         
 
-        private void GenerateCells()
+        private void GenerateCells(float gridRatio)
         {
             for (int row = 0; row < RowsSize; row++)
             {
@@ -97,6 +108,7 @@ namespace Matrix
                     columnVectors[column][row] = newCell;
                     
                     newCell.name += $" C{column + 1}-R{row + 1}";
+                    newCell.MultiplyScale(gridRatio);
                 }
             }
         }
@@ -114,13 +126,7 @@ namespace Matrix
             
             _matrixDictionary[cell.Value]++;
         }
-        
-        public void RecalculateMatrixRect(int columns, int rows)
-        {
-            ThisTransform.sizeDelta =
-                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, rows + 1, columns + 1, Offset) + new Vector2(SlotOffset,SlotOffset);
-        }
-        
+
         private void SetupSlots()
         {
             for (var i = 0; i < RowSlots.Length; i++)

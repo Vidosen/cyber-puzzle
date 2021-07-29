@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Utils
@@ -9,6 +10,12 @@ namespace Utils
         {
             return new Vector2(columns * childRect.height + (columns + 1) * childrenOffset,
                 rows * childRect.width + (rows + 1) * childrenOffset);
+        }
+        
+        public static float GetGridContainerRatio(RectTransform holder, Vector2 gridSize, float maxRatio = Single.PositiveInfinity)
+        {
+            var holderBounds = RectTransformUtility.CalculateRelativeRectTransformBounds(holder);
+            return Mathf.Min(holderBounds.size.x / gridSize.x, holderBounds.size.y /  gridSize.y, maxRatio);
         }
 
         public static Vector2 GetChildPositionContainer(Rect childRect, int xIndex, int yIndex, float childrenOffset)
@@ -35,5 +42,13 @@ namespace Utils
             return Color.HSVToRGB(resH / count, resS / count, resV / count);
         }
         
+        public static void MultiplyScale(this MonoBehaviour obj, float scale)
+        {
+            var _transform = obj.GetComponent<RectTransform>();
+            if (scale > 0 && _transform != null)
+            {
+                _transform.sizeDelta = _transform.sizeDelta * scale;   
+            }
+        }
     }
 }
