@@ -10,9 +10,12 @@ namespace Matrix
 {
     public class MatrixCell : BaseCell, IBeginDragHandler, IEndDragHandler, IDragHandler
     {
+        [SerializeField] private float _moveAnimationDuration = 0.45f;
         private Transform holder;
         private GameMatrix _gameMatrix;
-        private Sequence _animationSequence;
+        private Sequence _hideAnimation;
+        private Sequence _moveAnimation;
+        private Sequence _zPosAnimation;
         public RowVector Row { get; protected set; }
         public ColumnVector Column { get; protected set; }
 
@@ -29,38 +32,40 @@ namespace Matrix
 
         private void Hide(Action callback)
         {
-            if (_animationSequence.IsActive())
-                _animationSequence.Kill();
-            _animationSequence = DOTween.Sequence()
+            KillAnimation(_hideAnimation);
+            _hideAnimation = DOTween.Sequence()
                 .Append(ThisTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InOutSine))
                 .OnComplete((() => callback?.Invoke()));
         }
 
         private void OnDestroy()
         {
-            if (_animationSequence.IsActive())
-                _animationSequence.Kill();
-            
-            if (_zPosAnimation.IsActive())
-                _zPosAnimation.Kill();
+            KillAnimation(_zPosAnimation);
+            KillAnimation(_moveAnimation);
+            KillAnimation(_hideAnimation);
 
         }
-
-        private void Update()
+        private void KillAnimation(Tween tween)
         {
-            if (Row == null || Column == null || Row.IsDragging || Column.IsDragging)
-                return;
-            //SnapCell();
+            if (tween.IsActive()) tween.Kill();
         }
-
-        public void SnapCell()
+        
+        public void SnapCell(bool animate = false)
         {
             var rowSlot = _gameMatrix.FindRowSlotByVector(Row);
             var columnSlot = _gameMatrix.FindColumnSlotByVector(Column);
             var rowPos = rowSlot.ThisTransform.anchoredPosition;
             var columnPos = columnSlot.ThisTransform.anchoredPosition;
-            ThisTransform.anchoredPosition = new Vector2(columnPos.x + columnSlot.ThisTransform.rect.width / 2,
+            var targetPos = new Vector2(columnPos.x + columnSlot.ThisTransform.rect.width / 2,
                 rowPos.y - rowSlot.ThisTransform.rect.height / 2);
+            if (animate)
+            {
+                KillAnimation(_moveAnimation);
+                _moveAnimation = DOTween.Sequence()
+                    .Append(ThisTransform.DOAnchorPos(targetPos, _moveAnimationDuration));
+            }
+            else
+                ThisTransform.anchoredPosition = targetPos;
         }
 
         public override void HighlightCell(Color color, HighlightType type)
@@ -105,17 +110,16 @@ namespace Matrix
         {
             ThisTransform.SetParent(holder);
         }
-        private Tween _zPosAnimation;
+
         public void SetLocalZ(float newZ)
         {
-            if (_zPosAnimation.IsActive())
-            {
-                _zPosAnimation.Kill();
-            }
-            _zPosAnimation = ThisTransform.DOLocalMoveZ(newZ, 0.2f).Play();
+            KillAnimation(_zPosAnimation);
+            _zPosAnimation = DOTween.Sequence()
+                .Append(ThisTransform.DOLocalMoveZ(newZ, 0.2f));
         }
 
         private Vector2 _startPos;
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             _startPos = eventData.position;

@@ -53,6 +53,22 @@ namespace Services
             MessageBroker.Default.Receive<MatrixSignals.VectorSwapRequest>()
                 .Subscribe(request => SwapVectors(request.ActiveVector, request.PassiveVector))
                 .AddTo(_compositeDisposable);
+            MessageBroker.Default.Receive<MatrixSignals.VectorDragFinished>()
+                .Subscribe(request =>
+                {
+                    Array.ForEach(request.ActiveVector.Cells, cell => cell.SnapCell());
+                    if (request.ActiveVector is RowVector rowVector)
+                    {
+                        var slot = _gameMatrix.FindRowSlotByVector(rowVector);
+                        slot.SnapVector(true);
+                    }
+                    if (request.ActiveVector is ColumnVector columnVector)
+                    {
+                        var slot = _gameMatrix.FindColumnSlotByVector(columnVector);
+                        slot.SnapVector(true);
+                    }
+                })
+                .AddTo(_compositeDisposable);
             OnMatrixChanged();
         }
 
@@ -63,7 +79,9 @@ namespace Services
 #if DEBUG
             DebugMatrix();
 #endif
-            Array.ForEach(_gameMatrix.AllCells, cell => cell.SnapCell());
+            Array.ForEach(_gameMatrix.AllCells, cell => cell.SnapCell(true));
+            Array.ForEach(_gameMatrix.ColumnSlots, slot => slot.SnapVector(true));
+            Array.ForEach(_gameMatrix.RowSlots, slot => slot.SnapVector(true));
         }
 
         public void DisposeMatrix()

@@ -15,5 +15,9 @@ namespace Signals
             public BaseVector ActiveVector { get; set; }
             public int SlideOffset { get; set; }
         }
+        public class VectorDragFinished
+        {
+            public BaseVector ActiveVector { get; set; }
+        }
     }
 }

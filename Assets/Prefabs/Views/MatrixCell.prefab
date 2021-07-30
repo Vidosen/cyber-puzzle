@@ -91,6 +91,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Background: {fileID: 156353666666107191}
   cellValueText: {fileID: 158114184045292965}
+  _moveAnimationDuration: 0.2
 --- !u!1 &7811618385135235661
 GameObject:
   m_ObjectHideFlags: 0

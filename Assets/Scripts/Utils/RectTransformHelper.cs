@@ -18,9 +18,9 @@ namespace Utils
             return Mathf.Min(holderBounds.size.x / gridSize.x, holderBounds.size.y /  gridSize.y, maxRatio);
         }
 
-        public static Vector2 GetChildPositionContainer(Rect childRect, int xIndex, int yIndex, float childrenOffset)
+        public static Vector3 GetChildPositionContainer(Rect childRect, int xIndex, int yIndex, float childrenOffset)
         {
-            Vector2 resultPosition = Vector2.zero;
+            Vector3 resultPosition = Vector3.zero;
             resultPosition.x = childrenOffset * (xIndex + 1) + childRect.width * xIndex;
             resultPosition.y = -childrenOffset * (yIndex + 1) - childRect.height * yIndex;
             return resultPosition;

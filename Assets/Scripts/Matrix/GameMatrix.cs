@@ -58,7 +58,9 @@ namespace Matrix
             SetupCells(level);
             
         }
-        public float RecalculateMatrixRect(int columns, int rows, RectTransform holder)
+        
+        #region Internal Initialize
+        private float RecalculateMatrixRect(int columns, int rows, RectTransform holder)
         {
             var unscaledGridSize =
                 RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, rows + 1, columns + 1,
@@ -83,13 +85,13 @@ namespace Matrix
             for (int i = 0; i < size; i++)
             {
                 slots[i] = Instantiate(slotPrefab, Holder);
-                vectors[i] = Instantiate(vectorPrefab, slots[i].ThisTransform);
+                vectors[i] = Instantiate(vectorPrefab, Holder);
                 
                 slots[i].Initialize(vectors[i]);
                 slots[i].name += $" {i + 1}";
                 slots[i].MultiplyScale(gridRatio);
                 
-                vectors[i].Initialize(cellsCount, i);
+                vectors[i].Initialize(cellsCount, i, this);
                 vectors[i].name += $" {i + 1}";
                 vectors[i].MultiplyScale(gridRatio);
             }
@@ -113,20 +115,6 @@ namespace Matrix
             }
         }
 
-        public void ChangeCell(MatrixCell cell, int newValue = -1)
-        {
-            _matrixDictionary[cell.Value]--;
-            if (newValue == -1)
-                cell.Value = ChooseRandomValue();
-            else
-                cell.Value = newValue;
-
-            if (!_matrixDictionary.ContainsKey(cell.Value))
-                _matrixDictionary.Add(cell.Value, 0);
-            
-            _matrixDictionary[cell.Value]++;
-        }
-
         private void SetupSlots()
         {
             for (var i = 0; i < RowSlots.Length; i++)
@@ -134,15 +122,18 @@ namespace Matrix
                 var _transform = RowSlots[i].ThisTransform;
                 _transform.localPosition =
                     RectTransformHelper.GetChildPositionContainer(_transform.rect, 0, i + 1, Offset) +
-                    new Vector2(0, -SlotOffset);
+                    new Vector3(0, -SlotOffset, -5f);
+                RowSlots[i].SnapVector();
             }
             for (var i = 0; i < ColumnSlots.Length; i++)
             {
                 var _transform = ColumnSlots[i].ThisTransform;
                 _transform.localPosition =
                     RectTransformHelper.GetChildPositionContainer(_transform.rect, i + 1, 0, Offset) +
-                    new Vector2(SlotOffset, 0);
+                    new Vector3(SlotOffset, 0, -5f);
+                ColumnSlots[i].SnapVector();
             }
+            
         }
 
         private void SetupCells(LevelSettings level)
@@ -162,6 +153,21 @@ namespace Matrix
                 _matrixDictionary[cell.Value]++;
             }
 
+        }
+        #endregion
+        
+        public void ChangeCell(MatrixCell cell, int newValue = -1)
+        {
+            _matrixDictionary[cell.Value]--;
+            if (newValue == -1)
+                cell.Value = ChooseRandomValue();
+            else
+                cell.Value = newValue;
+
+            if (!_matrixDictionary.ContainsKey(cell.Value))
+                _matrixDictionary.Add(cell.Value, 0);
+            
+            _matrixDictionary[cell.Value]++;
         }
 
         private int ChooseRandomValue()
@@ -207,7 +213,7 @@ namespace Matrix
             return rowVectors[rowIndex][columnIndex];
         }
 
-        public void SwapVectors<TVector>(TVector vectorOne, TVector vectorTwo) where TVector : BaseVector
+        public void SwapVectors(BaseVector vectorOne, BaseVector vectorTwo)
         {
             var vecOneType = vectorOne.GetType();
             var vecTwoType = vectorTwo.GetType();
@@ -258,6 +264,7 @@ namespace Matrix
         {
             return columnSlots.FirstOrDefault(slot => slot.Vector == vector);
         }
+
         public void Dispose()
         {
             _matrixDictionary.Clear();

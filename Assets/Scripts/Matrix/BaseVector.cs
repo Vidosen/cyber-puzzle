@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using DG.Tweening;
+using Signals;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,7 +17,6 @@ namespace Matrix
         public RectTransform ThisTransform =>
             _thisTransform == null ? _thisTransform = transform as RectTransform : _thisTransform;
         public bool IsDragging => _isDragging;
-        
 
         public bool IsInitialized => cells != null;
         public abstract Vector2 SnapDirection { get; protected set; }
@@ -29,6 +31,9 @@ namespace Matrix
         private bool _isDragging;
         private float _deafultZ;
 
+        private Tween _animationTweener;
+        private GameMatrix _matrix;
+        private BaseVector _previewVector;
         private void Awake()
         {
             _canvas = GetComponentInParent<Canvas>();
@@ -81,10 +86,39 @@ namespace Matrix
         public void OnDrag(PointerEventData eventData)
         {
             ThisTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
+            if (this is ColumnVector columnVector)
+            {
+                var thisSlot = _matrix.FindColumnSlotByVector(columnVector);
+                var previewSlot =
+                    _matrix.ColumnSlots.FirstOrDefault(slot => slot.ThisTransform.rect.Overlaps(ThisTransform.rect));
+                if (previewSlot == null || previewSlot.Vector == this || previewSlot.Vector == _previewVector)
+                    return;
+
+                _previewVector = previewSlot.Vector;
+                previewSlot.SnapVector(true, thisSlot);
+                Array.ForEach(_previewVector.Cells, cell => cell.SnapCell());
+            }
+
+            if (this is RowVector rowVector)
+            {
+                var thisSlot = _matrix.FindRowSlotByVector(rowVector);
+                var previewSlot =
+                    _matrix.RowSlots.FirstOrDefault(slot => slot.ThisTransform.rect.Overlaps(ThisTransform.rect));
+                if (previewSlot == null || previewSlot.Vector == this || previewSlot.Vector == _previewVector)
+                    return;
+                
+                _previewVector = previewSlot.Vector;
+                previewSlot.SnapVector(true, thisSlot);
+                Array.ForEach(_previewVector.Cells, cell => cell.SnapCell());
+            }
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (_previewVector != null)
+            {
+                MessageBroker.Default.Publish(new MatrixSignals.VectorSwapRequest() {ActiveVector =  this, PassiveVector =  _previewVector });
+            }
             foreach (var cell in cells)
             {
                 cell.UnpinVector();
@@ -95,20 +129,17 @@ namespace Matrix
             _canvasGroup.blocksRaycasts = !_isDragging;
             _canvasGroup.alpha = 1f;
             
-            SetSortingOrder(10);
             SetLocalZ(_deafultZ);
-            ThisTransform.anchoredPosition = Vector3.zero;
-            Array.ForEach(Cells, cell => cell.SnapCell());
+            MessageBroker.Default.Publish(new MatrixSignals.VectorDragFinished(){ ActiveVector = this });
             Debug.Log($"{GetType().Name}.OnEndDrag");
         }
-
         public void OnBeginDrag(PointerEventData eventData)
         {
+            _previewVector = null;
             _isDragging = true;
             _canvasGroup.blocksRaycasts = !_isDragging;
             _canvasGroup.alpha = DragAlpha;
-
-            SetSortingOrder(100);
+            
             SetLocalZ(_deafultZ - _HighlightZOffset);
             foreach (var cell in cells)
             {
@@ -117,12 +148,12 @@ namespace Matrix
             }
         }
 
-        public BaseVector Initialize(int cellsCount, int index)
+        public BaseVector Initialize(int cellsCount, int index, GameMatrix matrix)
         {
+            _matrix = matrix;
             cells = new MatrixCell[cellsCount];
             SetLineIndex(index.ToString());
             ThisTransform.localScale = Vector3.one;
-            ThisTransform.anchoredPosition = Vector3.zero;
             return this;
         }
         
@@ -143,7 +174,7 @@ namespace Matrix
             Destroy(gameObject);
         }
 
-        private Tween _animationTweener;
+
         private void SetLocalZ(float newZ)
         {
             if (_animationTweener.IsActive())
