@@ -28,7 +28,9 @@ MonoBehaviour:
     m_Name: UniRx
     m_Url: https://package.openupm.com
     m_Scopes:
+    - com.cysharp.unitask
     - com.neuecc.unirx
+    - com.openupm
     m_IsDefault: 0
     m_Capabilities: 0
   m_UserSelectedRegistryName: UniRx
@@ -40,12 +42,16 @@ MonoBehaviour:
       m_Name: UniRx
       m_Url: https://package.openupm.com
       m_Scopes:
+      - com.cysharp.unitask
       - com.neuecc.unirx
+      - com.openupm
       m_IsDefault: 0
       m_Capabilities: 0
     m_Modified: 0
     m_Name: UniRx
     m_Url: https://package.openupm.com
     m_Scopes:
+    - com.cysharp.unitask
     - com.neuecc.unirx
+    - com.openupm
     m_SelectedScopeIndex: 0
