@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace Minigames.MatrixBreaching.Matrix.Commands
 {
-    public class ScrollVerticalRowCommand : IMatrixCommand
+    public class HorizontalRowScrollCommand : IMatrixCommand
     {
-        public int RowId { get; }
+        public int VertRowId { get; }
         public int ScrollDelta { get; }
         private readonly ProtectMatrix _contextMatrix;
 
-        public ScrollVerticalRowCommand(ProtectMatrix contextMatrix, int rowId, int scrollDelta)
+        public HorizontalRowScrollCommand(ProtectMatrix contextMatrix, int vertRowId, int scrollDelta)
         {
-            RowId = rowId;
+            VertRowId = vertRowId;
             ScrollDelta = scrollDelta;
             _contextMatrix = contextMatrix;
         }
@@ -24,14 +24,14 @@ namespace Minigames.MatrixBreaching.Matrix.Commands
 
         private void ScrollRow(bool isReversed)
         {
-            if (_contextMatrix.Size.y <= RowId)
+            if (_contextMatrix.Size.y <= VertRowId)
                 throw new InvalidOperationException();
-            var row = _contextMatrix.GetVerticalCells(RowId);
+            var row = _contextMatrix.GetHorizontalCells(VertRowId);
             foreach (var cell in row)
             {
-                var newRowId = Mathf.RoundToInt(Mathf.Repeat(cell.VerticalId + ScrollDelta * (isReversed ? -1 : 1),
-                    _contextMatrix.Size.y));
-                cell.Move(cell.HorizontalId, newRowId);
+                var newRowId = Mathf.RoundToInt(Mathf.Repeat(cell.HorizontalId + ScrollDelta * (isReversed ? -1 : 1),
+                    _contextMatrix.Size.x));
+                cell.Move(newRowId, cell.VerticalId);
             }
         }
 

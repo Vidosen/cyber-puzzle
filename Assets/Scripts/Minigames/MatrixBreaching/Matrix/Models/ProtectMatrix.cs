@@ -31,11 +31,11 @@ namespace Minigames.MatrixBreaching.Matrix.Models
             if (IsInitialized)
                 Dispose();
             Size = new Vector2(horizontalSize, verticalSize);
-            _cells.AddRange(_cellProvider.GetNewCells(horizontalSize * verticalSize));
-            for (int x = 0; x < horizontalSize; x++)
+            _cells.AddRange(_cellProvider.GetNewCells(horizontalSize, verticalSize));
             for (int y = 0; y < verticalSize; y++)
+            for (int x = 0; x < horizontalSize; x++)
             {
-                var cell = _cells[verticalSize * x + y];
+                var cell = _cells[horizontalSize * y + x];
                 cell.Move(x, y);
                 _cellAddedSubject.OnNext(cell);
             }
@@ -48,13 +48,13 @@ namespace Minigames.MatrixBreaching.Matrix.Models
             return _cells.AsEnumerable();
         }
 
-        public IEnumerable<ICell> GetHorizontalCells(int horizontalId)
+        public IList<ICell> GetHorizontalCells(int verticalId)
         {
-            return _cells.Where(cell => cell.HorizontalId.Equals(horizontalId)).AsEnumerable();
+            return _cells.Where(cell => cell.VerticalId.Equals(verticalId)).OrderBy(cell=>cell.HorizontalId).ToList();
         }
-        public IEnumerable<ICell> GetVerticalCells(int verticalId)
+        public IList<ICell> GetVerticalCells(int horizontalId)
         {
-            return _cells.Where(cell => cell.VerticalId.Equals(verticalId)).AsEnumerable();
+            return _cells.Where(cell => cell.HorizontalId.Equals(horizontalId)).OrderBy(cell=>cell.VerticalId).ToList();
         }
         public ICell GetCell(int horizontalId, int verticalId)
         {

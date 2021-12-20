@@ -6,10 +6,10 @@ namespace Minigames.MatrixBreaching.Matrix.Providers
 {
     public class MockCellProvider : ICellProvider
     {
-        private Func<int, IEnumerable<ICell>> _newMatrixCellsFunc;
+        private Func<int ,int, IEnumerable<ICell>> _newMatrixCellsFunc;
         private Func<ICell> _newCellFunc;
 
-        public MockCellProvider SetMockFunc(Func<int, IEnumerable<ICell>> newMatrixCellsFunc)
+        public MockCellProvider SetMockFunc(Func<int, int, IEnumerable<ICell>> newMatrixCellsFunc)
         {
             _newMatrixCellsFunc = newMatrixCellsFunc;
             return this;
@@ -19,9 +19,9 @@ namespace Minigames.MatrixBreaching.Matrix.Providers
             _newCellFunc = newCellFunc;
             return this;
         }
-        public IEnumerable<ICell> GetNewCells(int size)
+        public IEnumerable<ICell> GetNewCells(int horizontalSize, int verticalSize)
         {
-            return _newMatrixCellsFunc.Invoke(size);
+            return _newMatrixCellsFunc.Invoke(horizontalSize, verticalSize);
         }
 
         public ICell GetNewCell()
