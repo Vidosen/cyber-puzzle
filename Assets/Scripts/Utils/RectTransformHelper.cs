@@ -6,10 +6,10 @@ namespace Utils
 {
     public static class RectTransformHelper
     {
-        public static Vector2 GetGridContainer(Rect childRect, int rows, int columns, float childrenOffset)
+        public static Vector2 GetGridContainer(Vector2 childSize, int rows, int columns, float childrenOffset)
         {
-            return new Vector2(columns * childRect.height + (columns + 1) * childrenOffset,
-                rows * childRect.width + (rows + 1) * childrenOffset);
+            return new Vector2(columns * childSize.y + (columns + 1) * childrenOffset,
+                rows * childSize.x + (rows + 1) * childrenOffset);
         }
         
         public static float GetGridContainerRatio(RectTransform holder, Vector2 gridSize, float maxRatio = Single.PositiveInfinity)

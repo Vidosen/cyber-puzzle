@@ -1,6 +1,6 @@
 ﻿namespace Minigames.MatrixBreaching.Matrix.Data
 {
-    public enum CellValue
+    public enum CellValueType
     {
         Zero,
         One,

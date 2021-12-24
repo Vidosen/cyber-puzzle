@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class MatrixPresenter : MonoBehaviour
 {
-    [SerializeField]private RectTransform _rectTrnansform;
+    [SerializeField] private RectTransform _rectTrnansform;
 
     // Start is called before the first frame update
     void Start()

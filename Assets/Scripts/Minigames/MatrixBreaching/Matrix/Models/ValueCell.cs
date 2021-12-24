@@ -4,11 +4,11 @@ namespace Minigames.MatrixBreaching.Matrix.Models
 {
     public class ValueCell : BaseCell
     {
-        public CellValue Value { get; }
+        public CellValueType ValueType { get; }
 
-        public ValueCell(CellValue value)
+        public ValueCell(CellValueType valueType)
         {
-            Value = value;
+            ValueType = valueType;
         }
         public override void Dispose()
         {

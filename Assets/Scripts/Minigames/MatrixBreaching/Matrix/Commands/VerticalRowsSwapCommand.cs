@@ -9,9 +9,9 @@ namespace Minigames.MatrixBreaching.Matrix.Commands
     {
         public int FirstHorizRowId { get; }
         public int SecondHorizRowId { get; }
-        private readonly ProtectMatrix _contextMatrix;
+        private readonly GuardMatrix _contextMatrix;
 
-        public VerticalRowsSwapCommand(ProtectMatrix contextMatrix, int firstHorizRowId, int secondHorizRowId)
+        public VerticalRowsSwapCommand(GuardMatrix contextMatrix, int firstHorizRowId, int secondHorizRowId)
         {
             FirstHorizRowId = firstHorizRowId;
             SecondHorizRowId = secondHorizRowId;

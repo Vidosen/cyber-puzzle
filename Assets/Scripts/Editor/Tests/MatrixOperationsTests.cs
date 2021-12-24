@@ -8,6 +8,7 @@ using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Providers;
 using NUnit.Framework;
 using UnityEngine;
+using Utils;
 using Zenject;
 
 namespace Editor.Tests
@@ -18,7 +19,7 @@ namespace Editor.Tests
         public override void Setup()
         {
             base.Setup();
-            Container.Bind<ProtectMatrix>().ToSelf().AsSingle().NonLazy();
+            Container.Bind<GuardMatrix>().ToSelf().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<MockCellProvider>().AsSingle().NonLazy();
         }
 
@@ -37,13 +38,13 @@ namespace Editor.Tests
                 mockCellProvider.SetMockFunc(HorizontalFillCellsFunc);
             }
             
-            var protectMatrix = Container.Resolve<ProtectMatrix>();
+            var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
-            LogMatrix(protectMatrix);
+            protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
             var horizontalSwapCommand = new HorizontalRowsSwapCommand(protectMatrix, firstRow, secondRow);
             horizontalSwapCommand.Execute();
-            LogMatrix(protectMatrix);
+            protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
         }
         [Test]
@@ -59,13 +60,13 @@ namespace Editor.Tests
                 mockCellProvider.SetMockFunc(VerticalFillCellsFunc);
             }
             
-            var protectMatrix = Container.Resolve<ProtectMatrix>();
+            var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
-            LogMatrix(protectMatrix);
+            protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
             var horizontalSwapCommand = new HorizontalRowScrollCommand(protectMatrix, rowId, delta);
             horizontalSwapCommand.Execute();
-            LogMatrix(protectMatrix);
+            protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
         }
         
@@ -82,13 +83,13 @@ namespace Editor.Tests
                 mockCellProvider.SetMockFunc(VerticalFillCellsFunc);
             }
             
-            var protectMatrix = Container.Resolve<ProtectMatrix>();
+            var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
-            LogMatrix(protectMatrix);
+            protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
             var horizontalSwapCommand = new VerticalRowsSwapCommand(protectMatrix, firstRow, secondRow);
             horizontalSwapCommand.Execute();
-            LogMatrix(protectMatrix);
+            protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
             
         }
@@ -105,13 +106,13 @@ namespace Editor.Tests
                 mockCellProvider.SetMockFunc(HorizontalFillCellsFunc);
             }
             
-            var protectMatrix = Container.Resolve<ProtectMatrix>();
+            var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
-            LogMatrix(protectMatrix);
+            protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
             var horizontalSwapCommand = new VerticalRowScrollCommand(protectMatrix, rowId, delta);
             horizontalSwapCommand.Execute();
-            LogMatrix(protectMatrix);
+            protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
         }
 
@@ -120,7 +121,7 @@ namespace Editor.Tests
             var cells = new List<ICell>();
             for (var y = 0; y < vert; y++)
             for (var x = 0; x < horiz; x++)
-                cells.Add(new ValueCell((CellValue)Mathf.Repeat(y, Enum.GetNames(typeof(CellValue)).Length)));
+                cells.Add(new ValueCell((CellValueType)Mathf.Repeat(y, Enum.GetNames(typeof(CellValueType)).Length)));
             return cells;
         }
         private IEnumerable<ICell> VerticalFillCellsFunc(int horiz, int vert)
@@ -128,17 +129,17 @@ namespace Editor.Tests
             var cells = new List<ICell>();
             for (var y = 0; y < vert; y++)
             for (var x = 0; x < horiz; x++)
-                cells.Add(new ValueCell((CellValue)Mathf.Repeat(x, Enum.GetNames(typeof(CellValue)).Length)));
+                cells.Add(new ValueCell((CellValueType)Mathf.Repeat(x, Enum.GetNames(typeof(CellValueType)).Length)));
             return cells;
         }
 
 
-        private void AssertMatrixValid(ProtectMatrix protectMatrix, int expectedHorizontalSize, int expectedVerticalSize)
+        private void AssertMatrixValid(GuardMatrix guardMatrix, int expectedHorizontalSize, int expectedVerticalSize)
         {
-            Assert.IsTrue(protectMatrix.IsInitialized);
-            var cells = protectMatrix.GetCells().ToList();
-            Assert.AreEqual(expectedHorizontalSize, protectMatrix.Size.x);
-            Assert.AreEqual(expectedVerticalSize, protectMatrix.Size.y);
+            Assert.IsTrue(guardMatrix.IsInitialized);
+            var cells = guardMatrix.GetCells().ToList();
+            Assert.AreEqual(expectedHorizontalSize, guardMatrix.Size.x);
+            Assert.AreEqual(expectedVerticalSize, guardMatrix.Size.y);
             
             Assert.AreEqual(expectedHorizontalSize * expectedVerticalSize, cells.Count);
             for (int y = 0; y < expectedVerticalSize; y++)
@@ -150,17 +151,5 @@ namespace Editor.Tests
             }
         }
         
-        private void LogMatrix(ProtectMatrix protectMatrix)
-        {
-            Debug.Log("== Matrix :: Start ==");
-            for (int y = 0; y < protectMatrix.Size.y; y++)
-            {
-                var row = protectMatrix.GetHorizontalCells(y);
-                var rowLogLine = row.Select(cell => cell as ValueCell).Where(cell => cell != null)
-                    .Select(cell => (int)cell.Value + "\t").Aggregate((one, two) => one + two);
-                Debug.Log(rowLogLine);
-            }
-            Debug.Log("== Matrix :: End ==");
-        }
     }
 }

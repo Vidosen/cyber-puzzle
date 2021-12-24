@@ -10,11 +10,12 @@
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": true,
     "precompiledReferences": [
         "DemiLib.dll",
-        "DOTween.dll"
+        "DOTween.dll",
+        "Zenject-usage.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Minigames.MatrixBreaching.Matrix.Models
 {
-    public class ProtectMatrix : IDisposable
+    public class GuardMatrix : IDisposable
     {
-        public Vector2 Size { get; private set; }
+        public Vector2Int Size { get; private set; }
         public bool IsInitialized { get; private set; }
 
         public IObservable<ICell> OnCellAdded => _cellAddedSubject;
@@ -21,7 +21,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         private Subject<ICell> _cellRemovedSubject = new Subject<ICell>();
 
 
-        public ProtectMatrix(ICellProvider cellProvider)
+        public GuardMatrix(ICellProvider cellProvider)
         {
             _cellProvider = cellProvider;
         }
@@ -30,7 +30,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         {
             if (IsInitialized)
                 Dispose();
-            Size = new Vector2(horizontalSize, verticalSize);
+            Size = new Vector2Int(horizontalSize, verticalSize);
             _cells.AddRange(_cellProvider.GetNewCells(horizontalSize, verticalSize));
             for (int y = 0; y < verticalSize; y++)
             for (int x = 0; x < horizontalSize; x++)
@@ -45,7 +45,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
 
         public IEnumerable<ICell> GetCells()
         {
-            return _cells.AsEnumerable();
+            return _cells.ToList();
         }
 
         public IList<ICell> GetHorizontalCells(int verticalId)

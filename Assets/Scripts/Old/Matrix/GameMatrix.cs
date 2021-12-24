@@ -63,7 +63,7 @@ namespace Matrix
         private float RecalculateMatrixRect(int columns, int rows, RectTransform holder)
         {
             var unscaledGridSize =
-                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect, rows + 1, columns + 1,
+                RectTransformHelper.GetGridContainer(matrixCellPrefab.ThisTransform.rect.size, rows + 1, columns + 1,
                     Offset) + new Vector2(SlotOffset, SlotOffset);
             var gridRatio = RectTransformHelper.GetGridContainerRatio(holder, unscaledGridSize);
             ThisTransform.sizeDelta = unscaledGridSize * gridRatio;

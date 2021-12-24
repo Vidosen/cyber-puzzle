@@ -35,7 +35,7 @@ namespace Utils
             ClearObjectChildren();
 
             ((RectTransform) transform).sizeDelta =
-                RectTransformHelper.GetGridContainer(CellSlotPrefab.rect, Rows, Columns, Offset);
+                RectTransformHelper.GetGridContainer(CellSlotPrefab.rect.size, Rows, Columns, Offset);
 
             for (int i = 1; i < Columns; i++)
             {
