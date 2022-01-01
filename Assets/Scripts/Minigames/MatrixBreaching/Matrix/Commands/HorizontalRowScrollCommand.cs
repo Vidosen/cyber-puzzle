@@ -7,15 +7,19 @@ namespace Minigames.MatrixBreaching.Matrix.Commands
 {
     public class HorizontalRowScrollCommand : IMatrixCommand
     {
-        public int VertRowId { get; }
-        public int ScrollDelta { get; }
+        public int VertRowId { get; private set;}
+        public int ScrollDelta { get; private set;}
         private readonly GuardMatrix _contextMatrix;
 
-        public HorizontalRowScrollCommand(GuardMatrix contextMatrix, int vertRowId, int scrollDelta)
+        public HorizontalRowScrollCommand(GuardMatrix contextMatrix)
+        {
+            _contextMatrix = contextMatrix;
+        }
+
+        public void Initialize(int vertRowId, int scrollDelta)
         {
             VertRowId = vertRowId;
             ScrollDelta = scrollDelta;
-            _contextMatrix = contextMatrix;
         }
         public void Execute()
         {

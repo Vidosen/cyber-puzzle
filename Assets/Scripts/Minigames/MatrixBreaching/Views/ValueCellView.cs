@@ -18,15 +18,17 @@ namespace Minigames.MatrixBreaching.Views
         {
             _transform = GetComponent<RectTransform>();
         }
-        public void Initialize(ICell cellModel, float scale)
+        public void Initialize(ICell cellModel)
         {
             _cellModel = cellModel as ValueCell;
-            if (scale > 0 && _transform != null)
-            {
-                _transform.sizeDelta = _transform.sizeDelta * scale;
-            }
-
             UpdateView();
+        }
+        public void Rescale(float scaleFactor)
+        {
+            if (scaleFactor > 0 && Transform != null)
+            {
+                Transform.sizeDelta = Transform.sizeDelta * scaleFactor;   
+            }
         }
 
         private void UpdateView()

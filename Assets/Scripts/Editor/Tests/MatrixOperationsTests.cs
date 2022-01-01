@@ -6,6 +6,7 @@ using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Providers;
+using Minigames.MatrixBreaching.Matrix.Signals;
 using NUnit.Framework;
 using UnityEngine;
 using Utils;
@@ -19,8 +20,13 @@ namespace Editor.Tests
         public override void Setup()
         {
             base.Setup();
+            SignalBusInstaller.Install(Container);
+            Container.DeclareSignal<MatrixOperationsSignals.SwapOperationOccured>().OptionalSubscriber();
             Container.Bind<GuardMatrix>().ToSelf().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<MockCellProvider>().AsSingle().NonLazy();
+            
+            Container.BindFactory<OperationType, RowType, IMatrixCommand, IMatrixCommand.Factory>()
+                .FromFactory<OperationCommandFactory>();
         }
 
 
@@ -37,12 +43,14 @@ namespace Editor.Tests
                 var mockCellProvider = Container.Resolve<MockCellProvider>();
                 mockCellProvider.SetMockFunc(HorizontalFillCellsFunc);
             }
+            var factory = Container.Resolve<IMatrixCommand.Factory>();
             
             var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
             protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
-            var horizontalSwapCommand = new HorizontalRowsSwapCommand(protectMatrix, firstRow, secondRow);
+            var horizontalSwapCommand = factory.Create(OperationType.Swap, RowType.Horizontal) as HorizontalRowsSwapCommand;
+            horizontalSwapCommand.Initialize(firstRow, secondRow);
             horizontalSwapCommand.Execute();
             protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
@@ -59,13 +67,15 @@ namespace Editor.Tests
                 var mockCellProvider = Container.Resolve<MockCellProvider>();
                 mockCellProvider.SetMockFunc(VerticalFillCellsFunc);
             }
+            var factory = Container.Resolve<IMatrixCommand.Factory>();
             
             var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
             protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
-            var horizontalSwapCommand = new HorizontalRowScrollCommand(protectMatrix, rowId, delta);
-            horizontalSwapCommand.Execute();
+            var horizontalRowScrollCommand =  factory.Create(OperationType.Scroll, RowType.Horizontal) as HorizontalRowScrollCommand;
+            horizontalRowScrollCommand.Initialize(rowId, delta);
+            horizontalRowScrollCommand.Execute();
             protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
         }
@@ -82,13 +92,15 @@ namespace Editor.Tests
                 var mockCellProvider = Container.Resolve<MockCellProvider>();
                 mockCellProvider.SetMockFunc(VerticalFillCellsFunc);
             }
+            var factory = Container.Resolve<IMatrixCommand.Factory>();
             
             var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
             protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
-            var horizontalSwapCommand = new VerticalRowsSwapCommand(protectMatrix, firstRow, secondRow);
-            horizontalSwapCommand.Execute();
+            var verticalRowsSwapCommand =  factory.Create(OperationType.Swap, RowType.Vertical) as VerticalRowsSwapCommand;
+            verticalRowsSwapCommand.Initialize(firstRow, secondRow);
+            verticalRowsSwapCommand.Execute();
             protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
             
@@ -105,12 +117,14 @@ namespace Editor.Tests
                 var mockCellProvider = Container.Resolve<MockCellProvider>();
                 mockCellProvider.SetMockFunc(HorizontalFillCellsFunc);
             }
+            var factory = Container.Resolve<IMatrixCommand.Factory>();
             
             var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
             protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);
-            var horizontalSwapCommand = new VerticalRowScrollCommand(protectMatrix, rowId, delta);
+            var horizontalSwapCommand =  factory.Create(OperationType.Scroll, RowType.Vertical) as VerticalRowScrollCommand;
+            horizontalSwapCommand.Initialize(rowId, delta);
             horizontalSwapCommand.Execute();
             protectMatrix.Log();
             AssertMatrixValid(protectMatrix, h_size, v_size);

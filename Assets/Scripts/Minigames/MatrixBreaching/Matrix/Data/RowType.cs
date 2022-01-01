@@ -1,8 +1,9 @@
-﻿namespace Minigames.MatrixBreaching.Views
+﻿namespace Minigames.MatrixBreaching.Matrix.Data
 {
     public enum RowType
     {
-        Horizontal,
+        None = -1,
+        Horizontal = 0,
         Vertical
     }
 }

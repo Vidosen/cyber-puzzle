@@ -1,12 +1,19 @@
-﻿using Minigames.MatrixBreaching.Matrix.Interfaces;
+﻿using Minigames.MatrixBreaching.Matrix;
+using Minigames.MatrixBreaching.Matrix.Commands;
+using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Providers;
+using Minigames.MatrixBreaching.Matrix.Signals;
+using Minigames.MatrixBreaching.Views;
+using UnityEngine;
 using Zenject;
 
 namespace Minigames.MatrixBreaching.Bootstrap
 {
     public class MatrixBreachingInstaller : MonoInstaller
     {
+        [SerializeField] private GuardMatrixPresenter _matrixPresenter;
         public int RandomValueMatrxSeed;
 
         public override void InstallBindings()
@@ -18,6 +25,15 @@ namespace Minigames.MatrixBreaching.Bootstrap
                     if (obj is RandomValueCellProvider randomValueCellProvider)
                         randomValueCellProvider.SetRandomSeed(RandomValueMatrxSeed);
                 });
+            
+            Container.BindInstance(_matrixPresenter);
+            Container.Bind<SwapCommandsProcessor>().ToSelf().AsSingle();
+            Container.BindInterfacesAndSelfTo<VerticalSwapViewProcessor>().AsSingle();
+
+            Container.BindFactory<OperationType, RowType, IMatrixCommand, IMatrixCommand.Factory>()
+                .FromFactory<OperationCommandFactory>();
+
+            Container.DeclareSignal<MatrixOperationsSignals.SwapOperationOccured>();
         }
     }
 }

@@ -976,6 +976,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39ff2901a41641f2973f648e54d35e5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _matrixPresenter: {fileID: 2856264194495674756}
   RandomValueMatrxSeed: 0
 --- !u!1 &809278555
 GameObject:
@@ -1953,8 +1954,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9a856777b748fba86b3a37a4557ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HorizontalSize: 3
-  VerticalSize: 4
+  HorizontalSize: 4
+  VerticalSize: 3
 --- !u!4 &1177629924
 Transform:
   m_ObjectHideFlags: 0
@@ -3002,8 +3003,8 @@ MonoBehaviour:
     type: 3}
   valueCellPrefab: {fileID: 7563966118946652144, guid: 19827a5f71f27e041b42a9134140d4ff,
     type: 3}
-  Offset: 17.5
-  SlotOffset: 7.5
+  _offset: 20
+  _rowsOffset: 30
 --- !u!114 &2856264194495674765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3011,7 +3012,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2856264194495674754}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 

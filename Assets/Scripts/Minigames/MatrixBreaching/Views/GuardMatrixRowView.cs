@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Minigames.MatrixBreaching.Matrix.Data;
+using UnityEngine;
 
 namespace Minigames.MatrixBreaching.Views
 {
@@ -16,12 +17,16 @@ namespace Minigames.MatrixBreaching.Views
             _transform = GetComponent<RectTransform>();
         }
 
-        public void Initialize(int index, float scale)
+        public void Initialize(int index)
         {
             Index = index;
-            if (scale > 0 && _transform != null)
+        }
+
+        public void Rescale(float scaleFactor)
+        {
+            if (scaleFactor > 0 && Transform != null)
             {
-                _transform.sizeDelta = _transform.sizeDelta * scale;   
+                Transform.sizeDelta = Transform.sizeDelta * scaleFactor;   
             }
         }
     }

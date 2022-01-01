@@ -1,47 +1,75 @@
 ﻿using System;
+using Minigames.MatrixBreaching.Matrix;
+using Minigames.MatrixBreaching.Matrix.Data;
+using TMPro;
+using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using Zenject;
 
 namespace Minigames.MatrixBreaching.Views
 {
-    public class GuardMatrixExchangerView : MonoBehaviour
+    public class GuardMatrixExchangerView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
     {
+        [Header("Text")]
+        [SerializeField] private TextMeshProUGUI _indexText;
+        [SerializeField] private string _indexTextFormat;
         [SerializeField] private RowType _rowType;
         private RectTransform _transform;
-        private GuardMatrixRowView _rootRow;
+        private SwapCommandsProcessor _swapCommandsProcessor;
+        private Subject<PointerEventData> _onDragSubject = new Subject<PointerEventData>();
 
         public RowType RowType => _rowType;
         public RectTransform Transform => _transform;
+        public int RowIndex { get; private set; } = -1;
+        public bool IsMoving { get; private set; }
+
+        public IObservable<PointerEventData> OnDragObservable => _onDragSubject;
+
+        [Inject]
+        private void Construct(SwapCommandsProcessor swapCommandsProcessor)
+        {
+            _swapCommandsProcessor = swapCommandsProcessor;
+        }
 
         private void Awake()
         {
             _transform = GetComponent<RectTransform>();
         }
 
-        public void Initialize(GuardMatrixRowView rowView, float scale)
+        public void Initialize(int index)
         {
-            if (scale > 0 && _transform != null)
+            ChangeRowIndex(index);
+        }
+        public void Rescale(float scaleFactor)
+        {
+            if (scaleFactor > 0 && Transform != null)
             {
-                _transform.sizeDelta = _transform.sizeDelta * scale;   
+                Transform.sizeDelta = Transform.sizeDelta * scaleFactor;   
             }
-            ChangeRootRow(rowView);
         }
 
-        public void ChangeRootRow(GuardMatrixRowView rowView)
+        public void ChangeRowIndex(int index)
         {
-            _rootRow = rowView;
-            UpdatePosition();
+            RowIndex = index;
+            _indexText.text = string.Format(_indexTextFormat, RowIndex);
         }
 
-        private void UpdatePosition()
+        public void OnPointerDown(PointerEventData eventData)
         {
-            try
-            {
-                throw new NotImplementedException();
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
+            IsMoving = true;
+            _swapCommandsProcessor.StartSwap(RowType, RowIndex);
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            IsMoving = false;
+            _swapCommandsProcessor.FinishSwap(RowIndex);
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            _onDragSubject.OnNext(eventData);
         }
     }
 }

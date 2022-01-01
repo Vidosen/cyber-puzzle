@@ -1,42 +1,38 @@
 ﻿using System;
-using System.Linq;
-using Minigames.MatrixBreaching.Matrix.Interfaces;
+using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Signals;
+using Zenject;
 
 namespace Minigames.MatrixBreaching.Matrix.Commands
 {
-    public class HorizontalRowsSwapCommand : IMatrixCommand
+    public class HorizontalRowsSwapCommand : BaseRowsSwapCommand
     {
-        public int FirstVertRowId { get; }
-        public int SecondVertRowId { get; }
+        private readonly SignalBus _signalBus;
         private readonly GuardMatrix _contextMatrix;
 
-        public HorizontalRowsSwapCommand(GuardMatrix contextMatrix, int firstVertRowId, int secondVertRowId)
+        public HorizontalRowsSwapCommand(SignalBus signalBus, GuardMatrix contextMatrix)
         {
-            FirstVertRowId = firstVertRowId;
-            SecondVertRowId = secondVertRowId;
+            _signalBus = signalBus;
             _contextMatrix = contextMatrix;
         }
-        public void Execute()
+        
+        public override void Execute()
         {
-            if (_contextMatrix.Size.y <= FirstVertRowId || _contextMatrix.Size.y <= SecondVertRowId)
+            if (_contextMatrix.Size.y <= ApplyingRowId || _contextMatrix.Size.y <= AppliedRowId)
                 throw new InvalidOperationException();
             
-            var firstRow = _contextMatrix.GetHorizontalCells(FirstVertRowId);
-            var secondRow = _contextMatrix.GetHorizontalCells(SecondVertRowId);
+            var firstRow = _contextMatrix.GetHorizontalCells(ApplyingRowId);
+            var secondRow = _contextMatrix.GetHorizontalCells(AppliedRowId);
             foreach (var cell in firstRow)
             {
-                cell.Move(cell.HorizontalId, SecondVertRowId);
+                cell.Move(cell.HorizontalId, AppliedRowId);
             }
             foreach (var cell in secondRow)
             {
-                cell.Move(cell.HorizontalId, FirstVertRowId);
+                cell.Move(cell.HorizontalId, ApplyingRowId);
             }
-        }
-
-        public void Cancel()
-        {
-            Execute();
+            _signalBus.Fire(new MatrixOperationsSignals.SwapOperationOccured(RowType.Horizontal, ApplyingRowId, AppliedRowId));
         }
     }
 }

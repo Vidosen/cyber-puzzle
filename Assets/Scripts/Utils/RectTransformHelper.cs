@@ -21,8 +21,8 @@ namespace Utils
         public static Vector3 GetChildPositionContainer(Rect childRect, int xIndex, int yIndex, float childrenOffset)
         {
             Vector3 resultPosition = Vector3.zero;
-            resultPosition.x = childrenOffset * (xIndex + 1) + childRect.width * xIndex;
-            resultPosition.y = -childrenOffset * (yIndex + 1) - childRect.height * yIndex;
+            resultPosition.x = childrenOffset * (xIndex + 1) + childRect.width * xIndex + childRect.width * 0.5f;
+            resultPosition.y = -childrenOffset * (yIndex + 1) - childRect.height * yIndex - childRect.height * 0.5f;
             return resultPosition;
         }
 
