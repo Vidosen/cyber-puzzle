@@ -977,7 +977,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _matrixPresenter: {fileID: 2856264194495674756}
-  RandomValueMatrxSeed: 0
+  RandomValueMatrxSeed: 7
 --- !u!1 &809278555
 GameObject:
   m_ObjectHideFlags: 0
@@ -1954,8 +1954,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9a856777b748fba86b3a37a4557ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HorizontalSize: 4
-  VerticalSize: 3
+  HorizontalSize: 3
+  VerticalSize: 4
 --- !u!4 &1177629924
 Transform:
   m_ObjectHideFlags: 0
@@ -2993,16 +2993,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Holder: {fileID: 4920914492300165312}
-  verticalGuardMatrixRowViewPrefab: {fileID: 8783695294505643146, guid: 5924d6e7d1f55724da61171b8b96b3e0,
-    type: 3}
-  horizontalGuardMatrixRowViewPrefab: {fileID: 8783695294505643146, guid: bd4bc2ad311e5b249876313c9e237214,
-    type: 3}
-  verticalGuardMatrixExchangerViewPrefab: {fileID: 8540835288288645368, guid: f6304dd062e9c1649b3dfcab64b0f10b,
-    type: 3}
-  horizontalGuardMatrixExchangerViewPrefab: {fileID: 8540835288288645368, guid: 539a38ff591b29548828f632269cdbdd,
-    type: 3}
-  valueCellPrefab: {fileID: 7563966118946652144, guid: 19827a5f71f27e041b42a9134140d4ff,
-    type: 3}
   _offset: 20
   _rowsOffset: 30
 --- !u!114 &2856264194495674765

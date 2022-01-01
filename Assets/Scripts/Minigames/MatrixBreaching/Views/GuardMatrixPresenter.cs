@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
+using Minigames.MatrixBreaching.Config;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Signals;
@@ -15,13 +17,7 @@ namespace Minigames.MatrixBreaching.Views
     public class GuardMatrixPresenter : MonoBehaviour
     {
         [SerializeField] private RectTransform Holder;
-        [SerializeField] private GuardMatrixRowView verticalGuardMatrixRowViewPrefab;
-        [SerializeField] private GuardMatrixRowView horizontalGuardMatrixRowViewPrefab;
         
-        [SerializeField] private GuardMatrixExchangerView verticalGuardMatrixExchangerViewPrefab;
-        [SerializeField] private GuardMatrixExchangerView horizontalGuardMatrixExchangerViewPrefab;
-        
-        [SerializeField] private ValueCellView valueCellPrefab;
         [Space]
         [SerializeField, Min(0)] private float _offset = 10f;
         [SerializeField, Min(0)] private float _rowsOffset = 20f;
@@ -33,6 +29,8 @@ namespace Minigames.MatrixBreaching.Views
         public List<GuardMatrixExchangerView> HorizontalExchangerViews => _horizontalExchangerViews.ToList();
         public List<GuardMatrixExchangerView> VerticalExchangerViews => _verticalExchangerViews.ToList();
         public List<ValueCellView> CellViews => _cellViews.ToList();
+        public Dictionary<ValueCellView, Tweener> _cellViewTweeners = new Dictionary<ValueCellView, Tweener>();
+        public Dictionary<GuardMatrixExchangerView, Tweener> _exchangerViewTweeners = new Dictionary<GuardMatrixExchangerView, Tweener>();
 
         private RectTransform _transform;
 
@@ -49,10 +47,12 @@ namespace Minigames.MatrixBreaching.Views
         private DiContainer _container;
         private float _gridRatio;
         private SignalBus _signalBus;
+        private MatrixBreachingViewConfig _viewConfig;
 
         [Inject]
-        private void Construct(GuardMatrix guardMatrix, DiContainer container, SignalBus signalBus)
+        private void Construct(GuardMatrix guardMatrix, MatrixBreachingViewConfig viewConfig, DiContainer container, SignalBus signalBus)
         {
+            _viewConfig = viewConfig;
             _signalBus = signalBus;
             _container = container;
             _guardMatrix = guardMatrix;
@@ -96,34 +96,52 @@ namespace Minigames.MatrixBreaching.Views
                 case RowType.None:
                     return;
                 case RowType.Horizontal:
-                    cellViews.AddRange( GetHorizontalCellViews(signal.ApplyingRowIndex));
-                    cellViews.AddRange( GetHorizontalCellViews(signal.AppliedRowIndex));
                     applyingExchangerView = GetHorizontalExchangerView(signal.ApplyingRowIndex, true);
                     appliedExchangerView = GetHorizontalExchangerView(signal.AppliedRowIndex, true);
                     break;
                 case RowType.Vertical:
-                    cellViews.AddRange( GetVerticalCellViews(signal.ApplyingRowIndex));
-                    cellViews.AddRange( GetVerticalCellViews(signal.AppliedRowIndex));
                     applyingExchangerView = GetVerticalExchangerView(signal.ApplyingRowIndex, true);
                     appliedExchangerView = GetVerticalExchangerView(signal.AppliedRowIndex, true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            cellViews.ForEach(cellView=> UpdateCellViewPos(cellView));
-            
-            if (applyingExchangerView != null && !applyingExchangerView.IsMoving)
+
+            var isApplyingExchangerStatic = applyingExchangerView != null;
+            if (isApplyingExchangerStatic)
             {
                 applyingExchangerView.ChangeRowIndex(signal.AppliedRowIndex);
                 UpdateExchangerViewPos(applyingExchangerView);
 
             }
-            
-            if (appliedExchangerView != null && !appliedExchangerView.IsMoving)
+            var isAppliedExchangerStatic = appliedExchangerView != null;
+            if (isAppliedExchangerStatic)
             {
                 appliedExchangerView.ChangeRowIndex(signal.ApplyingRowIndex);
                 UpdateExchangerViewPos(appliedExchangerView);
             }
+            
+            switch (signal.RowType)
+            {
+                case RowType.None:
+                    return;
+                case RowType.Horizontal:
+                    if (isApplyingExchangerStatic)
+                        cellViews.AddRange( GetHorizontalCellViews(signal.AppliedRowIndex));
+                    if (isAppliedExchangerStatic)
+                        cellViews.AddRange( GetHorizontalCellViews(signal.ApplyingRowIndex));
+                    break;
+                case RowType.Vertical:
+                    if (isApplyingExchangerStatic)
+                        cellViews.AddRange( GetVerticalCellViews(signal.AppliedRowIndex));
+                    if (isAppliedExchangerStatic)
+                        cellViews.AddRange( GetVerticalCellViews(signal.ApplyingRowIndex));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            cellViews.ForEach(cellView=> UpdateCellViewPos(cellView));
         }
 
         public GuardMatrixExchangerView GetHorizontalExchangerView(int verticalId, bool excludeIsMoving = false)
@@ -162,17 +180,17 @@ namespace Minigames.MatrixBreaching.Views
         {
             foreach (var cell in guardMatrix.GetCells())
             {
-                var cellView = _container.InstantiatePrefabForComponent<ValueCellView>(valueCellPrefab, Holder);
+                var cellView = _container.InstantiatePrefabForComponent<ValueCellView>(_viewConfig.ValueCellViewViewTemplate, Holder);
                 cellView.Initialize(cell);
                 cellView.Rescale(_gridRatio);
                 
                 //cell.CellUpdated.Subscribe(_ => UpdateCellViewPos(cellView)).AddTo(cellView);
-                UpdateCellViewPos(cellView);
+                UpdateCellViewPos(cellView, false);
                 _cellViews.Add(cellView);
             }
         }
 
-        public void UpdateCellViewPos(ValueCellView cellView)
+        public void UpdateCellViewPos(ValueCellView cellView, bool animate = true)
         {
             var model = cellView.Model;
             var horizontalView = _horizontalRowViews.First(rowView => rowView.Index.Equals(model.VerticalId));
@@ -180,11 +198,21 @@ namespace Minigames.MatrixBreaching.Views
             
             var horizRowPos = horizontalView.Transform.anchoredPosition;
             var vertRowPos = verticalView.Transform.anchoredPosition;
-            
-            cellView.Transform.anchoredPosition = new Vector2(vertRowPos.x, horizRowPos.y);
+            var endPos = new Vector2(vertRowPos.x, horizRowPos.y);
+            if (animate && _viewConfig.SwapMoveDuration > 0)
+            {
+                if (_cellViewTweeners.TryGetValue(cellView, out var tweeer) && tweeer.IsActive())
+                    tweeer.Kill();
+                
+                _cellViewTweeners[cellView] = cellView.Transform
+                    .DOAnchorPos(endPos, _viewConfig.SwapMoveDuration)
+                    .SetEase(_viewConfig.SwapFlatMoveEase);
+            }
+            else
+                cellView.Transform.anchoredPosition = endPos;
         }
 
-        public void UpdateExchangerViewPos(GuardMatrixExchangerView exchangerView)
+        public void UpdateExchangerViewPos(GuardMatrixExchangerView exchangerView, bool animate = true)
         {
             GuardMatrixRowView rowView;
             switch (exchangerView.RowType)
@@ -200,33 +228,43 @@ namespace Minigames.MatrixBreaching.Views
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            exchangerView.Transform.anchoredPosition = rowView.Transform.anchoredPosition;
+            var endPos = rowView.Transform.anchoredPosition;
+            if (animate && _viewConfig.SwapMoveDuration > 0)
+            {
+                if (_exchangerViewTweeners.TryGetValue(exchangerView, out var tweeer) && tweeer.IsActive())
+                    tweeer.Kill();
+                _exchangerViewTweeners[exchangerView] = exchangerView.Transform
+                    .DOAnchorPos(endPos, _viewConfig.SwapMoveDuration)
+                    .SetEase(_viewConfig.SwapFlatMoveEase);
+            }
+            else
+                exchangerView.Transform.anchoredPosition = endPos;
         }
 
         private void InstantiateExchangers()
         {
             foreach (var rowView in _horizontalRowViews)
             {
-                var exchangerView = _container.InstantiatePrefabForComponent<GuardMatrixExchangerView>(horizontalGuardMatrixExchangerViewPrefab, Holder);
+                var exchangerView = _container.InstantiatePrefabForComponent<GuardMatrixExchangerView>(_viewConfig.HorizontalExchangerViewTemplate, Holder);
                 exchangerView.Initialize(rowView.Index);
                 exchangerView.Rescale(_gridRatio);
-                UpdateExchangerViewPos(exchangerView);
+                UpdateExchangerViewPos(exchangerView, false);
                 _horizontalExchangerViews.Add(exchangerView);
             }
             
             foreach (var rowView in _verticalRowViews)
             {
-                var exchangerView =  _container.InstantiatePrefabForComponent<GuardMatrixExchangerView>(verticalGuardMatrixExchangerViewPrefab, Holder);
+                var exchangerView =  _container.InstantiatePrefabForComponent<GuardMatrixExchangerView>(_viewConfig.VerticalExchangerViewTemplate, Holder);
                 exchangerView.Initialize(rowView.Index);
                 exchangerView.Rescale(_gridRatio);
-                UpdateExchangerViewPos(exchangerView);
+                UpdateExchangerViewPos(exchangerView, false);
                 _verticalExchangerViews.Add(exchangerView);
             }
         }
 
         private void RecalculateGuradMatrixRect(int columns, int rows, RectTransform holder)
         {
-            var cellSize = valueCellPrefab.Transform.sizeDelta;
+            var cellSize = _viewConfig.ValueCellViewViewTemplate.Transform.sizeDelta;
             var unscaledGridSize =
                 RectTransformHelper.GetGridContainer(cellSize, rows + 1, columns + 1,
                     _offset) + new Vector2(_rowsOffset, _rowsOffset);
@@ -237,7 +275,7 @@ namespace Minigames.MatrixBreaching.Views
         {
             for (int i = 0; i < guardMatrix.Size.x; i++)
             {
-                var rowView = _container.InstantiatePrefabForComponent<GuardMatrixRowView>(verticalGuardMatrixRowViewPrefab, Holder);
+                var rowView = _container.InstantiatePrefabForComponent<GuardMatrixRowView>(_viewConfig.VerticalRowViewTemplate, Holder);
                 rowView.Initialize(i);
                 rowView.Rescale(_gridRatio);
                 rowView.Transform.anchoredPosition3D =
@@ -247,7 +285,7 @@ namespace Minigames.MatrixBreaching.Views
 
             for (int i = 0; i < guardMatrix.Size.y; i++)
             {
-                var rowView = _container.InstantiatePrefabForComponent<GuardMatrixRowView>(horizontalGuardMatrixRowViewPrefab, Holder);
+                var rowView = _container.InstantiatePrefabForComponent<GuardMatrixRowView>(_viewConfig.HorizontalRowViewTemplate, Holder);
                 rowView.Initialize(i);
                 rowView.Rescale(_gridRatio);
                 rowView.Transform.anchoredPosition3D =

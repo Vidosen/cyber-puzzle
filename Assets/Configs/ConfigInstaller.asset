@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c72d314f354fec992c5b5deb83ce90, type: 3}
   m_Name: ConfigInstaller
   m_EditorClassIdentifier: 
+  _matrixBreachingViewConfig: {fileID: 11400000, guid: 7a0743791f98ee94bb159963318dd834,
+    type: 2}

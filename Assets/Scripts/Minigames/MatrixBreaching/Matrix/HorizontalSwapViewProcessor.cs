@@ -49,7 +49,7 @@ namespace Minigames.MatrixBreaching.Matrix
                 
                 _guardMatrixPresenter.UpdateExchangerViewPos(_exchanger);
             }
-            _cells.ForEach(_guardMatrixPresenter.UpdateCellViewPos);
+            _cells.ForEach(cell=>_guardMatrixPresenter.UpdateCellViewPos(cell));
             _cells.Clear();
         }
 
