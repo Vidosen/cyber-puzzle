@@ -28,7 +28,8 @@ namespace Minigames.MatrixBreaching.Bootstrap
             
             Container.BindInstance(_matrixPresenter);
             Container.Bind<SwapCommandsProcessor>().ToSelf().AsSingle();
-            Container.BindInterfacesAndSelfTo<VerticalSwapViewProcessor>().AsSingle();
+            Container.BindInterfacesTo<VerticalSwapViewProcessor>().AsSingle();
+            Container.BindInterfacesTo<HorizontalSwapViewProcessor>().AsSingle();
 
             Container.BindFactory<OperationType, RowType, IMatrixCommand, IMatrixCommand.Factory>()
                 .FromFactory<OperationCommandFactory>();

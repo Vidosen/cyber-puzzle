@@ -10,7 +10,7 @@ using Zenject;
 
 namespace Minigames.MatrixBreaching.Matrix
 {
-    public class VerticalSwapViewProcessor : IInitializable, IDisposable
+    public class HorizontalSwapViewProcessor : IInitializable, IDisposable
     {
         private readonly SwapCommandsProcessor _swapCommandsProcessor;
         private readonly GuardMatrixPresenter _guardMatrixPresenter;
@@ -21,7 +21,7 @@ namespace Minigames.MatrixBreaching.Matrix
         private List<ValueCellView> _cells = new List<ValueCellView>();
         private Canvas _canvas;
 
-        public VerticalSwapViewProcessor(SwapCommandsProcessor swapCommandsProcessor, GuardMatrixPresenter guardMatrixPresenter)
+        public HorizontalSwapViewProcessor(SwapCommandsProcessor swapCommandsProcessor, GuardMatrixPresenter guardMatrixPresenter)
         {
             _swapCommandsProcessor = swapCommandsProcessor;
             _guardMatrixPresenter = guardMatrixPresenter;
@@ -31,12 +31,12 @@ namespace Minigames.MatrixBreaching.Matrix
         {
             _canvas = _guardMatrixPresenter.GetComponentInParent<Canvas>();
             
-           _swapCommandsProcessor.IsExecutingCommand
-                .Where(isExecuting => isExecuting && _swapCommandsProcessor.RowType == RowType.Vertical)
+            _swapCommandsProcessor.IsExecutingCommand
+                .Where(isExecuting => isExecuting && _swapCommandsProcessor.RowType == RowType.Horizontal)
                 .Subscribe(_ => StartSwap()).AddTo(_compositeDisposable);
-           _swapCommandsProcessor.IsExecutingCommand
-               .Where(isExecuting => !isExecuting && _swapCommandsProcessor.RowType == RowType.Vertical)
-               .Subscribe(_ => EndSwap()).AddTo(_compositeDisposable);
+            _swapCommandsProcessor.IsExecutingCommand
+                .Where(isExecuting => !isExecuting && _swapCommandsProcessor.RowType == RowType.Horizontal)
+                .Subscribe(_ => EndSwap()).AddTo(_compositeDisposable);
         }
 
         private void EndSwap()
@@ -56,8 +56,8 @@ namespace Minigames.MatrixBreaching.Matrix
         private void StartSwap()
         {
             var horizontalId = _swapCommandsProcessor.ApplyingRowIndex;
-            _cells.AddRange(_guardMatrixPresenter.GetVerticalCellViews(horizontalId));
-            _exchanger = _guardMatrixPresenter.GetVerticalExchangerView(horizontalId);
+            _cells.AddRange(_guardMatrixPresenter.GetHorizontalCellViews(horizontalId));
+            _exchanger = _guardMatrixPresenter.GetHorizontalExchangerView(horizontalId);
             _swapProgressStream = _exchanger.OnDragObservable
                 .Subscribe(data => OnSwapProgress(data));
             OnSwapProgress(new PointerEventData(EventSystem.current));
@@ -74,7 +74,7 @@ namespace Minigames.MatrixBreaching.Matrix
             var exchangerRect = _exchanger.Transform.rect;
             exchangerRect.position = _exchanger.Transform.anchoredPosition;
             var overlappedRows =
-                _guardMatrixPresenter.VerticalRowViews
+                _guardMatrixPresenter.HorizontalRowViews
                     .Where(row =>
                     {
                         var rowRect = row.Transform.rect;
@@ -104,9 +104,9 @@ namespace Minigames.MatrixBreaching.Matrix
             _exchanger.Transform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
             foreach (var cellView in _cells)
             {
-                cellView.Transform.anchoredPosition = _exchanger.Transform.anchoredPosition + Vector2.down *
-                    ((cellView.Transform.sizeDelta.y + _guardMatrixPresenter.CellsOffset) *
-                     (cellView.Model.VerticalId + 1));
+                cellView.Transform.anchoredPosition = _exchanger.Transform.anchoredPosition + Vector2.right *
+                    ((cellView.Transform.sizeDelta.x + _guardMatrixPresenter.CellsOffset) *
+                     (cellView.Model.HorizontalId + 1));
             }
         }
 
