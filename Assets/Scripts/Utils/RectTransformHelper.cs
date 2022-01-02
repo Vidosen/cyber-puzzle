@@ -6,10 +6,10 @@ namespace Utils
 {
     public static class RectTransformHelper
     {
-        public static Vector2 GetGridContainer(Rect childRect, int rows, int columns, float childrenOffset)
+        public static Vector2 GetGridContainer(Vector2 childSize, int rows, int columns, float childrenOffset)
         {
-            return new Vector2(columns * childRect.height + (columns + 1) * childrenOffset,
-                rows * childRect.width + (rows + 1) * childrenOffset);
+            return new Vector2(columns * childSize.y + (columns + 1) * childrenOffset,
+                rows * childSize.x + (rows + 1) * childrenOffset);
         }
         
         public static float GetGridContainerRatio(RectTransform holder, Vector2 gridSize, float maxRatio = Single.PositiveInfinity)
@@ -18,11 +18,11 @@ namespace Utils
             return Mathf.Min(holderBounds.size.x / gridSize.x, holderBounds.size.y /  gridSize.y, maxRatio);
         }
 
-        public static Vector2 GetChildPositionContainer(Rect childRect, int xIndex, int yIndex, float childrenOffset)
+        public static Vector3 GetChildPositionContainer(Rect childRect, int xIndex, int yIndex, float childrenOffset)
         {
-            Vector2 resultPosition = Vector2.zero;
-            resultPosition.x = childrenOffset * (xIndex + 1) + childRect.width * xIndex;
-            resultPosition.y = -childrenOffset * (yIndex + 1) - childRect.height * yIndex;
+            Vector3 resultPosition = Vector3.zero;
+            resultPosition.x = childrenOffset * (xIndex + 1) + childRect.width * xIndex + childRect.width * 0.5f;
+            resultPosition.y = -childrenOffset * (yIndex + 1) - childRect.height * yIndex - childRect.height * 0.5f;
             return resultPosition;
         }
 

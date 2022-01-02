@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Game.unity
+    path: Assets/Scenes/BreachingMinigameTest.unity
     guid: d2ad1d19abf2e9d4b9200068ac3afb13
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000,
-      guid: 460944188dae08c479a5046551920e23, type: 2}
+      guid: be2f5265706082046b2e041ed00207f5, type: 2}
