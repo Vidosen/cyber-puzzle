@@ -1,47 +1,35 @@
 ﻿using System;
-using Minigames.MatrixBreaching.Matrix.Interfaces;
+using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Signals;
 using UnityEngine;
+using Zenject;
 
 namespace Minigames.MatrixBreaching.Matrix.Commands
 {
-    public class VerticalRowScrollCommand : IMatrixCommand
+    public class VerticalRowScrollCommand : BaseRowScrollCommand
     {
-        public int HorizRowId { get; private set; }
-        public int ScrollDelta { get; private set; }
         private readonly GuardMatrix _contextMatrix;
+        private readonly SignalBus _signalBus;
 
-        public VerticalRowScrollCommand(GuardMatrix contextMatrix)
+        public VerticalRowScrollCommand(GuardMatrix contextMatrix, SignalBus signalBus)
         {
             _contextMatrix = contextMatrix;
+            _signalBus = signalBus;
         }
 
-        public void Initialize(int horizRowId, int scrollDelta)
+        protected override void ScrollRow(bool isReversed)
         {
-            HorizRowId = horizRowId;
-            ScrollDelta = scrollDelta;
-        }
-        public void Execute()
-        {
-            ScrollRow(false);
-        }
-
-        private void ScrollRow(bool isReversed)
-        {
-            if (_contextMatrix.Size.x <= HorizRowId)
+            if (_contextMatrix.Size.x <= RowId)
                 throw new InvalidOperationException();
-            var row = _contextMatrix.GetVerticalCells(HorizRowId);
+            var row = _contextMatrix.GetVerticalCells(RowId);
             foreach (var cell in row)
             {
                 var newRowId = Mathf.RoundToInt(Mathf.Repeat(cell.VerticalId + ScrollDelta * (isReversed ? -1 : 1),
                     _contextMatrix.Size.y));
                 cell.Move(cell.HorizontalId, newRowId);
             }
-        }
-
-        public void Cancel()
-        {
-            ScrollRow(true);
+            _signalBus.Fire(new MatrixOperationsSignals.ScrollOperationOccured(RowType.Vertical, RowId));
         }
     }
 }

@@ -32,6 +32,11 @@ namespace Minigames.MatrixBreaching.Matrix
         
         public void StartSwap(RowType rowType, int index)
         {
+            if (_isExecutingCommand.Value)
+            {
+                Debug.LogWarning("Swipe is already being executed at the moment!");
+                return;
+            }
             RowType = rowType;
             AppliedRowIndex = ApplyingRowIndex = index;
             _isExecutingCommand.Value = true;
@@ -88,9 +93,14 @@ namespace Minigames.MatrixBreaching.Matrix
             {
                 _guardMatrix.Log();
             }
-
-            _lastMatrixCommand = null;
+            
             _isExecutingCommand.Value = false;
+            ResetState();
+            
+        }
+        private void ResetState()
+        {
+            _lastMatrixCommand = null;
             ApplyingRowIndex = -1;
             RowType = RowType.None;
         }

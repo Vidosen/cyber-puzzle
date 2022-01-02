@@ -29,8 +29,11 @@ namespace Minigames.MatrixBreaching.Views
         public List<GuardMatrixExchangerView> HorizontalExchangerViews => _horizontalExchangerViews.ToList();
         public List<GuardMatrixExchangerView> VerticalExchangerViews => _verticalExchangerViews.ToList();
         public List<ValueCellView> CellViews => _cellViews.ToList();
-        public Dictionary<ValueCellView, Tweener> _cellViewTweeners = new Dictionary<ValueCellView, Tweener>();
-        public Dictionary<GuardMatrixExchangerView, Tweener> _exchangerViewTweeners = new Dictionary<GuardMatrixExchangerView, Tweener>();
+
+        public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
+
+        private Dictionary<ValueCellView, Tweener> _cellViewTweeners = new Dictionary<ValueCellView, Tweener>();
+        private Dictionary<GuardMatrixExchangerView, Tweener> _exchangerViewTweeners = new Dictionary<GuardMatrixExchangerView, Tweener>();
 
         private RectTransform _transform;
 
@@ -48,6 +51,7 @@ namespace Minigames.MatrixBreaching.Views
         private float _gridRatio;
         private SignalBus _signalBus;
         private MatrixBreachingViewConfig _viewConfig;
+        private ReactiveProperty<bool> _isInitialized = new ReactiveProperty<bool>();
 
         [Inject]
         private void Construct(GuardMatrix guardMatrix, MatrixBreachingViewConfig viewConfig, DiContainer container, SignalBus signalBus)
@@ -84,6 +88,29 @@ namespace Minigames.MatrixBreaching.Views
             _signalBus.GetStream<MatrixOperationsSignals.SwapOperationOccured>()
                 .Subscribe(signal => OnSwapOccured(signal))
                 .AddTo(_compositeDisposable);
+            _signalBus.GetStream<MatrixOperationsSignals.ScrollOperationOccured>()
+                .Subscribe(signal => OnScrollOccured(signal))
+                .AddTo(_compositeDisposable);
+            _isInitialized.Value = true;
+        }
+
+        private void OnScrollOccured(MatrixOperationsSignals.ScrollOperationOccured signal)
+        {
+            var cellViews = new List<ValueCellView>();
+            switch (signal.RowType)
+            {
+                case RowType.None:
+                    return;
+                case RowType.Horizontal:
+                    cellViews.AddRange( GetHorizontalCellViews(signal.RowIndex));
+                    break;
+                case RowType.Vertical:
+                    cellViews.AddRange( GetVerticalCellViews(signal.RowIndex));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            cellViews.ForEach(cellView=> UpdateCellViewPos(cellView));
         }
 
         private void OnSwapOccured(MatrixOperationsSignals.SwapOperationOccured signal)
@@ -174,6 +201,11 @@ namespace Minigames.MatrixBreaching.Views
         {
             return _cellViews.Where(cell => cell.Model.HorizontalId.Equals(horizontalId))
                 .OrderBy(cell => cell.Model.VerticalId).ToList();
+        }
+        
+        public ValueCellView GeCellView(int horizontalId, int verticalId)
+        {
+            return _cellViews.First(cell => cell.Model.HorizontalId == horizontalId && cell.Model.VerticalId == verticalId);
         }
 
         private void InstantiateCells(GuardMatrix guardMatrix)
@@ -296,6 +328,8 @@ namespace Minigames.MatrixBreaching.Views
 
         public void OnDestroy()
         {
+            _isInitialized.Value = false;
+            _isInitialized.Dispose();
             _compositeDisposable.Clear();
         }
     }

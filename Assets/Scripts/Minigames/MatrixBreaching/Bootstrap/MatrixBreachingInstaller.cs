@@ -30,11 +30,15 @@ namespace Minigames.MatrixBreaching.Bootstrap
             Container.Bind<SwapCommandsProcessor>().ToSelf().AsSingle();
             Container.BindInterfacesTo<VerticalSwapViewProcessor>().AsSingle();
             Container.BindInterfacesTo<HorizontalSwapViewProcessor>().AsSingle();
+            
+            Container.Bind<ScrollCommandsProcessor>().ToSelf().AsSingle();
+            Container.BindInterfacesTo<ScrollViewProcessor>().AsSingle();
 
             Container.BindFactory<OperationType, RowType, IMatrixCommand, IMatrixCommand.Factory>()
                 .FromFactory<OperationCommandFactory>();
 
             Container.DeclareSignal<MatrixOperationsSignals.SwapOperationOccured>();
+            Container.DeclareSignal<MatrixOperationsSignals.ScrollOperationOccured>();
         }
     }
 }

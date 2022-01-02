@@ -1,47 +1,35 @@
 ﻿using System;
-using Minigames.MatrixBreaching.Matrix.Interfaces;
+using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Signals;
 using UnityEngine;
+using Zenject;
 
 namespace Minigames.MatrixBreaching.Matrix.Commands
 {
-    public class HorizontalRowScrollCommand : IMatrixCommand
+    public class HorizontalRowScrollCommand : BaseRowScrollCommand
     {
-        public int VertRowId { get; private set;}
-        public int ScrollDelta { get; private set;}
         private readonly GuardMatrix _contextMatrix;
+        private readonly SignalBus _signalBus;
 
-        public HorizontalRowScrollCommand(GuardMatrix contextMatrix)
+        public HorizontalRowScrollCommand(GuardMatrix contextMatrix, SignalBus signalBus)
         {
             _contextMatrix = contextMatrix;
+            _signalBus = signalBus;
         }
 
-        public void Initialize(int vertRowId, int scrollDelta)
+        protected override void ScrollRow(bool isReversed)
         {
-            VertRowId = vertRowId;
-            ScrollDelta = scrollDelta;
-        }
-        public void Execute()
-        {
-            ScrollRow(false);
-        }
-
-        private void ScrollRow(bool isReversed)
-        {
-            if (_contextMatrix.Size.y <= VertRowId)
+            if (_contextMatrix.Size.y <= RowId)
                 throw new InvalidOperationException();
-            var row = _contextMatrix.GetHorizontalCells(VertRowId);
+            var row = _contextMatrix.GetHorizontalCells(RowId);
             foreach (var cell in row)
             {
                 var newRowId = Mathf.RoundToInt(Mathf.Repeat(cell.HorizontalId + ScrollDelta * (isReversed ? -1 : 1),
                     _contextMatrix.Size.x));
                 cell.Move(newRowId, cell.VerticalId);
             }
-        }
-
-        public void Cancel()
-        {
-            ScrollRow(true);
+            _signalBus.Fire(new MatrixOperationsSignals.ScrollOperationOccured(RowType.Horizontal, RowId));
         }
     }
 }

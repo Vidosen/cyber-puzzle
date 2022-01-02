@@ -23,5 +23,18 @@ namespace Minigames.MatrixBreaching.Matrix.Signals
             }
         }
         
+        public class ScrollOperationOccured : IOperationSignal
+        {
+            public OperationType OperationType => OperationType.Scroll;
+            public RowType RowType { get; private set; }
+            public int RowIndex { get; private set; }
+
+            public ScrollOperationOccured(RowType rowType, int rowIndex)
+            {
+                RowType = rowType;
+                RowIndex = rowIndex;
+            }
+        }
+        
     }
 }
