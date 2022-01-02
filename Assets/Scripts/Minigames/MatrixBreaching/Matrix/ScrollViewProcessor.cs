@@ -57,11 +57,11 @@ namespace Minigames.MatrixBreaching.Matrix
                     throw new InvalidOperationException();
                 case RowType.Horizontal:
                     _scrollingNeighbourCells.AddRange(_matrixPresenter.GetHorizontalCellViews(_scrollCommandsProcessor.VerticalIndex));
-                    _scrollThreshold = 1.5f * (scrollingCell.Transform.sizeDelta.x + _matrixPresenter.CellsOffset);
+                    _scrollThreshold = scrollingCell.Transform.sizeDelta.x + _matrixPresenter.CellsOffset;
                     break;
                 case RowType.Vertical:
                     _scrollingNeighbourCells.AddRange(_matrixPresenter.GetVerticalCellViews(_scrollCommandsProcessor.HorizontalIndex));
-                    _scrollThreshold = 1.5f * (scrollingCell.Transform.sizeDelta.y + _matrixPresenter.CellsOffset);
+                    _scrollThreshold = scrollingCell.Transform.sizeDelta.y + _matrixPresenter.CellsOffset;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -76,10 +76,10 @@ namespace Minigames.MatrixBreaching.Matrix
                 case RowType.None:
                     throw new InvalidOperationException();
                 case RowType.Horizontal:
-                    _deltaCellScroll += data.delta.x * _canvas.scaleFactor;
+                    _deltaCellScroll += data.delta.x / _canvas.scaleFactor;
                     break;
                 case RowType.Vertical:
-                    _deltaCellScroll -= data.delta.y * _canvas.scaleFactor;
+                    _deltaCellScroll -= data.delta.y / _canvas.scaleFactor;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -103,13 +103,13 @@ namespace Minigames.MatrixBreaching.Matrix
             var scaleFactor = _canvas.scaleFactor;
             var horizontalDeltaScroll = cellView.UnscaledDeltaMove.x / scaleFactor;
             var verticalDeltaScroll = cellView.UnscaledDeltaMove.y / scaleFactor;
-            if (Mathf.Abs(horizontalDeltaScroll) > cellView.Transform.sizeDelta.x  * 0.5f)
+            if (Mathf.Abs(horizontalDeltaScroll) > cellView.Transform.sizeDelta.x  * 0.1f)
             {
                 _scrollCommandsProcessor.StartScroll(RowType.Horizontal, cellView.Model.HorizontalId,
                     cellView.Model.VerticalId);
                 return;
             }
-            if (Mathf.Abs(verticalDeltaScroll) > cellView.Transform.sizeDelta.y * 0.5f)
+            if (Mathf.Abs(verticalDeltaScroll) > cellView.Transform.sizeDelta.y * 0.1f)
             {
                 _scrollCommandsProcessor.StartScroll(RowType.Vertical, cellView.Model.HorizontalId,
                     cellView.Model.VerticalId);
