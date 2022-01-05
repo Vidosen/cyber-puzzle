@@ -79,7 +79,7 @@ namespace Minigames.MatrixBreaching.Views
         public void InitializeFromModel(GuardMatrix guardMatrix)
         {
             _compositeDisposable.Clear();
-            RecalculateGuradMatrixRect(guardMatrix.Size.x, guardMatrix.Size.y, transform.parent as RectTransform);
+            RecalculateGuradMatrixRect(guardMatrix.Size.x, guardMatrix.Size.y, _transform.parent as RectTransform);
             
             InstantiateRows(guardMatrix);
             InstantiateExchangers();

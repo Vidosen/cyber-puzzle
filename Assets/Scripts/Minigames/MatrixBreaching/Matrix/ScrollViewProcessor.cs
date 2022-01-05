@@ -103,13 +103,13 @@ namespace Minigames.MatrixBreaching.Matrix
             var scaleFactor = _canvas.scaleFactor;
             var horizontalDeltaScroll = cellView.UnscaledDeltaMove.x / scaleFactor;
             var verticalDeltaScroll = cellView.UnscaledDeltaMove.y / scaleFactor;
-            if (Mathf.Abs(horizontalDeltaScroll) > cellView.Transform.sizeDelta.x  * 0.1f)
+            if (Mathf.Abs(horizontalDeltaScroll) > cellView.Transform.sizeDelta.x  * 0.05f)
             {
                 _scrollCommandsProcessor.StartScroll(RowType.Horizontal, cellView.Model.HorizontalId,
                     cellView.Model.VerticalId);
                 return;
             }
-            if (Mathf.Abs(verticalDeltaScroll) > cellView.Transform.sizeDelta.y * 0.1f)
+            if (Mathf.Abs(verticalDeltaScroll) > cellView.Transform.sizeDelta.y * 0.05f)
             {
                 _scrollCommandsProcessor.StartScroll(RowType.Vertical, cellView.Model.HorizontalId,
                     cellView.Model.VerticalId);
