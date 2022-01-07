@@ -212,7 +212,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
         {
             foreach (var cell in guardMatrix.GetCells())
             {
-                var cellView = _container.InstantiatePrefabForComponent<ValueCellView>(_viewConfig.ValueCellViewViewTemplate, Holder);
+                var cellView = _container.InstantiatePrefabForComponent<ValueCellView>(_viewConfig.ValueCellViewTemplate, Holder);
                 cellView.Initialize(cell);
                 cellView.Rescale(_gridRatio);
                 
@@ -296,7 +296,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         private void RecalculateGuradMatrixRect(int columns, int rows, RectTransform holder)
         {
-            var cellSize = _viewConfig.ValueCellViewViewTemplate.Transform.sizeDelta;
+            var cellSize = _viewConfig.ValueCellViewTemplate.Transform.sizeDelta;
             var unscaledGridSize =
                 RectTransformHelper.GetGridContainer(cellSize, rows + 1, columns + 1,
                     _offset) + new Vector2(_rowsOffset, _rowsOffset);

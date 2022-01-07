@@ -3,12 +3,20 @@ using System.Collections.Generic;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Utils;
+using Zenject;
 
 namespace Minigames.MatrixBreaching.Matrix.Providers
 {
     public class RandomValueCellProvider : ICellProvider
     {
+        private readonly DiContainer _container;
         private Random _random;
+
+        public RandomValueCellProvider(DiContainer container)
+        {
+            _container = container;
+        }
         public void SetRandomSeed(int seed)
         {
             _random = new Random(seed);
@@ -26,7 +34,10 @@ namespace Minigames.MatrixBreaching.Matrix.Providers
 
         public ICell GetNewCell()
         {
-            return new ValueCell((CellValueType)_random.Next(0, Enum.GetNames(typeof(CellValueType)).Length));
+            var enumIndex = _random.Next(0, CoreExtensions.GetEnumSize<CellValueType>());
+            var cellValue =
+                (CellValueType) Enum.Parse(typeof(CellValueType), Enum.GetNames(typeof(CellValueType))[enumIndex]);
+            return _container.Instantiate<ValueCell>(new object[] { cellValue });
         }
     }
 }

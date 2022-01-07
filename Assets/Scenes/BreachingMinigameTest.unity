@@ -209,6 +209,7 @@ GameObject:
   m_Component:
   - component: {fileID: 193600065}
   - component: {fileID: 193600067}
+  - component: {fileID: 193600069}
   - component: {fileID: 193600066}
   - component: {fileID: 193600068}
   m_Layer: 5
@@ -297,6 +298,19 @@ MonoBehaviour:
   m_FlexibleWidth: 0.8
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &193600069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193600064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c296ba7887846fd9599297c94cfea88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _holder: {fileID: 1084224804}
 --- !u!1 &216944971
 GameObject:
   m_ObjectHideFlags: 0
@@ -1766,9 +1780,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a654774c4ca20b4ca9a5f01cce73cb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _progressBarSlider: {fileID: 1616609674}
-  _goalText: {fileID: 1071973034}
-  levelProgressHandler: {fileID: 0}
 --- !u!1 &1071973032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1920,7 +1931,7 @@ GameObject:
   - component: {fileID: 1084224808}
   - component: {fileID: 1084224807}
   m_Layer: 5
-  m_Name: Body
+  m_Name: Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1958,14 +1969,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 35
-    m_Right: 35
-    m_Top: 100
+    m_Left: 30
+    m_Right: 30
+    m_Top: 30
     m_Bottom: 20
-  m_ChildAlignment: 3
-  m_Spacing: 20
+  m_ChildAlignment: 0
+  m_Spacing: 30
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -2038,7 +2049,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9a856777b748fba86b3a37a4557ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HorizontalSize: 5
+  HorizontalSize: 4
   VerticalSize: 5
 --- !u!4 &1177629924
 Transform:
@@ -2282,8 +2293,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc68e69b5ed6ab9489e37f4d0de26fcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHorizontalAngle: 7.5
-  MaxVerticalAngle: 3.125
 --- !u!223 &1374401804
 Canvas:
   m_ObjectHideFlags: 0
@@ -2648,8 +2657,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cf206cd3290c1e4d9cce039ac9d293b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelHandler: {fileID: 0}
-  _timer: {fileID: 846882199}
 --- !u!1 &1956344764
 GameObject:
   m_ObjectHideFlags: 0

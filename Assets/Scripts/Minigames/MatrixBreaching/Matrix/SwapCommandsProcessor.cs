@@ -2,6 +2,7 @@
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Signals;
 using UniRx;
 using UnityEngine;
 using Utils;
@@ -24,10 +25,11 @@ namespace Minigames.MatrixBreaching.Matrix
         
         private IMatrixCommand _lastMatrixCommand;
 
-        public SwapCommandsProcessor(GuardMatrix guardMatrix, IMatrixCommand.Factory commandFactory)
+        public SwapCommandsProcessor(GuardMatrix guardMatrix, IMatrixCommand.Factory commandFactory, SignalBus signalBus)
         {
             _guardMatrix = guardMatrix;
             _commandFactory = commandFactory;
+            _signalBus = signalBus;
         }
         
         public void StartSwap(RowType rowType, int index)
@@ -92,6 +94,7 @@ namespace Minigames.MatrixBreaching.Matrix
             else
             {
                 _guardMatrix.Log();
+                _signalBus.Fire<MatrixOperationsSignals.OperationApplied>();
             }
             
             _isExecutingCommand.Value = false;

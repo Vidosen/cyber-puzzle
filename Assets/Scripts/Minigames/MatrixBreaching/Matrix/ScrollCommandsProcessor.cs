@@ -3,9 +3,11 @@ using Minigames.MatrixBreaching.Matrix.Commands;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Signals;
 using UniRx;
 using UnityEngine;
 using Utils;
+using Zenject;
 
 namespace Minigames.MatrixBreaching.Matrix
 {
@@ -13,6 +15,7 @@ namespace Minigames.MatrixBreaching.Matrix
     {
         private readonly GuardMatrix _guardMatrix;
         private readonly IMatrixCommand.Factory _commandFactory;
+        private readonly SignalBus _signalBus;
         public IReadOnlyReactiveProperty<bool> IsExecutingCommand => _isExecutingCommand.ToReadOnlyReactiveProperty();
         public RowType RowType { get; private set; }
         public int VerticalIndex { get; private set; }
@@ -22,10 +25,11 @@ namespace Minigames.MatrixBreaching.Matrix
         public bool IsScrollOccured => VerticalIndex != -1 && Mathf.Abs(ScrollDelta) > 0;
         private ReactiveProperty<bool> _isExecutingCommand = new ReactiveProperty<bool>();
 
-        public ScrollCommandsProcessor(GuardMatrix guardMatrix, IMatrixCommand.Factory commandFactory)
+        public ScrollCommandsProcessor(GuardMatrix guardMatrix, IMatrixCommand.Factory commandFactory, SignalBus signalBus)
         {
             _guardMatrix = guardMatrix;
             _commandFactory = commandFactory;
+            _signalBus = signalBus;
         }
         
         public void StartScroll(RowType rowType, int cellHorizontalIndex, int cellVerticalIndex)
@@ -91,6 +95,7 @@ namespace Minigames.MatrixBreaching.Matrix
             else
             {
                 _guardMatrix.Log();
+                _signalBus.Fire<MatrixOperationsSignals.OperationApplied>();
             }
             
             _isExecutingCommand.Value = false;

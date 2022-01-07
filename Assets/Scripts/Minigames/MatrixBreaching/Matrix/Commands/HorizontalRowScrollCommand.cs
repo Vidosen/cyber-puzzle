@@ -29,7 +29,7 @@ namespace Minigames.MatrixBreaching.Matrix.Commands
                     _contextMatrix.Size.x));
                 cell.Move(newRowId, cell.VerticalId);
             }
-            _signalBus.Fire(new MatrixOperationsSignals.ScrollOperationOccured(RowType.Horizontal, RowId));
+            _signalBus.AbstractFire(new MatrixOperationsSignals.ScrollOperationOccured(RowType.Horizontal, RowId));
         }
     }
 }

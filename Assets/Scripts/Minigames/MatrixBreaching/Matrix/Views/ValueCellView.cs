@@ -5,6 +5,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Utils;
 using Zenject;
 
 namespace Minigames.MatrixBreaching.Matrix.Views
@@ -50,7 +51,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         private void UpdateView()
         {
-            _valueText.text = ((int)_cellModel.Value).ToString();
+            _valueText.text = _cellModel.Value.ToTextString();
         }
 
         public void OnBeginDrag(PointerEventData eventData)

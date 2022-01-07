@@ -60,9 +60,9 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         {
             var foundCells = _cells.Where(cell =>
                 cell.HorizontalId.Equals(horizontalId) && cell.VerticalId.Equals(verticalId)).ToList();
-            if (foundCells.Count != 1)
+            if (foundCells.Count > 1)
                 throw new InvalidOperationException();
-            return foundCells.First();
+            return foundCells.FirstOrDefault();
         }
 
         public ICell ReplaceCell(int horizontalId, int verticalId)

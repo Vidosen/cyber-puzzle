@@ -8,6 +8,7 @@ using Minigames.MatrixBreaching.Matrix.Signals;
 using Minigames.MatrixBreaching.Matrix.Views;
 using Minigames.MatrixBreaching.Vulnerabilities;
 using Minigames.MatrixBreaching.Vulnerabilities.Models;
+using Minigames.MatrixBreaching.Vulnerabilities.Rules;
 using Minigames.MatrixBreaching.Vulnerabilities.Services;
 using UnityEngine;
 using Zenject;
@@ -40,8 +41,10 @@ namespace Minigames.MatrixBreaching.Bootstrap
             Container.BindFactory<OperationType, RowType, IMatrixCommand, IMatrixCommand.Factory>()
                 .FromFactory<OperationCommandFactory>();
 
-            Container.DeclareSignal<MatrixOperationsSignals.SwapOperationOccured>();
-            Container.DeclareSignal<MatrixOperationsSignals.ScrollOperationOccured>();
+            Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.SwapOperationOccured>();
+            Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.ScrollOperationOccured>();
+            Container.DeclareSignal<MatrixOperationsSignals.OperationApplied>();
+            Container.DeclareSignal<MatrixSignals.CellDisposed>().OptionalSubscriber();
 
             Container.BindFactory<string, VulnerabilityModel, VulnerabiltyFactory>().FromNew();
             Container.Bind<VulnerabiltyInventory>().AsSingle();
@@ -52,6 +55,9 @@ namespace Minigames.MatrixBreaching.Bootstrap
                 if (obj is VulnerabilityService vulnerabilityService)
                     vulnerabilityService.SetRandomSeed(RandomValueMatrxSeed);
             });;
+
+            Container.BindInterfacesTo<VulnerabilitiesManagementRule>().AsSingle();
+            Container.BindInterfacesTo<CheckVulnerabilitiesRule>().AsSingle();
         }
     }
 }

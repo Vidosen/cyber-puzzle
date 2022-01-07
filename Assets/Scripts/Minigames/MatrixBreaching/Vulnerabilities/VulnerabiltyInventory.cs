@@ -19,8 +19,9 @@ namespace Minigames.MatrixBreaching.Vulnerabilities
         public VulnerabilityModel CreateNewModel(List<CellValueType> vulnerabilitySequence, out string modelId)
         {
             modelId = $"{nameof(VulnerabilityModel)}_{_index++}";
-            var model = CreateModelById(modelId);
+            var model = _factory.Create(modelId);
             model.Initialize(vulnerabilitySequence);
+            _models.Add(model);
             return model;
         }
         public override VulnerabilityModel CreateModelById(string modelId)

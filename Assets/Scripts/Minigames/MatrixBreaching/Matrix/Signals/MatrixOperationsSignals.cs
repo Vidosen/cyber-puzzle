@@ -35,6 +35,8 @@ namespace Minigames.MatrixBreaching.Matrix.Signals
                 RowIndex = rowIndex;
             }
         }
-        
+
+        public class OperationApplied
+        { }
     }
 }

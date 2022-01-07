@@ -22,5 +22,9 @@ MonoBehaviour:
     type: 3}
   _valueCellViewTemplate: {fileID: 7563966118946652144, guid: 19827a5f71f27e041b42a9134140d4ff,
     type: 3}
+  _vulnerabilityCellViewTemplate: {fileID: 8410818666897769199, guid: 6adc9ea7c98755f40aa4089b1771ed9f,
+    type: 3}
+  _vulnerabilityViewTemplate: {fileID: 8139749099043802147, guid: 07508541c78d7cf43afbccd035567fe9,
+    type: 3}
   _swapFlatMoveEase: 4
   _swapMoveDuration: 0.25

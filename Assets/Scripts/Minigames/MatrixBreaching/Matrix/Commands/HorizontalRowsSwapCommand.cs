@@ -32,7 +32,7 @@ namespace Minigames.MatrixBreaching.Matrix.Commands
             {
                 cell.Move(cell.HorizontalId, ApplyingRowId);
             }
-            _signalBus.Fire(new MatrixOperationsSignals.SwapOperationOccured(RowType.Horizontal, ApplyingRowId, AppliedRowId));
+            _signalBus.AbstractFire(new MatrixOperationsSignals.SwapOperationOccured(RowType.Horizontal, ApplyingRowId, AppliedRowId));
         }
     }
 }

@@ -2,15 +2,10 @@
 {
     public enum CellValueType
     {
-        Zero,
-        One,
-        Two,
-        Three,
-        Four,
-        Five,
-        Six,
-        Seven,
-        Eight,
-        Nine
+        Two = 2,
+        Four = 4,
+        Eight = 8,
+        Sixteen = 16,
+        ThirtyTwo = 32
     }
 }

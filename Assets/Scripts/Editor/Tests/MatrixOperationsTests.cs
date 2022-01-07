@@ -21,7 +21,9 @@ namespace Editor.Tests
         {
             base.Setup();
             SignalBusInstaller.Install(Container);
-            Container.DeclareSignal<MatrixOperationsSignals.SwapOperationOccured>().OptionalSubscriber();
+            Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.SwapOperationOccured>().OptionalSubscriber();
+            Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.ScrollOperationOccured>().OptionalSubscriber();
+            Container.DeclareSignal<MatrixSignals.CellDisposed>().OptionalSubscriber();
             Container.Bind<GuardMatrix>().ToSelf().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<MockCellProvider>().AsSingle().NonLazy();
             
@@ -135,7 +137,8 @@ namespace Editor.Tests
             var cells = new List<ICell>();
             for (var y = 0; y < vert; y++)
             for (var x = 0; x < horiz; x++)
-                cells.Add(new ValueCell((CellValueType)Mathf.Repeat(y, Enum.GetNames(typeof(CellValueType)).Length)));
+                cells.Add(Container.Instantiate<ValueCell>(new object[]
+                    { (CellValueType)Mathf.Repeat(y, CoreExtensions.GetEnumSize<CellValueType>()) }));
             return cells;
         }
         private IEnumerable<ICell> VerticalFillCellsFunc(int horiz, int vert)
@@ -143,7 +146,10 @@ namespace Editor.Tests
             var cells = new List<ICell>();
             for (var y = 0; y < vert; y++)
             for (var x = 0; x < horiz; x++)
-                cells.Add(new ValueCell((CellValueType)Mathf.Repeat(x, Enum.GetNames(typeof(CellValueType)).Length)));
+                cells.Add(Container.Instantiate<ValueCell>(new object[]
+                    {
+                        (CellValueType)Mathf.Repeat(x, CoreExtensions.GetEnumSize<CellValueType>())
+                    }));
             return cells;
         }
 

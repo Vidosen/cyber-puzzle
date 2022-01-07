@@ -5,6 +5,7 @@ using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Providers;
+using Minigames.MatrixBreaching.Matrix.Signals;
 using NUnit.Framework;
 using UnityEngine;
 using Utils;
@@ -18,6 +19,10 @@ namespace Editor.Tests
         public override void Setup()
         {
             base.Setup();
+            SignalBusInstaller.Install(Container);
+            Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.SwapOperationOccured>().OptionalSubscriber();
+            Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.ScrollOperationOccured>().OptionalSubscriber();
+            Container.DeclareSignal<MatrixSignals.CellDisposed>().OptionalSubscriber();
             Container.Bind<GuardMatrix>().ToSelf().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<MockCellProvider>().AsSingle().NonLazy();
         }
@@ -167,14 +172,14 @@ namespace Editor.Tests
             {
                 var mockCellProvider = Container.Resolve<MockCellProvider>();
                 mockCellProvider.SetMockFunc(SimpleFillCellsFunc);
-                mockCellProvider.SetMockFunc(() => new ValueCell(CellValueType.Eight));
+                mockCellProvider.SetMockFunc(() =>Container.Instantiate<ValueCell>( new object[]{ CellValueType.Eight }));
             }
             
             var protectMatrix = Container.Resolve<GuardMatrix>();
             protectMatrix.Initialize(h_size, v_size);
             protectMatrix.Log();
             foreach (var cell in protectMatrix.GetCells())
-                Assert.IsTrue(cell is ValueCell valueCell && valueCell.Value == CellValueType.Zero);
+                Assert.IsTrue(cell is ValueCell valueCell && valueCell.Value == CellValueType.Two);
             
             for (int verticalId = 0; verticalId < v_size; verticalId++)
             for (int horizontalId = 0; horizontalId < h_size; horizontalId++)
@@ -189,7 +194,8 @@ namespace Editor.Tests
         private IEnumerable<ICell> SimpleFillCellsFunc(int horiz, int vert)
         {
             var cells = new List<ICell>();
-            for (var i = 0; i < horiz * vert; i++) cells.Add(new ValueCell(CellValueType.Zero));
+            for (var i = 0; i < horiz * vert; i++)
+                cells.Add(Container.Instantiate<ValueCell>( new object[]{ CellValueType.Two }));
             return cells;
         }
 
@@ -197,7 +203,10 @@ namespace Editor.Tests
         {
             var cells = new List<ICell>();
             for (var i = 0; i < horiz * vert; i++)
-                cells.Add(new ValueCell((CellValueType)Mathf.Repeat(i, Enum.GetNames(typeof(CellValueType)).Length)));
+                cells.Add(Container.Instantiate<ValueCell>(new object[]
+            {
+                (CellValueType)Mathf.Repeat(i, Enum.GetNames(typeof(CellValueType)).Length)
+            }));
             return cells;
         }
 
