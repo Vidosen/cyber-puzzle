@@ -151,7 +151,7 @@ namespace Editor.Tests
                 {
                     Assert.IsTrue(valueCell != null);
                     Assert.AreEqual((CellValueType)Mathf.RoundToInt(Mathf.Repeat(verticalId * h_size + horizontalId,
-                            Enum.GetNames(typeof(CellValueType)).Length)), valueCell.ValueType);
+                            Enum.GetNames(typeof(CellValueType)).Length)), valueCell.Value);
                 }
             }
         }
@@ -174,7 +174,7 @@ namespace Editor.Tests
             protectMatrix.Initialize(h_size, v_size);
             protectMatrix.Log();
             foreach (var cell in protectMatrix.GetCells())
-                Assert.IsTrue(cell is ValueCell valueCell && valueCell.ValueType == CellValueType.Zero);
+                Assert.IsTrue(cell is ValueCell valueCell && valueCell.Value == CellValueType.Zero);
             
             for (int verticalId = 0; verticalId < v_size; verticalId++)
             for (int horizontalId = 0; horizontalId < h_size; horizontalId++)
@@ -182,7 +182,7 @@ namespace Editor.Tests
                 var cell = protectMatrix.ReplaceCell(horizontalId, verticalId);
                 Debug.Log(string.Empty);
                 protectMatrix.Log();
-                Assert.IsTrue(cell is ValueCell valueCell && valueCell.ValueType == CellValueType.Eight);
+                Assert.IsTrue(cell is ValueCell valueCell && valueCell.Value == CellValueType.Eight);
             }
         }
 

@@ -12,7 +12,7 @@ using UnityEngine;
 using Utils;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Views
+namespace Minigames.MatrixBreaching.Matrix.Views
 {
     public class GuardMatrixPresenter : MonoBehaviour
     {

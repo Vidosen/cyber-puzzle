@@ -5,7 +5,10 @@ using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Providers;
 using Minigames.MatrixBreaching.Matrix.Signals;
-using Minigames.MatrixBreaching.Views;
+using Minigames.MatrixBreaching.Matrix.Views;
+using Minigames.MatrixBreaching.Vulnerabilities;
+using Minigames.MatrixBreaching.Vulnerabilities.Models;
+using Minigames.MatrixBreaching.Vulnerabilities.Services;
 using UnityEngine;
 using Zenject;
 
@@ -27,11 +30,11 @@ namespace Minigames.MatrixBreaching.Bootstrap
                 });
             
             Container.BindInstance(_matrixPresenter);
-            Container.Bind<SwapCommandsProcessor>().ToSelf().AsSingle();
+            Container.Bind<SwapCommandsProcessor>().AsSingle();
             Container.BindInterfacesTo<VerticalSwapViewProcessor>().AsSingle();
             Container.BindInterfacesTo<HorizontalSwapViewProcessor>().AsSingle();
             
-            Container.Bind<ScrollCommandsProcessor>().ToSelf().AsSingle();
+            Container.Bind<ScrollCommandsProcessor>().AsSingle();
             Container.BindInterfacesTo<ScrollViewProcessor>().AsSingle();
 
             Container.BindFactory<OperationType, RowType, IMatrixCommand, IMatrixCommand.Factory>()
@@ -39,6 +42,16 @@ namespace Minigames.MatrixBreaching.Bootstrap
 
             Container.DeclareSignal<MatrixOperationsSignals.SwapOperationOccured>();
             Container.DeclareSignal<MatrixOperationsSignals.ScrollOperationOccured>();
+
+            Container.BindFactory<string, VulnerabilityModel, VulnerabiltyFactory>().FromNew();
+            Container.Bind<VulnerabiltyInventory>().AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<VulnerabilityService>().AsSingle()
+                .OnInstantiated((context, obj) =>
+            {
+                if (obj is VulnerabilityService vulnerabilityService)
+                    vulnerabilityService.SetRandomSeed(RandomValueMatrxSeed);
+            });;
         }
     }
 }

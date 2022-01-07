@@ -1,5 +1,5 @@
 ﻿using DG.Tweening;
-using Minigames.MatrixBreaching.Views;
+using Minigames.MatrixBreaching.Matrix.Views;
 using UnityEngine;
 
 namespace Minigames.MatrixBreaching.Config
@@ -7,15 +7,16 @@ namespace Minigames.MatrixBreaching.Config
     [CreateAssetMenu(fileName = "MatrixBreachingViewConfig", menuName = "Configs/Matrix Breaching View", order = 0)]
     public class MatrixBreachingViewConfig : ScriptableObject
     {
-        [Header("Templates")]
+        [Header("Templates/Guard Matrix")]
         [SerializeField] private GuardMatrixRowView _verticalRowViewTemplate;
         [SerializeField] private GuardMatrixRowView _horizontalRowViewTemplate;
         
         [SerializeField] private GuardMatrixExchangerView _verticalExchangerViewTemplate;
         [SerializeField] private GuardMatrixExchangerView _horizontalExchangerViewTemplate;
+        [Header("Templates/Vulnerability")]
         
         [SerializeField] private ValueCellView _valueCellViewTemplate;
-        [Header("Animation")]
+        [Header("Animation/Guard Matrix")]
         [SerializeField] private Ease _swapFlatMoveEase;
         [SerializeField] private float _swapMoveDuration;
 

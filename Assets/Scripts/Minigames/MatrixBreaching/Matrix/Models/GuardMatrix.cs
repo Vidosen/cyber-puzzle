@@ -43,7 +43,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
             IsInitialized = true;
         }
 
-        public IEnumerable<ICell> GetCells()
+        public IList<ICell> GetCells()
         {
             return _cells.ToList();
         }

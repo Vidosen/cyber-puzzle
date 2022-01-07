@@ -9,7 +9,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
     {
         public abstract void Dispose();
 
-        public IObservable<Unit> CellUpdated => _positionChangedSubject;
+        public IObservable<Unit> CellPositionChanged => _positionChangedSubject;
         protected Subject<Unit> _positionChangedSubject = new Subject<Unit>();
         public int HorizontalId { get; protected set; }
         public int VerticalId { get; protected set; }

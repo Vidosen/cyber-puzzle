@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Minigames.MatrixBreaching.Matrix.Data;
-using Minigames.MatrixBreaching.Views;
+using Minigames.MatrixBreaching.Matrix.Views;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;

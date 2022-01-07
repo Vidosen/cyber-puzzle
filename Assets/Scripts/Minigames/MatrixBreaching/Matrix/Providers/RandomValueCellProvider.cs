@@ -8,7 +8,7 @@ namespace Minigames.MatrixBreaching.Matrix.Providers
 {
     public class RandomValueCellProvider : ICellProvider
     {
-        private Random _random = new Random();
+        private Random _random;
         public void SetRandomSeed(int seed)
         {
             _random = new Random(seed);

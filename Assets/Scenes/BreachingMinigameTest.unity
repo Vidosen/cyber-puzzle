@@ -977,7 +977,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _matrixPresenter: {fileID: 2856264194495674756}
-  RandomValueMatrxSeed: 7
+  RandomValueMatrxSeed: 0
 --- !u!1 &809278555
 GameObject:
   m_ObjectHideFlags: 0
@@ -2038,8 +2038,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9a856777b748fba86b3a37a4557ca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HorizontalSize: 6
-  VerticalSize: 6
+  HorizontalSize: 5
+  VerticalSize: 5
 --- !u!4 &1177629924
 Transform:
   m_ObjectHideFlags: 0

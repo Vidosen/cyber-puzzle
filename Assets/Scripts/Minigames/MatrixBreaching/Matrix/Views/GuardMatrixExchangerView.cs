@@ -1,5 +1,4 @@
 ﻿using System;
-using Minigames.MatrixBreaching.Matrix;
 using Minigames.MatrixBreaching.Matrix.Data;
 using TMPro;
 using UniRx;
@@ -7,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Views
+namespace Minigames.MatrixBreaching.Matrix.Views
 {
     public class GuardMatrixExchangerView : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
     {

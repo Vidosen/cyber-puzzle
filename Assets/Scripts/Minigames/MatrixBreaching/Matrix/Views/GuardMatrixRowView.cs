@@ -1,7 +1,7 @@
 ﻿using Minigames.MatrixBreaching.Matrix.Data;
 using UnityEngine;
 
-namespace Minigames.MatrixBreaching.Views
+namespace Minigames.MatrixBreaching.Matrix.Views
 {
     public class GuardMatrixRowView : MonoBehaviour
     {

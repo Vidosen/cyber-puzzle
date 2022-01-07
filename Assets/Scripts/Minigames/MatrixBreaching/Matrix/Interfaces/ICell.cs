@@ -5,7 +5,7 @@ namespace Minigames.MatrixBreaching.Matrix.Interfaces
 {
     public interface ICell : IDisposable
     {
-        IObservable<Unit> CellUpdated { get; }
+        IObservable<Unit> CellPositionChanged { get; }
 
         int HorizontalId { get; }
         int VerticalId { get; }

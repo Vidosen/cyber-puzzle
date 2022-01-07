@@ -1,5 +1,4 @@
 ﻿using System;
-using Minigames.MatrixBreaching.Matrix;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
 using TMPro;
@@ -8,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Views
+namespace Minigames.MatrixBreaching.Matrix.Views
 {
     public class ValueCellView : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
     {
@@ -51,7 +50,7 @@ namespace Minigames.MatrixBreaching.Views
 
         private void UpdateView()
         {
-            _valueText.text = ((int)_cellModel.ValueType).ToString();
+            _valueText.text = ((int)_cellModel.Value).ToString();
         }
 
         public void OnBeginDrag(PointerEventData eventData)

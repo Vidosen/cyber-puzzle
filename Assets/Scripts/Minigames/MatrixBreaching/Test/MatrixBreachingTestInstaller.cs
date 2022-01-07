@@ -1,7 +1,6 @@
-﻿using Minigames.MatrixBreaching.Matrix.Models;
-using Zenject;
+﻿using Zenject;
 
-namespace Minigames.MatrixBreaching.Bootstrap
+namespace Minigames.MatrixBreaching.Test
 {
     public class MatrixBreachingTestInstaller : MonoInstaller
     {

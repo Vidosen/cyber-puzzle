@@ -13,7 +13,7 @@ namespace Utils
             {
                 var row = guardMatrix.GetHorizontalCells(y);
                 var rowLogLine = row.Select(cell => cell as ValueCell).Where(cell => cell != null)
-                    .Select(cell => (int)cell.ValueType + "\t").Aggregate((one, two) => one + two);
+                    .Select(cell => (int)cell.Value + "\t").Aggregate((one, two) => one + two);
                 Debug.Log(rowLogLine);
             }
             Debug.Log("== Matrix :: End ==");
