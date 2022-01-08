@@ -42,7 +42,10 @@ namespace Minigames.MatrixBreaching.Vulnerabilities.Rules
             if (_vulnerabilityService.FindCompletedVulnerabilities(out var foundVulnerabilites))
             {
                 foreach (var model in foundVulnerabilites)
+                {
+                    model.MatchedSequence.ForEach(cell=>_guardMatrix.ReplaceCell(cell));
                     _vulnerabiltyInventory.Remove(model);
+                }
             }
         }
     }

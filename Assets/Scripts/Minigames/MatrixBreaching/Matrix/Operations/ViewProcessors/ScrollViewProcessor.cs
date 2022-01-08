@@ -29,18 +29,9 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
             _matrixPresenter = matrixPresenter;
             _scrollCommandsProcessor = scrollCommandsProcessor;
         }
-        public async void Initialize()
+        public void Initialize()
         {
             _canvas = _matrixPresenter.GetComponentInParent<Canvas>();
-            await _matrixPresenter.IsInitialized.Where(isInit => isInit).ToUniTask(true);
-            
-            foreach (var cellView in _matrixPresenter.CellViews)
-            {
-                cellView.OnDragObservable
-                    .Where(_=>!_scrollCommandsProcessor.IsExecutingCommand.Value)
-                    .Subscribe(_ => CheckStartScrollAbility(cellView))
-                    .AddTo(_compositeDisposable);
-            }
 
             _scrollCommandsProcessor.IsExecutingCommand.Where(isExecuting => isExecuting)
                 .Subscribe(_ => OnStartedScroll()).AddTo(_compositeDisposable);
@@ -50,7 +41,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 
         private void OnStartedScroll()
         {
-            _scrollingCell = _matrixPresenter.GeCellView(_scrollCommandsProcessor.HorizontalIndex,
+            _scrollingCell = _matrixPresenter.GetCellView(_scrollCommandsProcessor.HorizontalIndex,
                 _scrollCommandsProcessor.VerticalIndex);
             switch (_scrollCommandsProcessor.RowType)
             {
@@ -126,24 +117,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
             _scrollStream?.Dispose();
             _scrollingNeighbourCells.Clear();
         }
-
-        private void CheckStartScrollAbility(ValueCellView cellView)
-        {
-            var scaleFactor = _canvas.scaleFactor;
-            var horizontalDeltaScroll = cellView.UnscaledDeltaMove.x / scaleFactor;
-            var verticalDeltaScroll = cellView.UnscaledDeltaMove.y / scaleFactor;
-            if (Mathf.Abs(horizontalDeltaScroll) > cellView.Transform.sizeDelta.x  * 0.05f)
-            {
-                _scrollCommandsProcessor.StartScroll(RowType.Horizontal, cellView.Model.HorizontalId,
-                    cellView.Model.VerticalId);
-                return;
-            }
-            if (Mathf.Abs(verticalDeltaScroll) > cellView.Transform.sizeDelta.y * 0.05f)
-            {
-                _scrollCommandsProcessor.StartScroll(RowType.Vertical, cellView.Model.HorizontalId,
-                    cellView.Model.VerticalId);
-            }
-        }
+        
 
         public void Dispose()
         {

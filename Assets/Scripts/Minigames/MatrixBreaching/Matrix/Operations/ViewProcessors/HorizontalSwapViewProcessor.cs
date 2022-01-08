@@ -16,7 +16,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
         private readonly GuardMatrixPresenter _matrixPresenter;
         
         private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
-        private IDisposable _swapProgressStream;
+        private readonly CompositeDisposable _swapDisposable = new CompositeDisposable();
         private GuardMatrixExchangerView _exchanger;
         private List<ValueCellView> _cells = new List<ValueCellView>();
         private Canvas _canvas;
@@ -41,7 +41,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 
         private void EndSwap()
         {
-            _swapProgressStream?.Dispose();
+            _swapDisposable.Clear();
             if (_exchanger != null)
             {
                 if (_swapCommandsProcessor.IsSwapOccured)
@@ -55,11 +55,12 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 
         private void StartSwap()
         {
+            _cells.Clear();
             var horizontalId = _swapCommandsProcessor.ApplyingRowIndex;
             _cells.AddRange(_matrixPresenter.GetHorizontalCellViews(horizontalId));
             _exchanger = _matrixPresenter.GetHorizontalExchangerView(horizontalId);
-            _swapProgressStream = _exchanger.OnDragObservable
-                .Subscribe(data => OnSwapProgress(data));
+            _exchanger.OnDragObservable
+                .Subscribe(data => OnSwapProgress(data)).AddTo(_swapDisposable);
             OnSwapProgress(new PointerEventData(EventSystem.current));
         }
 
@@ -103,7 +104,8 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
             _exchanger.Transform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
             foreach (var cellView in _cells)
             {
-                cellView.Transform.anchoredPosition = _exchanger.Transform.anchoredPosition + Vector2.right *
+                if (cellView != null)
+                    cellView.Transform.anchoredPosition = _exchanger.Transform.anchoredPosition + Vector2.right *
                     ((cellView.Transform.sizeDelta.x + _matrixPresenter.CellsOffset) *
                      (cellView.Model.HorizontalId + 1));
             }

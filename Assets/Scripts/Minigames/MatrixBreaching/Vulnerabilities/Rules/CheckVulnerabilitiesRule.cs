@@ -28,7 +28,7 @@ namespace Minigames.MatrixBreaching.Vulnerabilities.Rules
             foreach (var model in _vulnerabiltyInventory)
             {
                 IList<ValueCell> foundMatchedMatrixCells = _vulnerabilityService.FindBestMatchForVulnerability(model);
-                model.SetMatchedSequenceSize(foundMatchedMatrixCells.Count);
+                model.SetMatchedMatrixSequence(foundMatchedMatrixCells);
             }
         }
     }

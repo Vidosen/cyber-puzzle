@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Views;
 using UniRx;
 using UnityEngine;
@@ -13,23 +14,25 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
     public class VerticalSwapViewProcessor : IInitializable, IDisposable
     {
         private readonly SwapCommandsProcessor _swapCommandsProcessor;
-        private readonly GuardMatrixPresenter _guardMatrixPresenter;
-        
+        private readonly GuardMatrixPresenter _matrixPresenter;
+        private readonly GuardMatrix _matrix;
+
         private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
-        private IDisposable _swapProgressStream;
+        private readonly CompositeDisposable _swapDisposable = new CompositeDisposable();
         private GuardMatrixExchangerView _exchanger;
         private List<ValueCellView> _cells = new List<ValueCellView>();
         private Canvas _canvas;
 
-        public VerticalSwapViewProcessor(SwapCommandsProcessor swapCommandsProcessor, GuardMatrixPresenter guardMatrixPresenter)
+        public VerticalSwapViewProcessor(SwapCommandsProcessor swapCommandsProcessor, GuardMatrixPresenter matrixPresenter, GuardMatrix matrix)
         {
             _swapCommandsProcessor = swapCommandsProcessor;
-            _guardMatrixPresenter = guardMatrixPresenter;
+            _matrixPresenter = matrixPresenter;
+            _matrix = matrix;
         }
 
         public void Initialize()
         {
-            _canvas = _guardMatrixPresenter.GetComponentInParent<Canvas>();
+            _canvas = _matrixPresenter.GetComponentInParent<Canvas>();
             
            _swapCommandsProcessor.IsExecutingCommand
                 .Where(isExecuting => isExecuting && _swapCommandsProcessor.RowType == RowType.Vertical)
@@ -41,25 +44,26 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 
         private void EndSwap()
         {
-            _swapProgressStream?.Dispose();
+            _swapDisposable.Clear();
             if (_exchanger != null)
             {
                 if (_swapCommandsProcessor.IsSwapOccured)
                     _exchanger.ChangeRowIndex(_swapCommandsProcessor.AppliedRowIndex);
                 
-                _guardMatrixPresenter.UpdateExchangerViewPos(_exchanger);
+                _matrixPresenter.UpdateExchangerViewPos(_exchanger);
             }
-            _cells.ForEach(cell=>_guardMatrixPresenter.UpdateCellViewPos(cell));
+            _cells.ForEach(cell=>_matrixPresenter.UpdateCellViewPos(cell));
             _cells.Clear();
         }
 
         private void StartSwap()
         {
+            _cells.Clear();
             var horizontalId = _swapCommandsProcessor.ApplyingRowIndex;
-            _cells.AddRange(_guardMatrixPresenter.GetVerticalCellViews(horizontalId));
-            _exchanger = _guardMatrixPresenter.GetVerticalExchangerView(horizontalId);
-            _swapProgressStream = _exchanger.OnDragObservable
-                .Subscribe(data => OnSwapProgress(data));
+            _cells.AddRange(_matrixPresenter.GetVerticalCellViews(horizontalId));
+            _exchanger = _matrixPresenter.GetVerticalExchangerView(horizontalId);
+            _exchanger.OnDragObservable
+                .Subscribe(data => OnSwapProgress(data)).AddTo(_swapDisposable);
             OnSwapProgress(new PointerEventData(EventSystem.current));
         }
 
@@ -74,7 +78,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
             var exchangerRect = _exchanger.Transform.rect;
             exchangerRect.position = _exchanger.Transform.anchoredPosition;
             var overlappedRows =
-                _guardMatrixPresenter.VerticalRowViews
+                _matrixPresenter.VerticalRowViews
                     .Where(row =>
                     {
                         var rowRect = row.Transform.rect;
@@ -104,8 +108,9 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
             _exchanger.Transform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
             foreach (var cellView in _cells)
             {
-                cellView.Transform.anchoredPosition = _exchanger.Transform.anchoredPosition + Vector2.down *
-                    ((cellView.Transform.sizeDelta.y + _guardMatrixPresenter.CellsOffset) *
+                if (cellView != null)
+                    cellView.Transform.anchoredPosition = _exchanger.Transform.anchoredPosition + Vector2.down *
+                    ((cellView.Transform.sizeDelta.y + _matrixPresenter.CellsOffset) *
                      (cellView.Model.VerticalId + 1));
             }
         }

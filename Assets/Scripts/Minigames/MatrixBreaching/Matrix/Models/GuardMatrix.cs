@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using UniRx;
 using UnityEngine;
@@ -12,13 +13,10 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         public Vector2Int Size { get; private set; }
         public bool IsInitialized { get; private set; }
 
-        public IObservable<ICell> OnCellAdded => _cellAddedSubject;
-        public IObservable<ICell> OnCellRemoved => _cellRemovedSubject;
-
+        public IObservable<ReplaceCellsEventArgs> OnCellReplaced => _cellReplacedSubject;
         private readonly ICellProvider _cellProvider;
         private readonly List<ICell> _cells = new List<ICell>();
-        private Subject<ICell> _cellAddedSubject = new Subject<ICell>();
-        private Subject<ICell> _cellRemovedSubject = new Subject<ICell>();
+        private Subject<ReplaceCellsEventArgs> _cellReplacedSubject = new Subject<ReplaceCellsEventArgs>();
 
 
         public GuardMatrix(ICellProvider cellProvider)
@@ -37,7 +35,6 @@ namespace Minigames.MatrixBreaching.Matrix.Models
             {
                 var cell = _cells[horizontalSize * y + x];
                 cell.Move(x, y);
-                _cellAddedSubject.OnNext(cell);
             }
 
             IsInitialized = true;
@@ -73,17 +70,19 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         public ICell ReplaceCell(ICell cell)
         {
             if (!_cells.Contains(cell))
-                throw new InvalidOperationException();
+            {
+                Debug.LogWarning(
+                    $"Cell ({cell.HorizontalId}, {cell.VerticalId}) is already replaced");
+                return null;
+            }
 
             var newCell = _cellProvider.GetNewCell();
             newCell.Move(cell.HorizontalId, cell.VerticalId);
             
+            _cellReplacedSubject.OnNext(new ReplaceCellsEventArgs(cell, newCell));
             _cells.Remove(cell);
-            _cellRemovedSubject.OnNext(cell);
             cell.Dispose();
-            
             _cells.Add(newCell);
-            _cellAddedSubject.OnNext(newCell);
             return newCell;
         }
 

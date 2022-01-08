@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Minigames.MatrixBreaching.Config;
 using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using UniRx;
@@ -54,7 +56,8 @@ namespace Minigames.MatrixBreaching.Matrix.Views
         private ReactiveProperty<bool> _isInitialized = new ReactiveProperty<bool>();
 
         [Inject]
-        private void Construct(GuardMatrix guardMatrix, MatrixBreachingViewConfig viewConfig, DiContainer container, SignalBus signalBus)
+        private void Construct(GuardMatrix guardMatrix, MatrixBreachingViewConfig viewConfig, DiContainer container,
+            SignalBus signalBus)
         {
             _viewConfig = viewConfig;
             _signalBus = signalBus;
@@ -203,7 +206,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
                 .OrderBy(cell => cell.Model.VerticalId).ToList();
         }
         
-        public ValueCellView GeCellView(int horizontalId, int verticalId)
+        public ValueCellView GetCellView(int horizontalId, int verticalId)
         {
             return _cellViews.First(cell => cell.Model.HorizontalId == horizontalId && cell.Model.VerticalId == verticalId);
         }
@@ -212,14 +215,39 @@ namespace Minigames.MatrixBreaching.Matrix.Views
         {
             foreach (var cell in guardMatrix.GetCells())
             {
-                var cellView = _container.InstantiatePrefabForComponent<ValueCellView>(_viewConfig.ValueCellViewTemplate, Holder);
-                cellView.Initialize(cell);
-                cellView.Rescale(_gridRatio);
-                
-                //cell.CellUpdated.Subscribe(_ => UpdateCellViewPos(cellView)).AddTo(cellView);
-                UpdateCellViewPos(cellView, false);
-                _cellViews.Add(cellView);
+                InstantiateCell(cell, false);
             }
+
+            guardMatrix.OnCellReplaced.Subscribe(args => ReplaceCellViews(args))
+                .AddTo(_compositeDisposable);
+        }
+
+        private async void ReplaceCellViews(ReplaceCellsEventArgs args)
+        {
+            if (args.DisposedCell != null)
+            {
+               await DisposeCell(args.DisposedCell);
+            }
+            InstantiateCell(args.NewCell, true);
+        }
+
+        private async UniTask DisposeCell(ICell cell)
+        {
+            var foundView = _cellViews.FirstOrDefault(view => view.Model == cell);
+            if (foundView == null)
+                return;
+            await foundView.HideAnimation();
+            Destroy(foundView.gameObject);
+            _cellViews.Remove(foundView);
+        }
+        private void InstantiateCell(ICell cell, bool animate)
+        {
+            var cellView = _container.InstantiatePrefabForComponent<ValueCellView>(_viewConfig.ValueCellViewTemplate, Holder);
+            cellView.Initialize(cell, animate);
+            cellView.Rescale(_gridRatio);
+
+            UpdateCellViewPos(cellView, false);
+            _cellViews.Add(cellView);
         }
 
         public void UpdateCellViewPos(ValueCellView cellView, bool animate = true)
