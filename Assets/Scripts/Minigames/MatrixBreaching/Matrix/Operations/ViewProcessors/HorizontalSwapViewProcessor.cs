@@ -8,12 +8,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix
+namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 {
     public class HorizontalSwapViewProcessor : IInitializable, IDisposable
     {
         private readonly SwapCommandsProcessor _swapCommandsProcessor;
-        private readonly GuardMatrixPresenter _guardMatrixPresenter;
+        private readonly GuardMatrixPresenter _matrixPresenter;
         
         private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private IDisposable _swapProgressStream;
@@ -21,15 +21,15 @@ namespace Minigames.MatrixBreaching.Matrix
         private List<ValueCellView> _cells = new List<ValueCellView>();
         private Canvas _canvas;
 
-        public HorizontalSwapViewProcessor(SwapCommandsProcessor swapCommandsProcessor, GuardMatrixPresenter guardMatrixPresenter)
+        public HorizontalSwapViewProcessor(SwapCommandsProcessor swapCommandsProcessor, GuardMatrixPresenter matrixPresenter)
         {
             _swapCommandsProcessor = swapCommandsProcessor;
-            _guardMatrixPresenter = guardMatrixPresenter;
+            _matrixPresenter = matrixPresenter;
         }
 
         public void Initialize()
         {
-            _canvas = _guardMatrixPresenter.GetComponentInParent<Canvas>();
+            _canvas = _matrixPresenter.GetComponentInParent<Canvas>();
             
             _swapCommandsProcessor.IsExecutingCommand
                 .Where(isExecuting => isExecuting && _swapCommandsProcessor.RowType == RowType.Horizontal)
@@ -47,17 +47,17 @@ namespace Minigames.MatrixBreaching.Matrix
                 if (_swapCommandsProcessor.IsSwapOccured)
                     _exchanger.ChangeRowIndex(_swapCommandsProcessor.AppliedRowIndex);
                 
-                _guardMatrixPresenter.UpdateExchangerViewPos(_exchanger);
+                _matrixPresenter.UpdateExchangerViewPos(_exchanger);
             }
-            _cells.ForEach(cell=>_guardMatrixPresenter.UpdateCellViewPos(cell));
+            _cells.ForEach(cell=>_matrixPresenter.UpdateCellViewPos(cell));
             _cells.Clear();
         }
 
         private void StartSwap()
         {
             var horizontalId = _swapCommandsProcessor.ApplyingRowIndex;
-            _cells.AddRange(_guardMatrixPresenter.GetHorizontalCellViews(horizontalId));
-            _exchanger = _guardMatrixPresenter.GetHorizontalExchangerView(horizontalId);
+            _cells.AddRange(_matrixPresenter.GetHorizontalCellViews(horizontalId));
+            _exchanger = _matrixPresenter.GetHorizontalExchangerView(horizontalId);
             _swapProgressStream = _exchanger.OnDragObservable
                 .Subscribe(data => OnSwapProgress(data));
             OnSwapProgress(new PointerEventData(EventSystem.current));
@@ -74,14 +74,13 @@ namespace Minigames.MatrixBreaching.Matrix
             var exchangerRect = _exchanger.Transform.rect;
             exchangerRect.position = _exchanger.Transform.anchoredPosition;
             var overlappedRows =
-                _guardMatrixPresenter.HorizontalRowViews
+                _matrixPresenter.HorizontalRowViews
                     .Where(row =>
                     {
                         var rowRect = row.Transform.rect;
                         rowRect.position = row.Transform.anchoredPosition;
-                        return exchangerRect.Overlaps(rowRect);
+                        return row.Index != _exchanger.RowIndex && exchangerRect.Overlaps(rowRect);
                     })
-                    .Where(row=> row.Index != _exchanger.RowIndex)
                     .OrderBy(row => row.Index)
                     .ToList();
 
@@ -105,7 +104,7 @@ namespace Minigames.MatrixBreaching.Matrix
             foreach (var cellView in _cells)
             {
                 cellView.Transform.anchoredPosition = _exchanger.Transform.anchoredPosition + Vector2.right *
-                    ((cellView.Transform.sizeDelta.x + _guardMatrixPresenter.CellsOffset) *
+                    ((cellView.Transform.sizeDelta.x + _matrixPresenter.CellsOffset) *
                      (cellView.Model.HorizontalId + 1));
             }
         }

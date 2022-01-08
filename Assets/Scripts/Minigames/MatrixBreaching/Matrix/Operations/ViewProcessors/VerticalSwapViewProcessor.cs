@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix
+namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 {
     public class VerticalSwapViewProcessor : IInitializable, IDisposable
     {

@@ -1,5 +1,4 @@
-﻿using System;
-using Minigames.MatrixBreaching.Matrix.Models;
+﻿using Minigames.MatrixBreaching.Matrix.Models;
 using UnityEngine;
 using Utils;
 using Zenject;

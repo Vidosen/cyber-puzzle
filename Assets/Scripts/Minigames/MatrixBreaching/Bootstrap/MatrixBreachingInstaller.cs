@@ -3,6 +3,7 @@ using Minigames.MatrixBreaching.Matrix.Commands;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors;
 using Minigames.MatrixBreaching.Matrix.Providers;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using Minigames.MatrixBreaching.Matrix.Views;

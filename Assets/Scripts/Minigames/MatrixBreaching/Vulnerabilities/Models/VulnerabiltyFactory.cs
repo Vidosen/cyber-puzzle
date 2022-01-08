@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Zenject;
+﻿using Zenject;
 
 namespace Minigames.MatrixBreaching.Vulnerabilities.Models
 {

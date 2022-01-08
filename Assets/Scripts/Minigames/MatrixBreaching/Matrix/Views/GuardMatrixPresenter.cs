@@ -326,6 +326,11 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             }
         }
 
+        public bool TryGetCellMoveAnimationTweener(ValueCellView cellView, out Tweener tweerner)
+        {
+            return _cellViewTweeners.TryGetValue(cellView, out tweerner);
+        }
+
         public void OnDestroy()
         {
             _isInitialized.Value = false;

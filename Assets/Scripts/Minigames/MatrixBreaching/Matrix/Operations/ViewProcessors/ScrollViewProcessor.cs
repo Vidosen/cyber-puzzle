@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Views;
 using UniRx;
@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix
+namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 {
     public class ScrollViewProcessor : IInitializable, IDisposable
     {
@@ -22,6 +22,7 @@ namespace Minigames.MatrixBreaching.Matrix
         private IDisposable _scrollStream;
         private float _deltaCellScroll;
         private float _scrollThreshold;
+        private ValueCellView _scrollingCell;
 
         public ScrollViewProcessor(GuardMatrixPresenter matrixPresenter, ScrollCommandsProcessor scrollCommandsProcessor)
         {
@@ -49,7 +50,7 @@ namespace Minigames.MatrixBreaching.Matrix
 
         private void OnStartedScroll()
         {
-            var scrollingCell = _matrixPresenter.GeCellView(_scrollCommandsProcessor.HorizontalIndex,
+            _scrollingCell = _matrixPresenter.GeCellView(_scrollCommandsProcessor.HorizontalIndex,
                 _scrollCommandsProcessor.VerticalIndex);
             switch (_scrollCommandsProcessor.RowType)
             {
@@ -57,20 +58,24 @@ namespace Minigames.MatrixBreaching.Matrix
                     throw new InvalidOperationException();
                 case RowType.Horizontal:
                     _scrollingNeighbourCells.AddRange(_matrixPresenter.GetHorizontalCellViews(_scrollCommandsProcessor.VerticalIndex));
-                    _scrollThreshold = scrollingCell.Transform.sizeDelta.x + _matrixPresenter.CellsOffset;
+                    _scrollThreshold = _scrollingCell.Transform.sizeDelta.x * 0.4f;
                     break;
                 case RowType.Vertical:
                     _scrollingNeighbourCells.AddRange(_matrixPresenter.GetVerticalCellViews(_scrollCommandsProcessor.HorizontalIndex));
-                    _scrollThreshold = scrollingCell.Transform.sizeDelta.y + _matrixPresenter.CellsOffset;
+                    _scrollThreshold = _scrollingCell.Transform.sizeDelta.y * 0.4f;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            _scrollStream = scrollingCell.OnDragObservable.Subscribe(data => OnCellScroll(data));
+            _scrollStream = _scrollingCell.OnDragObservable.Subscribe(data => OnCellScroll(data));
         }
 
         private void OnCellScroll(PointerEventData data)
         {
+            if (_matrixPresenter.TryGetCellMoveAnimationTweener(_scrollingCell, out var tweener) &&
+                tweener.IsActive() && tweener.IsPlaying())
+                return;
+            
             switch (_scrollCommandsProcessor.RowType)
             {
                 case RowType.None:
@@ -84,6 +89,29 @@ namespace Minigames.MatrixBreaching.Matrix
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            CheckScrollAbility();
+            UpdateScrollPositions(data);
+        }
+
+        private void UpdateScrollPositions(PointerEventData eventData)
+        {
+            switch (_scrollCommandsProcessor.RowType)
+            {
+                case RowType.None:
+                    throw new InvalidOperationException();
+                case RowType.Horizontal:
+                    _scrollingNeighbourCells.ForEach(cell => cell.Transform.anchoredPosition += Vector2.right * eventData.delta.x / _canvas.scaleFactor);
+                    break;
+                case RowType.Vertical:
+                    _scrollingNeighbourCells.ForEach(cell => cell.Transform.anchoredPosition += Vector2.up * eventData.delta.y / _canvas.scaleFactor);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void CheckScrollAbility()
+        {
             if (Mathf.Abs(_deltaCellScroll) > _scrollThreshold)
             {
                 var scrollValue = Mathf.RoundToInt(_deltaCellScroll / _scrollThreshold);
@@ -94,6 +122,7 @@ namespace Minigames.MatrixBreaching.Matrix
 
         private void OnFinishedScroll()
         {
+            _scrollingNeighbourCells.ForEach(cell=>_matrixPresenter.UpdateCellViewPos(cell));
             _scrollStream?.Dispose();
             _scrollingNeighbourCells.Clear();
         }
