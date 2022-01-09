@@ -63,8 +63,18 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
             _cells.AddRange(_matrixPresenter.GetVerticalCellViews(horizontalId));
             _exchanger = _matrixPresenter.GetVerticalExchangerView(horizontalId);
             _exchanger.OnDragObservable
-                .Subscribe(data => OnSwapProgress(data)).AddTo(_swapDisposable);
+                .Subscribe(data => OnSwapProgress(data))
+                .AddTo(_swapDisposable);
             OnSwapProgress(new PointerEventData(EventSystem.current));
+            _matrixPresenter.CellViewsReplaced
+                .Subscribe(
+                    args =>
+                    {
+                        if (_cells.Contains(args.DisposedCellView))
+                            _cells.Remove(args.DisposedCellView);
+                        if (!_cells.Contains(args.NewCellView))
+                            _cells.Add(args.NewCellView);
+                    }).AddTo(_swapDisposable);
         }
 
         private void OnSwapProgress(PointerEventData eventData)

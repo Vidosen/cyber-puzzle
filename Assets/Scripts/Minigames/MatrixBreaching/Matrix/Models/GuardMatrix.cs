@@ -79,10 +79,10 @@ namespace Minigames.MatrixBreaching.Matrix.Models
             var newCell = _cellProvider.GetNewCell();
             newCell.Move(cell.HorizontalId, cell.VerticalId);
             
-            _cellReplacedSubject.OnNext(new ReplaceCellsEventArgs(cell, newCell));
             _cells.Remove(cell);
             cell.Dispose();
             _cells.Add(newCell);
+            _cellReplacedSubject.OnNext(new ReplaceCellsEventArgs(cell, newCell));
             return newCell;
         }
 

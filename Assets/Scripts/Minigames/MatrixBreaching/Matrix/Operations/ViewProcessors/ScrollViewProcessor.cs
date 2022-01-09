@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Views;
 using UniRx;
 using UnityEngine;
@@ -18,8 +19,8 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
         private CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private Canvas _canvas;
         
-        private List<ValueCellView> _scrollingNeighbourCells = new List<ValueCellView>();
-        private IDisposable _scrollStream;
+        private List<ValueCellView> _cells = new List<ValueCellView>();
+        private CompositeDisposable _srollDisposable = new CompositeDisposable();
         private float _deltaCellScroll;
         private float _scrollThreshold;
         private ValueCellView _scrollingCell;
@@ -48,17 +49,27 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
                 case RowType.None:
                     throw new InvalidOperationException();
                 case RowType.Horizontal:
-                    _scrollingNeighbourCells.AddRange(_matrixPresenter.GetHorizontalCellViews(_scrollCommandsProcessor.VerticalIndex));
+                    _cells.AddRange(_matrixPresenter.GetHorizontalCellViews(_scrollCommandsProcessor.VerticalIndex));
                     _scrollThreshold = _scrollingCell.Transform.sizeDelta.x * 0.4f;
                     break;
                 case RowType.Vertical:
-                    _scrollingNeighbourCells.AddRange(_matrixPresenter.GetVerticalCellViews(_scrollCommandsProcessor.HorizontalIndex));
+                    _cells.AddRange(_matrixPresenter.GetVerticalCellViews(_scrollCommandsProcessor.HorizontalIndex));
                     _scrollThreshold = _scrollingCell.Transform.sizeDelta.y * 0.4f;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            _scrollStream = _scrollingCell.OnDragObservable.Subscribe(data => OnCellScroll(data));
+
+            _scrollingCell.OnDragObservable.Subscribe(data => OnCellScroll(data)).AddTo(_srollDisposable);
+            _matrixPresenter.CellViewsReplaced
+                .Subscribe(
+                    args =>
+                    {
+                        if (_cells.Contains(args.DisposedCellView))
+                            _cells.Remove(args.DisposedCellView);
+                        if (!_cells.Contains(args.NewCellView))
+                            _cells.Add(args.NewCellView);
+                    }).AddTo(_srollDisposable);
         }
 
         private void OnCellScroll(PointerEventData data)
@@ -91,10 +102,10 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
                 case RowType.None:
                     throw new InvalidOperationException();
                 case RowType.Horizontal:
-                    _scrollingNeighbourCells.ForEach(cell => cell.Transform.anchoredPosition += Vector2.right * eventData.delta.x / _canvas.scaleFactor);
+                    _cells.ForEach(cell => cell.Transform.anchoredPosition += Vector2.right * eventData.delta.x / _canvas.scaleFactor);
                     break;
                 case RowType.Vertical:
-                    _scrollingNeighbourCells.ForEach(cell => cell.Transform.anchoredPosition += Vector2.up * eventData.delta.y / _canvas.scaleFactor);
+                    _cells.ForEach(cell => cell.Transform.anchoredPosition += Vector2.up * eventData.delta.y / _canvas.scaleFactor);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -113,9 +124,9 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 
         private void OnFinishedScroll()
         {
-            _scrollingNeighbourCells.ForEach(cell=>_matrixPresenter.UpdateCellViewPos(cell));
-            _scrollStream?.Dispose();
-            _scrollingNeighbourCells.Clear();
+            _cells.ForEach(cell=>_matrixPresenter.UpdateCellViewPos(cell));
+            _srollDisposable.Clear();
+            _cells.Clear();
         }
         
 

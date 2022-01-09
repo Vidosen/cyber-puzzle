@@ -87,6 +87,7 @@ namespace Minigames.MatrixBreaching.Matrix
                                $" but tried to finish with {index} index!");
                 return;
             }
+            _isExecutingCommand.Value = false;
             if (!IsSwapOccured)
             {
                 Debug.Log("Swap cancelled");
@@ -96,8 +97,6 @@ namespace Minigames.MatrixBreaching.Matrix
                 _guardMatrix.Log();
                 _signalBus.Fire<MatrixOperationsSignals.OperationApplied>();
             }
-            
-            _isExecutingCommand.Value = false;
             ResetState();
             
         }

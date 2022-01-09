@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Views;
 using UniRx;
 using UnityEngine;
@@ -14,7 +15,6 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
     {
         private readonly SwapCommandsProcessor _swapCommandsProcessor;
         private readonly GuardMatrixPresenter _matrixPresenter;
-        
         private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private readonly CompositeDisposable _swapDisposable = new CompositeDisposable();
         private GuardMatrixExchangerView _exchanger;
@@ -60,8 +60,19 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
             _cells.AddRange(_matrixPresenter.GetHorizontalCellViews(horizontalId));
             _exchanger = _matrixPresenter.GetHorizontalExchangerView(horizontalId);
             _exchanger.OnDragObservable
-                .Subscribe(data => OnSwapProgress(data)).AddTo(_swapDisposable);
+                .Subscribe(data => OnSwapProgress(data))
+                .AddTo(_swapDisposable);
             OnSwapProgress(new PointerEventData(EventSystem.current));
+            
+            _matrixPresenter.CellViewsReplaced
+                .Subscribe(
+                    args =>
+                    {
+                        if (_cells.Contains(args.DisposedCellView))
+                            _cells.Remove(args.DisposedCellView);
+                        if (!_cells.Contains(args.NewCellView))
+                            _cells.Add(args.NewCellView);
+                    }).AddTo(_swapDisposable);
         }
 
         private void OnSwapProgress(PointerEventData eventData)

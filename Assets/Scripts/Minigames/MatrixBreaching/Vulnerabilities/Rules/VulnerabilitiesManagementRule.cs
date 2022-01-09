@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using System.Linq;
+using Cysharp.Threading.Tasks;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using Minigames.MatrixBreaching.Vulnerabilities.Services;
@@ -28,7 +29,10 @@ namespace Minigames.MatrixBreaching.Vulnerabilities.Rules
                 await UniTask.WaitUntil(() => _guardMatrix.IsInitialized);
             
             _vulnerabiltyInventory.ModelRemoved.Subscribe(removeEvent =>
-                _vulnerabilityService.CreateNewVulnerability(removeEvent.Value.SequenceSize));
+            {
+                _vulnerabilityService.CreateNewVulnerability(removeEvent.Value.SequenceSize);
+                RemoveCompletedVulnerabilities();
+            });
             _signalBus.Subscribe<MatrixOperationsSignals.OperationApplied>(RemoveCompletedVulnerabilities);
             _vulnerabilityService.CreateNewVulnerability(3);
             _vulnerabilityService.CreateNewVulnerability(4);
@@ -41,9 +45,12 @@ namespace Minigames.MatrixBreaching.Vulnerabilities.Rules
         {
             if (_vulnerabilityService.FindCompletedVulnerabilities(out var foundVulnerabilites))
             {
+                foreach (var valueCell in foundVulnerabilites.SelectMany(model => model.MatchedSequence).Distinct())
+                {
+                    _guardMatrix.ReplaceCell(valueCell);
+                }
                 foreach (var model in foundVulnerabilites)
                 {
-                    model.MatchedSequence.ForEach(cell=>_guardMatrix.ReplaceCell(cell));
                     _vulnerabiltyInventory.Remove(model);
                 }
             }

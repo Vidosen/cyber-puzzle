@@ -28,6 +28,14 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         public virtual void Dispose()
         {
             _signalBus.Fire(new MatrixSignals.CellDisposed(this));
+            _positionChangedSubject.Dispose();
+            HorizontalId = -1;
+            VerticalId = -1;
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} ({HorizontalId}, {VerticalId}) Hash: {GetHashCode()}";
         }
     }
 }

@@ -31,6 +31,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
         public List<GuardMatrixExchangerView> HorizontalExchangerViews => _horizontalExchangerViews.ToList();
         public List<GuardMatrixExchangerView> VerticalExchangerViews => _verticalExchangerViews.ToList();
         public List<ValueCellView> CellViews => _cellViews.ToList();
+        public IObservable<ReplaceCellViewsEventArgs> CellViewsReplaced => _cellViewsReplacedSubject; 
 
         public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
 
@@ -54,6 +55,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
         private SignalBus _signalBus;
         private MatrixBreachingViewConfig _viewConfig;
         private ReactiveProperty<bool> _isInitialized = new ReactiveProperty<bool>();
+        private Subject<ReplaceCellViewsEventArgs> _cellViewsReplacedSubject = new Subject<ReplaceCellViewsEventArgs>();
 
         [Inject]
         private void Construct(GuardMatrix guardMatrix, MatrixBreachingViewConfig viewConfig, DiContainer container,
@@ -224,23 +226,27 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         private async void ReplaceCellViews(ReplaceCellsEventArgs args)
         {
-            if (args.DisposedCell != null)
+            var disposeCellView = await DisposeCell(args.DisposedCell);
+            if (args.NewCell.VerticalId == -1 || args.NewCell.VerticalId == -1)
             {
-               await DisposeCell(args.DisposedCell);
+                Debug.LogWarning($"View for {args.NewCell} wasn't created because it probably already has been disposed!");
+                return;
             }
-            InstantiateCell(args.NewCell, true);
+            var newCellView = InstantiateCell(args.NewCell, true);
+            _cellViewsReplacedSubject.OnNext(new ReplaceCellViewsEventArgs(disposeCellView, newCellView));
         }
 
-        private async UniTask DisposeCell(ICell cell)
+        private async UniTask<ValueCellView> DisposeCell(ICell cell)
         {
             var foundView = _cellViews.FirstOrDefault(view => view.Model == cell);
             if (foundView == null)
-                return;
+                return null;
             await foundView.HideAnimation();
             Destroy(foundView.gameObject);
             _cellViews.Remove(foundView);
+            return foundView;
         }
-        private void InstantiateCell(ICell cell, bool animate)
+        private ValueCellView InstantiateCell(ICell cell, bool animate)
         {
             var cellView = _container.InstantiatePrefabForComponent<ValueCellView>(_viewConfig.ValueCellViewTemplate, Holder);
             cellView.Initialize(cell, animate);
@@ -248,14 +254,20 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
             UpdateCellViewPos(cellView, false);
             _cellViews.Add(cellView);
+            return cellView;
         }
 
         public void UpdateCellViewPos(ValueCellView cellView, bool animate = true)
         {
             var model = cellView.Model;
-            var horizontalView = _horizontalRowViews.First(rowView => rowView.Index.Equals(model.VerticalId));
-            var verticalView = _verticalRowViews.First(rowView => rowView.Index.Equals(model.HorizontalId));
-            
+            var horizontalView = _horizontalRowViews.FirstOrDefault(rowView => rowView.Index == model.VerticalId);
+            var verticalView = _verticalRowViews.FirstOrDefault(rowView => rowView.Index == model.HorizontalId);
+
+            if (horizontalView == null || verticalView == null)
+            {
+                Debug.LogError($"{cellView.Model} is not valid!");
+                return;
+            }
             var horizRowPos = horizontalView.Transform.anchoredPosition;
             var vertRowPos = verticalView.Transform.anchoredPosition;
             var endPos = new Vector2(vertRowPos.x, horizRowPos.y);

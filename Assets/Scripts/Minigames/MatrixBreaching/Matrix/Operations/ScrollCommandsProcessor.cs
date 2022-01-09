@@ -88,6 +88,7 @@ namespace Minigames.MatrixBreaching.Matrix
                                $" but tried to finish with ({cellHorizontalIndex}, {cellVerticalIndex}) indices!");
                 return;
             }
+            _isExecutingCommand.Value = false;
             if (!IsScrollOccured)
             {
                 Debug.Log("Swap cancelled");
@@ -97,8 +98,6 @@ namespace Minigames.MatrixBreaching.Matrix
                 _guardMatrix.Log();
                 _signalBus.Fire<MatrixOperationsSignals.OperationApplied>();
             }
-            
-            _isExecutingCommand.Value = false;
             ResetState();
         }
 
