@@ -1,5 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Models.Cells;
 using UnityEngine;
 
 namespace Utils
@@ -12,11 +16,28 @@ namespace Utils
             for (int y = 0; y < guardMatrix.Size.y; y++)
             {
                 var row = guardMatrix.GetHorizontalCells(y);
-                var rowLogLine = row.Select(cell => cell as ValueCell).Where(cell => cell != null)
-                    .Select(cell => (int)cell.Value + "\t").Aggregate((one, two) => one + two);
+                var rowLogLine = row
+                    .Select(cell => GetCellLog(cell) + "\t").Aggregate((one, two) => one + two);
                 Debug.Log(rowLogLine);
             }
             Debug.Log("== Matrix :: End ==");
+        }
+
+        private static string GetCellLog(ICell cell)
+        {
+            switch (cell.CellType)
+            {
+                case CellType.Value:
+                case CellType.Glitch:
+                    var valueCell = (ValueCell)cell;
+                    return ((int)valueCell.Value).ToString();
+                case CellType.Shuffle:
+                    return "-S-";
+                case CellType.Lock:
+                    return "-L-";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

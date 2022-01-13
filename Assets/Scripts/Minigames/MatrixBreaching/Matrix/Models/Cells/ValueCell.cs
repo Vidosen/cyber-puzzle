@@ -1,14 +1,12 @@
 ﻿using Minigames.MatrixBreaching.Matrix.Data;
-using UniRx;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix.Models
+namespace Minigames.MatrixBreaching.Matrix.Models.Cells
 {
     public class ValueCell : BaseCell
     {
-        private ReactiveProperty<bool> _isLit = new ReactiveProperty<bool>();
-        public CellValueType Value { get; }
-        public IReadOnlyReactiveProperty<bool> IsLit => _isLit;
+        public CellValueType Value { get; protected set; }
+        public override CellType CellType => CellType.Value;
 
         public ValueCell(CellValueType value, SignalBus signalBus) : base(signalBus)
         {

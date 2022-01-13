@@ -13,5 +13,15 @@ namespace Minigames.MatrixBreaching.Matrix.Signals
                 DisposedCell = cell;
             }
         }
+        
+        public class CellMoved
+        {
+            public ICell Cell { get; }
+
+            public CellMoved(ICell cell)
+            {
+                Cell = cell;
+            }
+        }
     }
 }

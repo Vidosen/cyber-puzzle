@@ -1,35 +1,30 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
-using Minigames.MatrixBreaching.Matrix.Models;
-using TMPro;
+using Minigames.MatrixBreaching.Matrix.Operations;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Utils;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix.Views
+namespace Minigames.MatrixBreaching.Matrix.Views.Cells
 {
-    public class ValueCellView : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
+        public abstract class BaseCellView : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
     {
-        [SerializeField] private TextMeshProUGUI _valueText;
         public RectTransform Transform => _transform == null ? GetComponent<RectTransform>() : _transform;
-        public ICell Model => _cellModel;
+        public abstract ICell Model { get; }
 
         public IReadOnlyReactiveProperty<bool> IsMoving => _isMoving;
         public IObservable<PointerEventData> OnDragObservable => _onDragSubject;
         public Vector2 UnscaledDeltaMove { get; private set; }
-
-        private ValueCell _cellModel;
+        
         private RectTransform _transform;
         private ReactiveProperty<bool> _isMoving = new ReactiveProperty<bool>();
         private Subject<PointerEventData> _onDragSubject = new Subject<PointerEventData>();
         private ScrollCommandsProcessor _scrollCommandsProcessor;
-        private Canvas _canvas;
+        protected Canvas _canvas;
 
         [Inject]
         private void Construct(ScrollCommandsProcessor scrollCommandsProcessor)
@@ -42,26 +37,14 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             _canvas = GetComponentInParent<Canvas>();
             _transform = GetComponent<RectTransform>();
         }
-        public void Initialize(ICell cellModel, bool animate)
-        {
-            _cellModel = cellModel as ValueCell;
-            UpdateView();
-            if (animate)
-            {
-                _transform.DOScale(Vector3.one, 0.25f).From(Vector3.zero).SetEase(Ease.OutQuad);
-            }
-        }
+
+        public abstract void Initialize(ICell cellModel, bool animateShow);
         public void Rescale(float scaleFactor)
         {
             if (scaleFactor > 0 && Transform != null)
             {
                 Transform.sizeDelta = Transform.sizeDelta * scaleFactor;   
             }
-        }
-
-        private void UpdateView()
-        {
-            _valueText.text = _cellModel.Value.ToTextString();
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -71,7 +54,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            _scrollCommandsProcessor.FinishScroll(_cellModel.HorizontalId, _cellModel.VerticalId);
+            _scrollCommandsProcessor.FinishScroll(Model.HorizontalId, Model.VerticalId);
             UnscaledDeltaMove = Vector2.zero;
         }
 
@@ -101,10 +84,19 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             }
         }
         
-        public async UniTask HideAnimation()
+        public virtual async UniTask HideAnimation()
         {
             var destroyEffect = _transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.OutQuad);
             await destroyEffect.AsyncWaitForCompletion();
         }
     }
+        public abstract class BaseCellView<TCell> : BaseCellView where TCell : ICell
+        {
+            public override ICell Model => _concrecteModel;
+            protected TCell _concrecteModel;
+            public override void Initialize(ICell cellModel, bool animateShow)
+            {
+                _concrecteModel = (TCell)cellModel;
+            }
+        }
 }

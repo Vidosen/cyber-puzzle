@@ -4,6 +4,7 @@ using System.Linq;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Views;
+using Minigames.MatrixBreaching.Matrix.Views.Cells;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,7 +21,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
         private readonly CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private readonly CompositeDisposable _swapDisposable = new CompositeDisposable();
         private GuardMatrixExchangerView _exchanger;
-        private List<ValueCellView> _cells = new List<ValueCellView>();
+        private List<BaseCellView> _cells = new List<BaseCellView>();
         private Canvas _canvas;
 
         public VerticalSwapViewProcessor(SwapCommandsProcessor swapCommandsProcessor, GuardMatrixPresenter matrixPresenter, GuardMatrix matrix)

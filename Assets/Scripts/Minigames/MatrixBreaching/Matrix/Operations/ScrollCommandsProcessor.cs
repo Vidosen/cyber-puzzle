@@ -1,15 +1,15 @@
 ﻿using System;
-using Minigames.MatrixBreaching.Matrix.Commands;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Operations.Commands;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using UniRx;
 using UnityEngine;
 using Utils;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix
+namespace Minigames.MatrixBreaching.Matrix.Operations
 {
     public class ScrollCommandsProcessor
     {

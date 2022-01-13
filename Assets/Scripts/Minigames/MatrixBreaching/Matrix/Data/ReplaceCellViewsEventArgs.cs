@@ -1,16 +1,17 @@
 ﻿using Minigames.MatrixBreaching.Matrix.Views;
+using Minigames.MatrixBreaching.Matrix.Views.Cells;
 
 namespace Minigames.MatrixBreaching.Matrix.Data
 {
     public struct ReplaceCellViewsEventArgs
     {
-        public ReplaceCellViewsEventArgs(ValueCellView disposedCellView, ValueCellView newCellView)
+        public ReplaceCellViewsEventArgs(BaseCellView disposedCellView, BaseCellView newCellView)
         {
             DisposedCellView = disposedCellView;
             NewCellView = newCellView;
         }
 
-        public ValueCellView DisposedCellView { get; }
-        public ValueCellView NewCellView { get; }
+        public BaseCellView DisposedCellView { get; }
+        public BaseCellView NewCellView { get; }
     }
 }

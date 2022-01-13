@@ -1,19 +1,29 @@
-﻿
-using System;
+﻿using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using UniRx;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix.Models
+namespace Minigames.MatrixBreaching.Matrix.Models.Cells
 {
     public abstract class BaseCell : ICell
     {
         private readonly SignalBus _signalBus;
-        public IObservable<Unit> CellPositionChanged => _positionChangedSubject;
-        protected Subject<Unit> _positionChangedSubject = new Subject<Unit>();
+        private ReactiveProperty<float> _lockTimeLeft = new ReactiveProperty<float>();
         public int HorizontalId { get; protected set; }
         public int VerticalId { get; protected set; }
+        public IReadOnlyReactiveProperty<float> LockTimeLeft => _lockTimeLeft;
+        public IReadOnlyReactiveProperty<bool> IsLocked => _lockTimeLeft.Select(timeLeft => timeLeft > 0).ToReadOnlyReactiveProperty();
+        public void Lock(float lockTime)
+        {
+            _lockTimeLeft.Value = lockTime;
+        }
+        public void Unlock()
+        {
+            _lockTimeLeft.Value = 0;
+        }
+
+        public abstract CellType CellType { get; }
         public BaseCell(SignalBus signalBus)
         {
             _signalBus = signalBus;
@@ -23,12 +33,11 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         {
             HorizontalId = horizontal;
             VerticalId = vertical;
-            _positionChangedSubject.OnNext(Unit.Default);
+            _signalBus.Fire(new MatrixSignals.CellMoved(this));
         }
         public virtual void Dispose()
         {
             _signalBus.Fire(new MatrixSignals.CellDisposed(this));
-            _positionChangedSubject.Dispose();
             HorizontalId = -1;
             VerticalId = -1;
         }

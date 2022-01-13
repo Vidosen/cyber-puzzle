@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Minigames.MatrixBreaching.Matrix.Commands;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Models.Cells;
+using Minigames.MatrixBreaching.Matrix.Operations.Commands;
 using Minigames.MatrixBreaching.Matrix.Providers;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using NUnit.Framework;
@@ -24,6 +25,7 @@ namespace Editor.Tests
             Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.SwapOperationOccured>().OptionalSubscriber();
             Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.ScrollOperationOccured>().OptionalSubscriber();
             Container.DeclareSignal<MatrixSignals.CellDisposed>().OptionalSubscriber();
+            Container.DeclareSignal<MatrixSignals.CellMoved>().OptionalSubscriber();
             Container.Bind<GuardMatrix>().ToSelf().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<MockCellProvider>().AsSingle().NonLazy();
             

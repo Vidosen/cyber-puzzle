@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
-using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Models.Cells;
 using Utils;
 using Zenject;
 

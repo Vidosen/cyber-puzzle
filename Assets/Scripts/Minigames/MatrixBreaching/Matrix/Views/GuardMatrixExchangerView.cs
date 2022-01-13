@@ -1,5 +1,6 @@
 ﻿using System;
 using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Operations;
 using TMPro;
 using UniRx;
 using UnityEngine;

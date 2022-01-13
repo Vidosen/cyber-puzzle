@@ -9,6 +9,7 @@ using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Signals;
+using Minigames.MatrixBreaching.Matrix.Views.Cells;
 using UniRx;
 using UnityEngine;
 using Utils;
@@ -30,12 +31,12 @@ namespace Minigames.MatrixBreaching.Matrix.Views
         public List<GuardMatrixRowView> VerticalRowViews => _verticalRowViews.ToList();
         public List<GuardMatrixExchangerView> HorizontalExchangerViews => _horizontalExchangerViews.ToList();
         public List<GuardMatrixExchangerView> VerticalExchangerViews => _verticalExchangerViews.ToList();
-        public List<ValueCellView> CellViews => _cellViews.ToList();
+        public List<BaseCellView> CellViews => _cellViews.ToList();
         public IObservable<ReplaceCellViewsEventArgs> CellViewsReplaced => _cellViewsReplacedSubject; 
 
         public IReadOnlyReactiveProperty<bool> IsInitialized => _isInitialized;
 
-        private Dictionary<ValueCellView, Tweener> _cellViewTweeners = new Dictionary<ValueCellView, Tweener>();
+        private Dictionary<BaseCellView, Tweener> _cellViewTweeners = new Dictionary<BaseCellView, Tweener>();
         private Dictionary<GuardMatrixExchangerView, Tweener> _exchangerViewTweeners = new Dictionary<GuardMatrixExchangerView, Tweener>();
 
         private RectTransform _transform;
@@ -46,7 +47,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
         private List<GuardMatrixExchangerView> _horizontalExchangerViews = new List<GuardMatrixExchangerView>();
         private List<GuardMatrixExchangerView> _verticalExchangerViews = new List<GuardMatrixExchangerView>();
         
-        private List<ValueCellView> _cellViews = new List<ValueCellView>();
+        private List<BaseCellView> _cellViews = new List<BaseCellView>();
         private CompositeDisposable _compositeDisposable = new CompositeDisposable();
 
         private GuardMatrix _guardMatrix;
@@ -101,7 +102,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         private void OnScrollOccured(MatrixOperationsSignals.ScrollOperationOccured signal)
         {
-            var cellViews = new List<ValueCellView>();
+            var cellViews = new List<BaseCellView>();
             switch (signal.RowType)
             {
                 case RowType.None:
@@ -120,7 +121,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         private void OnSwapOccured(MatrixOperationsSignals.SwapOperationOccured signal)
         {
-            var cellViews = new List<ValueCellView>();
+            var cellViews = new List<BaseCellView>();
             GuardMatrixExchangerView applyingExchangerView;
             GuardMatrixExchangerView appliedExchangerView;
             switch (signal.RowType)
@@ -197,18 +198,18 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             return _verticalRowViews.First(row => row.Index.Equals(horizontalId));
         }
         
-        public IList<ValueCellView> GetHorizontalCellViews(int verticalId)
+        public IList<BaseCellView> GetHorizontalCellViews(int verticalId)
         {
             return _cellViews.Where(cell => cell.Model.VerticalId.Equals(verticalId))
                 .OrderBy(cell => cell.Model.HorizontalId).ToList();
         }
-        public IList<ValueCellView> GetVerticalCellViews(int horizontalId)
+        public IList<BaseCellView> GetVerticalCellViews(int horizontalId)
         {
             return _cellViews.Where(cell => cell.Model.HorizontalId.Equals(horizontalId))
                 .OrderBy(cell => cell.Model.VerticalId).ToList();
         }
         
-        public ValueCellView GetCellView(int horizontalId, int verticalId)
+        public BaseCellView GetCellView(int horizontalId, int verticalId)
         {
             return _cellViews.First(cell => cell.Model.HorizontalId == horizontalId && cell.Model.VerticalId == verticalId);
         }
@@ -236,7 +237,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             _cellViewsReplacedSubject.OnNext(new ReplaceCellViewsEventArgs(disposeCellView, newCellView));
         }
 
-        private async UniTask<ValueCellView> DisposeCell(ICell cell)
+        private async UniTask<BaseCellView> DisposeCell(ICell cell)
         {
             var foundView = _cellViews.FirstOrDefault(view => view.Model == cell);
             if (foundView == null)
@@ -246,9 +247,9 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             _cellViews.Remove(foundView);
             return foundView;
         }
-        private ValueCellView InstantiateCell(ICell cell, bool animate)
+        private BaseCellView InstantiateCell(ICell cell, bool animate)
         {
-            var cellView = _container.InstantiatePrefabForComponent<ValueCellView>(_viewConfig.ValueCellViewTemplate, Holder);
+            var cellView = _container.InstantiatePrefabForComponent<BaseCellView>(_viewConfig.GetCellViewTemplate(cell.CellType), Holder);
             cellView.Initialize(cell, animate);
             cellView.Rescale(_gridRatio);
 
@@ -257,7 +258,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             return cellView;
         }
 
-        public void UpdateCellViewPos(ValueCellView cellView, bool animate = true)
+        public void UpdateCellViewPos(BaseCellView cellView, bool animate = true)
         {
             var model = cellView.Model;
             var horizontalView = _horizontalRowViews.FirstOrDefault(rowView => rowView.Index == model.VerticalId);
@@ -336,9 +337,8 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         private void RecalculateGuradMatrixRect(int columns, int rows, RectTransform holder)
         {
-            var cellSize = _viewConfig.ValueCellViewTemplate.Transform.sizeDelta;
             var unscaledGridSize =
-                RectTransformHelper.GetGridContainer(cellSize, rows + 1, columns + 1,
+                RectTransformHelper.GetGridContainer(_viewConfig.GenericCellSize, rows + 1, columns + 1,
                     _offset) + new Vector2(_rowsOffset, _rowsOffset);
             _gridRatio = RectTransformHelper.GetGridContainerRatio(holder, unscaledGridSize);
             Transform.sizeDelta = unscaledGridSize * _gridRatio;
@@ -366,7 +366,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             }
         }
 
-        public bool TryGetCellMoveAnimationTweener(ValueCellView cellView, out Tweener tweerner)
+        public bool TryGetCellMoveAnimationTweener(BaseCellView cellView, out Tweener tweerner)
         {
             return _cellViewTweeners.TryGetValue(cellView, out tweerner);
         }

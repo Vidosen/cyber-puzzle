@@ -5,6 +5,7 @@ using DG.Tweening;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Views;
+using Minigames.MatrixBreaching.Matrix.Views.Cells;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,11 +20,11 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
         private CompositeDisposable _compositeDisposable = new CompositeDisposable();
         private Canvas _canvas;
         
-        private List<ValueCellView> _cells = new List<ValueCellView>();
+        private List<BaseCellView> _cells = new List<BaseCellView>();
         private CompositeDisposable _srollDisposable = new CompositeDisposable();
         private float _deltaCellScroll;
         private float _scrollThreshold;
-        private ValueCellView _scrollingCell;
+        private BaseCellView _scrollingCell;
 
         public ScrollViewProcessor(GuardMatrixPresenter matrixPresenter, ScrollCommandsProcessor scrollCommandsProcessor)
         {

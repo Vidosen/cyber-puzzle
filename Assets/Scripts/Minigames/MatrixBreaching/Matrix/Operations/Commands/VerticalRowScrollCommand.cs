@@ -5,7 +5,7 @@ using Minigames.MatrixBreaching.Matrix.Signals;
 using UnityEngine;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix.Commands
+namespace Minigames.MatrixBreaching.Matrix.Operations.Commands
 {
     public class VerticalRowScrollCommand : BaseRowScrollCommand
     {

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8225311a93434535b942f1973368db14, type: 3}
   m_Name: MatrixBreachingViewConfig
   m_EditorClassIdentifier: 
+  _genericCellSize: {x: 120, y: 120}
   _verticalRowViewTemplate: {fileID: 8783695294505643146, guid: 5924d6e7d1f55724da61171b8b96b3e0,
     type: 3}
   _horizontalRowViewTemplate: {fileID: 8783695294505643146, guid: bd4bc2ad311e5b249876313c9e237214,
@@ -20,8 +21,15 @@ MonoBehaviour:
     type: 3}
   _horizontalExchangerViewTemplate: {fileID: 8540835288288645368, guid: 539a38ff591b29548828f632269cdbdd,
     type: 3}
-  _valueCellViewTemplate: {fileID: 7563966118946652144, guid: 19827a5f71f27e041b42a9134140d4ff,
-    type: 3}
+  _cellViewTemplates:
+  - Type: 0
+    View: {fileID: 5063649934570652543, guid: 19827a5f71f27e041b42a9134140d4ff, type: 3}
+  - Type: 1
+    View: {fileID: 2973201899565573335, guid: a1dbece26bf12b0488c7e668ac8879a9, type: 3}
+  - Type: 2
+    View: {fileID: 4805717855616409414, guid: ab1403b12da367145806b96cf735d0dd, type: 3}
+  - Type: 3
+    View: {fileID: 7097394222432306736, guid: 58bd79d7cbbc04a4da80fb2c216de764, type: 3}
   _vulnerabilityCellViewTemplate: {fileID: 8410818666897769199, guid: 6adc9ea7c98755f40aa4089b1771ed9f,
     type: 3}
   _vulnerabilityViewTemplate: {fileID: 8139749099043802147, guid: 07508541c78d7cf43afbccd035567fe9,

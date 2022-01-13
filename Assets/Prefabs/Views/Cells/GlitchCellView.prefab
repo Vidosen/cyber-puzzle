@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 156353666666107189}
   - component: {fileID: 156353666666107144}
   - component: {fileID: 156353666666107191}
-  - component: {fileID: 7563966118946652144}
+  - component: {fileID: 2973201899565573335}
   m_Layer: 5
-  m_Name: ValueCellView
+  m_Name: GlitchCellView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,8 +59,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 48386f0d8f5a1de48a9eb83a0dce54f2, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.5019608}
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.5330188, b: 0.8954519, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
---- !u!114 &7563966118946652144
+--- !u!114 &2973201899565573335
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,7 +86,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 156353666666107188}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fef57dc59154ea1a38bee0ef362f6f3, type: 3}
+  m_Script: {fileID: 11500000, guid: dbc80c079d5a4fe6b3a43fa40b4d1192, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _valueText: {fileID: 158114184045292965}

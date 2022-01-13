@@ -1,8 +1,9 @@
 ﻿using Minigames.MatrixBreaching.Matrix;
-using Minigames.MatrixBreaching.Matrix.Commands;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Operations;
+using Minigames.MatrixBreaching.Matrix.Operations.Commands;
 using Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors;
 using Minigames.MatrixBreaching.Matrix.Providers;
 using Minigames.MatrixBreaching.Matrix.Signals;
@@ -24,10 +25,10 @@ namespace Minigames.MatrixBreaching.Bootstrap
         public override void InstallBindings()
         {
             Container.Bind<GuardMatrix>().ToSelf().AsSingle().NonLazy();
-            Container.Bind<ICellProvider>().To<RandomValueCellProvider>().AsSingle()
+            Container.Bind<ICellProvider>().To<RandomCellProvider>().AsSingle()
                 .OnInstantiated((context, obj) =>
                 {
-                    if (obj is RandomValueCellProvider randomValueCellProvider)
+                    if (obj is RandomCellProvider randomValueCellProvider)
                         randomValueCellProvider.SetRandomSeed(RandomValueMatrxSeed);
                 });
             
@@ -46,6 +47,7 @@ namespace Minigames.MatrixBreaching.Bootstrap
             Container.DeclareSignalWithInterfaces<MatrixOperationsSignals.ScrollOperationOccured>();
             Container.DeclareSignal<MatrixOperationsSignals.OperationApplied>();
             Container.DeclareSignal<MatrixSignals.CellDisposed>().OptionalSubscriber();
+            Container.DeclareSignal<MatrixSignals.CellMoved>().OptionalSubscriber();
 
             Container.BindFactory<string, VulnerabilityModel, VulnerabiltyFactory>().FromNew();
             Container.Bind<VulnerabiltyInventory>().AsSingle();
