@@ -1,4 +1,7 @@
-﻿using Minigames.MatrixBreaching.Matrix.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Interfaces;
 
 namespace Minigames.MatrixBreaching.Matrix.Signals
 {
@@ -37,6 +40,13 @@ namespace Minigames.MatrixBreaching.Matrix.Signals
         }
 
         public class OperationApplied
-        { }
+        {
+            public List<ICell> InvolvedCells { get; }
+
+            public OperationApplied(params ICell[] involvedCells)
+            {
+                InvolvedCells = involvedCells.ToList();
+            }
+        }
     }
 }

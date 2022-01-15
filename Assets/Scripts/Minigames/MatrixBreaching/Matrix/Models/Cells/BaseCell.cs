@@ -38,8 +38,6 @@ namespace Minigames.MatrixBreaching.Matrix.Models.Cells
         public virtual void Dispose()
         {
             _signalBus.Fire(new MatrixSignals.CellDisposed(this));
-            HorizontalId = -1;
-            VerticalId = -1;
         }
 
         public override string ToString()

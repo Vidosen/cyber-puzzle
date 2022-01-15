@@ -1,4 +1,7 @@
-﻿using Minigames.MatrixBreaching.Matrix.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Operations.Commands;
@@ -95,7 +98,24 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
             else
             {
                 _guardMatrix.Log();
-                _signalBus.Fire<MatrixOperationsSignals.OperationApplied>();
+                IList<ICell> applyingCells;
+                IList<ICell> appliedCells;
+                switch (RowType)
+                {
+                    case RowType.None:
+                        throw new InvalidOperationException();
+                    case RowType.Horizontal:
+                        applyingCells = _guardMatrix.GetHorizontalCells(ApplyingRowIndex);
+                        appliedCells = _guardMatrix.GetHorizontalCells(AppliedRowIndex);
+                        break;
+                    case RowType.Vertical:
+                        applyingCells = _guardMatrix.GetVerticalCells(ApplyingRowIndex);
+                        appliedCells = _guardMatrix.GetVerticalCells(AppliedRowIndex);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                _signalBus.Fire(new MatrixOperationsSignals.OperationApplied(applyingCells.Concat(appliedCells).ToArray()));
             }
             ResetState();
             

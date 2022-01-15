@@ -61,6 +61,19 @@ namespace Minigames.MatrixBreaching.Bootstrap
 
             Container.BindInterfacesTo<VulnerabilitiesManagementRule>().AsSingle();
             Container.BindInterfacesTo<CheckVulnerabilitiesRule>().AsSingle();
+            
+            Container.BindInterfacesTo<PostOperationGlitchRule>().AsSingle()
+                .OnInstantiated((context, obj) =>
+                {
+                    if (obj is PostOperationGlitchRule postOperationShuffle)
+                        postOperationShuffle.SetRandomSeed(RandomValueMatrxSeed);
+                });
+            Container.BindInterfacesTo<PostOperationShuffleRule>().AsSingle()
+                .OnInstantiated((context, obj) =>
+            {
+                if (obj is PostOperationShuffleRule postOperationShuffle)
+                    postOperationShuffle.SetRandomSeed(RandomValueMatrxSeed);
+            });
         }
     }
 }

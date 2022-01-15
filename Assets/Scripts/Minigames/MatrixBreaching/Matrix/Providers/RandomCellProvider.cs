@@ -35,18 +35,13 @@ namespace Minigames.MatrixBreaching.Matrix.Providers
         public ICell GetNewCell()
         {
             var cellType = CoreExtensions.GetRandomEnum<CellType>(_random);
+            var cellValue = CoreExtensions.GetRandomEnum<CellValueType>(_random);
             switch (cellType)
             {
                 case CellType.Value:
-                {
-                    var cellValue = CoreExtensions.GetRandomEnum<CellValueType>(_random);
                     return _container.Instantiate<ValueCell>(new object[] { cellValue });
-                }
                 case CellType.Glitch:
-                {
-                    var cellValue = CoreExtensions.GetRandomEnum<CellValueType>(_random);
                     return _container.Instantiate<GlitchCell>(new object[] { cellValue });
-                }
                 case CellType.Shuffle:
                     return _container.Instantiate<ShuffleCell>();
                 case CellType.Lock:

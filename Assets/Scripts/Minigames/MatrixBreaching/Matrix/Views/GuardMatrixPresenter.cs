@@ -211,7 +211,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views
         
         public BaseCellView GetCellView(int horizontalId, int verticalId)
         {
-            return _cellViews.First(cell => cell.Model.HorizontalId == horizontalId && cell.Model.VerticalId == verticalId);
+            return _cellViews.FirstOrDefault(cell => cell.Model.HorizontalId == horizontalId && cell.Model.VerticalId == verticalId);
         }
 
         private void InstantiateCells(GuardMatrix guardMatrix)
@@ -227,13 +227,13 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         private async void ReplaceCellViews(ReplaceCellsEventArgs args)
         {
+            var newCellView = InstantiateCell(args.NewCell, true);
             var disposeCellView = await DisposeCell(args.DisposedCell);
             if (args.NewCell.VerticalId == -1 || args.NewCell.VerticalId == -1)
             {
                 Debug.LogWarning($"View for {args.NewCell} wasn't created because it probably already has been disposed!");
                 return;
             }
-            var newCellView = InstantiateCell(args.NewCell, true);
             _cellViewsReplacedSubject.OnNext(new ReplaceCellViewsEventArgs(disposeCellView, newCellView));
         }
 
@@ -242,9 +242,9 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             var foundView = _cellViews.FirstOrDefault(view => view.Model == cell);
             if (foundView == null)
                 return null;
+            _cellViews.Remove(foundView);
             await foundView.HideAnimation();
             Destroy(foundView.gameObject);
-            _cellViews.Remove(foundView);
             return foundView;
         }
         private BaseCellView InstantiateCell(ICell cell, bool animate)
