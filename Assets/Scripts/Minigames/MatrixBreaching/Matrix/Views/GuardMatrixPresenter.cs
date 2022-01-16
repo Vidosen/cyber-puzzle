@@ -227,13 +227,14 @@ namespace Minigames.MatrixBreaching.Matrix.Views
 
         private async void ReplaceCellViews(ReplaceCellsEventArgs args)
         {
-            var newCellView = InstantiateCell(args.NewCell, true);
-            var disposeCellView = await DisposeCell(args.DisposedCell);
-            if (args.NewCell.VerticalId == -1 || args.NewCell.VerticalId == -1)
+            if (args.NewCell.IsDisposed)
             {
                 Debug.LogWarning($"View for {args.NewCell} wasn't created because it probably already has been disposed!");
                 return;
             }
+            var newCellView = InstantiateCell(args.NewCell, true);
+            var disposeCellView = await DisposeCell(args.DisposedCell);
+
             _cellViewsReplacedSubject.OnNext(new ReplaceCellViewsEventArgs(disposeCellView, newCellView));
         }
 

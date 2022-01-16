@@ -4,6 +4,7 @@ using System.Linq;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Models.Cells;
 using Minigames.MatrixBreaching.Matrix.Operations.Commands;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using UniRx;
@@ -42,11 +43,30 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
                 Debug.LogWarning("Swipe is already being executed at the moment!");
                 return;
             }
+
+            if (HasLockedCells(rowType, index))
+                return;
+            
             RowType = rowType;
             AppliedRowIndex = ApplyingRowIndex = index;
             _isExecutingCommand.Value = true;
         }
-        
+
+        private bool HasLockedCells(RowType rowType, int index)
+        {
+            switch (rowType)
+            {
+                case RowType.None:
+                    throw new InvalidOperationException();
+                case RowType.Horizontal:
+                    return _guardMatrix.GetHorizontalCells(index) .Any(cell => cell is LockCell lockCell && lockCell.IsLocked.Value);
+                case RowType.Vertical:
+                        return _guardMatrix.GetVerticalCells(index).Any(cell => cell is LockCell lockCell && lockCell.IsLocked.Value);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rowType), rowType, null);
+            }
+        }
+
         public void ApplyTo(int secondIndex)
         {
             if (!IsExecutingCommand.Value)
@@ -86,7 +106,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
         {
             if (ApplyingRowIndex != index)
             {
-                Debug.LogError($"Swap is being executed with {ApplyingRowIndex} index," +
+                Debug.LogWarning($"Swap is being executed with {ApplyingRowIndex} index," +
                                $" but tried to finish with {index} index!");
                 return;
             }

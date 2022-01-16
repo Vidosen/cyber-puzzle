@@ -9,20 +9,9 @@ namespace Minigames.MatrixBreaching.Matrix.Models.Cells
     public abstract class BaseCell : ICell
     {
         private readonly SignalBus _signalBus;
-        private ReactiveProperty<float> _lockTimeLeft = new ReactiveProperty<float>();
         public int HorizontalId { get; protected set; }
         public int VerticalId { get; protected set; }
-        public IReadOnlyReactiveProperty<float> LockTimeLeft => _lockTimeLeft;
-        public IReadOnlyReactiveProperty<bool> IsLocked => _lockTimeLeft.Select(timeLeft => timeLeft > 0).ToReadOnlyReactiveProperty();
-        public void Lock(float lockTime)
-        {
-            _lockTimeLeft.Value = lockTime;
-        }
-        public void Unlock()
-        {
-            _lockTimeLeft.Value = 0;
-        }
-
+        public bool IsDisposed { get; protected set; }
         public abstract CellType CellType { get; }
         public BaseCell(SignalBus signalBus)
         {
@@ -37,6 +26,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models.Cells
         }
         public virtual void Dispose()
         {
+            IsDisposed = true;
             _signalBus.Fire(new MatrixSignals.CellDisposed(this));
         }
 

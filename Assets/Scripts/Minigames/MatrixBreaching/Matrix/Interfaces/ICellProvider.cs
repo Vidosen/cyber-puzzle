@@ -5,6 +5,6 @@ namespace Minigames.MatrixBreaching.Matrix.Interfaces
     public interface ICellProvider
     {
         IEnumerable<ICell> GetNewCells(int horizontalSize, int verticalSize);
-        ICell GetNewCell();
+        ICell GetNewCell(List<ICell> existingCells);
     }
 }

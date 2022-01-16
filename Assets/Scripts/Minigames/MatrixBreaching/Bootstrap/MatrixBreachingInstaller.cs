@@ -74,6 +74,7 @@ namespace Minigames.MatrixBreaching.Bootstrap
                 if (obj is PostOperationShuffleRule postOperationShuffle)
                     postOperationShuffle.SetRandomSeed(RandomValueMatrxSeed);
             });
+            Container.BindInterfacesTo<PostOperationLockRule>().AsSingle();
         }
     }
 }

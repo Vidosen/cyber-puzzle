@@ -4,6 +4,7 @@ using System.Linq;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Models.Cells;
 using Minigames.MatrixBreaching.Matrix.Operations.Commands;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using UniRx;
@@ -41,12 +42,28 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
                 Debug.LogWarning("Scroll is already being executed at the moment!");
                 return;
             }
+            if (HasLockedCells(rowType, new Vector2Int(cellHorizontalIndex, cellVerticalIndex)))
+                return;
             RowType = rowType;
             HorizontalIndex = cellHorizontalIndex;
             VerticalIndex = cellVerticalIndex;
             _isExecutingCommand.Value = true;
         }
-        
+        private bool HasLockedCells(RowType rowType, Vector2Int pos)
+        {
+            switch (rowType)
+            {
+                case RowType.None:
+                    throw new InvalidOperationException();
+                case RowType.Horizontal:
+                    return _guardMatrix.GetHorizontalCells(pos.y) .Any(cell => cell is LockCell lockCell && lockCell.IsLocked.Value);
+                case RowType.Vertical:
+                    return _guardMatrix.GetVerticalCells(pos.x).Any(cell => cell is LockCell lockCell && lockCell.IsLocked.Value);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rowType), rowType, null);
+            }
+        }
+
         public void ApplyScroll(int scrollDelta)
         {
             if (!IsExecutingCommand.Value)
@@ -86,7 +103,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
         {
             if (HorizontalIndex != cellHorizontalIndex && VerticalIndex != cellVerticalIndex)
             {
-                Debug.LogError($"Scroll is being executed with ({HorizontalIndex}, {VerticalIndex}) indices," +
+                Debug.LogWarning($"Scroll is being executed with ({HorizontalIndex}, {VerticalIndex}) indices," +
                                $" but tried to finish with ({cellHorizontalIndex}, {cellVerticalIndex}) indices!");
                 return;
             }

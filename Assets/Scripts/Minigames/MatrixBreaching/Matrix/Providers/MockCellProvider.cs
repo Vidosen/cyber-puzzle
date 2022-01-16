@@ -24,7 +24,7 @@ namespace Minigames.MatrixBreaching.Matrix.Providers
             return _newMatrixCellsFunc.Invoke(horizontalSize, verticalSize);
         }
 
-        public ICell GetNewCell()
+        public ICell GetNewCell(List<ICell> existingCells)
         {
             return _newCellFunc.Invoke();
         }
