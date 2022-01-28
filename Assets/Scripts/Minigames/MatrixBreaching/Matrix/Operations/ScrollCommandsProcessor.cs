@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Minigames.MatrixBreaching.Core.Data;
+using Minigames.MatrixBreaching.Core.Services;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
@@ -19,6 +21,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
         private readonly GuardMatrix _guardMatrix;
         private readonly IMatrixCommand.Factory _commandFactory;
         private readonly SignalBus _signalBus;
+        private readonly MatrixBreachingService _matrixBreachingService;
         public IReadOnlyReactiveProperty<bool> IsExecutingCommand => _isExecutingCommand.ToReadOnlyReactiveProperty();
         public RowType RowType { get; private set; }
         public int VerticalIndex { get; private set; }
@@ -28,15 +31,22 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
         public bool IsScrollOccured => VerticalIndex != -1 && Mathf.Abs(ScrollDelta) > 0;
         private ReactiveProperty<bool> _isExecutingCommand = new ReactiveProperty<bool>();
 
-        public ScrollCommandsProcessor(GuardMatrix guardMatrix, IMatrixCommand.Factory commandFactory, SignalBus signalBus)
+        public ScrollCommandsProcessor(GuardMatrix guardMatrix, IMatrixCommand.Factory commandFactory,
+            SignalBus signalBus, MatrixBreachingService matrixBreachingService)
         {
             _guardMatrix = guardMatrix;
             _commandFactory = commandFactory;
             _signalBus = signalBus;
+            _matrixBreachingService = matrixBreachingService;
         }
         
         public void StartScroll(RowType rowType, int cellHorizontalIndex, int cellVerticalIndex)
         {
+            if (_matrixBreachingService.StatusReactiveProperty.Value != MatrixBreachingData.Status.Process)
+            {
+                Debug.LogWarning("Minigame isn't in progress!");
+                return;
+            }
             if (_isExecutingCommand.Value)
             {
                 Debug.LogWarning("Scroll is already being executed at the moment!");
@@ -66,6 +76,11 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
 
         public void ApplyScroll(int scrollDelta)
         {
+            if (_matrixBreachingService.StatusReactiveProperty.Value != MatrixBreachingData.Status.Process)
+            {
+                Debug.LogWarning("Minigame isn't in progress!");
+                return;
+            }
             if (!IsExecutingCommand.Value)
             {
                 Debug.LogError("Scroll is not being executed at the moment!");

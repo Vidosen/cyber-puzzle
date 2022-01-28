@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Minigames.MatrixBreaching.Core.Data;
+using Minigames.MatrixBreaching.Core.Services;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models;
@@ -19,6 +21,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
         private readonly GuardMatrix _guardMatrix;
         private readonly IMatrixCommand.Factory _commandFactory;
         private readonly SignalBus _signalBus;
+        private readonly MatrixBreachingService _matrixBreachingService;
         public IReadOnlyReactiveProperty<bool> IsExecutingCommand => _isExecutingCommand.ToReadOnlyReactiveProperty();
         public RowType RowType { get; private set; }
         public int ApplyingRowIndex { get; private set; }
@@ -29,15 +32,23 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
         
         private IMatrixCommand _lastMatrixCommand;
 
-        public SwapCommandsProcessor(GuardMatrix guardMatrix, IMatrixCommand.Factory commandFactory, SignalBus signalBus)
+        public SwapCommandsProcessor(GuardMatrix guardMatrix, IMatrixCommand.Factory commandFactory,
+            SignalBus signalBus, MatrixBreachingService matrixBreachingService)
         {
             _guardMatrix = guardMatrix;
             _commandFactory = commandFactory;
             _signalBus = signalBus;
+            _matrixBreachingService = matrixBreachingService;
         }
         
         public void StartSwap(RowType rowType, int index)
         {
+            if (_matrixBreachingService.StatusReactiveProperty.Value != MatrixBreachingData.Status.Process)
+            {
+                Debug.LogWarning("Minigame isn't in progress!");
+                return;
+            }
+            
             if (_isExecutingCommand.Value)
             {
                 Debug.LogWarning("Swipe is already being executed at the moment!");
@@ -69,12 +80,20 @@ namespace Minigames.MatrixBreaching.Matrix.Operations
 
         public void ApplyTo(int secondIndex)
         {
+            if (_matrixBreachingService.StatusReactiveProperty.Value != MatrixBreachingData.Status.Process)
+            {
+                Debug.LogWarning("Minigame isn't in progress!");
+                return;
+            }
             if (!IsExecutingCommand.Value)
             {
                 Debug.LogError("Swap is not being executed at the moment!");
                 return;
             }
             TryCancel();
+            if (HasLockedCells(RowType, secondIndex))
+                return;
+
             var command = GetSwapCommand(secondIndex);
             command.Execute();
 

@@ -8,9 +8,11 @@ namespace Core.Bootstrap
     public class ConfigInstaller : ScriptableObjectInstaller
     {
         [SerializeField] private MatrixBreachingViewConfig _matrixBreachingViewConfig;
+        [SerializeField] private MatrixBreachingGeneralConfig _matrixBreachingGeneralConfig;
         public override void InstallBindings()
         {
             Container.BindInstance(_matrixBreachingViewConfig).AsSingle();
+            Container.BindInstance(_matrixBreachingGeneralConfig).AsSingle();
         }
     }
 }

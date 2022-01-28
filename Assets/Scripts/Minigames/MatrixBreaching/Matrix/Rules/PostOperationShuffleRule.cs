@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models.Cells;
@@ -11,7 +12,7 @@ using Random = System.Random;
 
 namespace Minigames.MatrixBreaching.Matrix.Models
 {
-    public class PostOperationShuffleRule : IInitializable
+    public class PostOperationShuffleRule : IInitializable, IReqiureRandomSeed
     {
         private readonly SignalBus _signalBus;
         private readonly GuardMatrix _guardMatrix;
@@ -41,7 +42,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         {
             _random = new Random(seed);
         }
-        private void ApplyShuffle(ShuffleCell shuffleCell)
+        private async void ApplyShuffle(ShuffleCell shuffleCell)
         {
             var shuffleTargetCells = new[]
             {
@@ -53,7 +54,9 @@ namespace Minigames.MatrixBreaching.Matrix.Models
                 _guardMatrix.GetCell(shuffleCell.HorizontalId - 1, shuffleCell.VerticalId - 1),
                 _guardMatrix.GetCell(shuffleCell.HorizontalId - 1, shuffleCell.VerticalId),
                 _guardMatrix.GetCell(shuffleCell.HorizontalId - 1, shuffleCell.VerticalId + 1)
-            }.Where(cell => cell != null && cell is ValueCell).OrderBy(_ => _random.Next()).ToList();
+            }.Where(cell => cell != null && cell is ValueCell)
+                .OrderBy(_ => _random.Next())
+                .ToList();
             var shuffleQueue = new Queue<ICell>(shuffleTargetCells);
             if (shuffleQueue.Count > 0)
             {
@@ -69,14 +72,23 @@ namespace Minigames.MatrixBreaching.Matrix.Models
                         next.Move(firstPos.x, firstPos.y);
                 }
 
+                var taskList = new List<UniTask>();
                 foreach (var targetCell in shuffleTargetCells)
                 {
                     var cellView = _guardMatrixPresenter.GetCellView(targetCell.HorizontalId, targetCell.VerticalId);
-                    _guardMatrixPresenter.UpdateCellViewPos(cellView);
+                    taskList.Add(_guardMatrixPresenter.UpdateCellViewPosAsync(cellView, shuffleCell.HorizontalId, shuffleCell.VerticalId));
                 }
+                await UniTask.WhenAll(taskList);
+                taskList.Clear();
+                foreach (var targetCell in shuffleTargetCells)
+                {
+                    var cellView = _guardMatrixPresenter.GetCellView(targetCell.HorizontalId, targetCell.VerticalId);
+                    taskList.Add(_guardMatrixPresenter.UpdateCellViewPosAsync(cellView));
+                }
+                await UniTask.WhenAll(taskList);
             }
-
             _guardMatrix.ReplaceCell(shuffleCell);
+            _signalBus.AbstractFire(new MatrixOperationsSignals.PostOperationOccured(OperationType.Shuffle));
         }
     }
 }

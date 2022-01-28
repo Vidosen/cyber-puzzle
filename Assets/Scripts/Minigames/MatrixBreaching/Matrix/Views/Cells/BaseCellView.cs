@@ -1,6 +1,8 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Operations;
@@ -25,6 +27,7 @@ namespace Minigames.MatrixBreaching.Matrix.Views.Cells
         private Subject<PointerEventData> _onDragSubject = new Subject<PointerEventData>();
         private ScrollCommandsProcessor _scrollCommandsProcessor;
         protected Canvas _canvas;
+        private Tween _hideAnimation;
 
         [Inject]
         private void Construct(ScrollCommandsProcessor scrollCommandsProcessor)
@@ -86,8 +89,19 @@ namespace Minigames.MatrixBreaching.Matrix.Views.Cells
         
         public virtual async UniTask HideAnimation()
         {
-            var destroyEffect = _transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.OutQuad);
-            await destroyEffect.AsyncWaitForCompletion();
+            if (_hideAnimation.IsActive())
+            {
+                await _hideAnimation.AsyncWaitForKill();
+                return;
+            }
+            
+            _hideAnimation = _transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.OutQuad);
+            await _hideAnimation.AsyncWaitForKill();
+        }
+        
+        private void OnDestroy()
+        {
+            _hideAnimation?.Kill();
         }
     }
         public abstract class BaseCellView<TCell> : BaseCellView where TCell : ICell

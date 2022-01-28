@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Minigames.MatrixBreaching.Config;
@@ -245,6 +246,8 @@ namespace Minigames.MatrixBreaching.Matrix.Views
                 return null;
             _cellViews.Remove(foundView);
             await foundView.HideAnimation();
+            if (_cellViewTweeners.TryGetValue(foundView, out var tweeer) && tweeer.IsActive())
+                tweeer.Kill();
             Destroy(foundView.gameObject);
             return foundView;
         }
@@ -265,11 +268,35 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             var horizontalView = _horizontalRowViews.FirstOrDefault(rowView => rowView.Index == model.VerticalId);
             var verticalView = _verticalRowViews.FirstOrDefault(rowView => rowView.Index == model.HorizontalId);
 
+            UpdateCellViewPosInternal(cellView, animate, horizontalView, verticalView);
+        }
+        public async UniTask UpdateCellViewPosAsync(BaseCellView cellView, bool animate = true)
+        {
+            var model = cellView.Model;
+            var horizontalView = _horizontalRowViews.FirstOrDefault(rowView => rowView.Index == model.VerticalId);
+            var verticalView = _verticalRowViews.FirstOrDefault(rowView => rowView.Index == model.HorizontalId);
+
+            var tween = UpdateCellViewPosInternal(cellView, animate, horizontalView, verticalView);
+            if (tween.IsActive()) await tween.AsyncWaitForKill();
+        }
+        public async UniTask UpdateCellViewPosAsync(BaseCellView cellView, int horizontalId, int verticalId, bool animate = true)
+        {
+            var horizontalView = _horizontalRowViews.FirstOrDefault(rowView => rowView.Index == verticalId);
+            var verticalView = _verticalRowViews.FirstOrDefault(rowView => rowView.Index == horizontalId);
+
+            var tween = UpdateCellViewPosInternal(cellView, animate, horizontalView, verticalView);
+            if (tween.IsActive()) await tween.AsyncWaitForKill();
+        }
+
+        private Tween UpdateCellViewPosInternal(BaseCellView cellView, bool animate, GuardMatrixRowView horizontalView,
+            GuardMatrixRowView verticalView)
+        {
             if (horizontalView == null || verticalView == null)
             {
                 Debug.LogError($"{cellView.Model} is not valid!");
-                return;
+                return null;
             }
+
             var horizRowPos = horizontalView.Transform.anchoredPosition;
             var vertRowPos = verticalView.Transform.anchoredPosition;
             var endPos = new Vector2(vertRowPos.x, horizRowPos.y);
@@ -277,13 +304,16 @@ namespace Minigames.MatrixBreaching.Matrix.Views
             {
                 if (_cellViewTweeners.TryGetValue(cellView, out var tweeer) && tweeer.IsActive())
                     tweeer.Kill();
-                
+
                 _cellViewTweeners[cellView] = cellView.Transform
                     .DOAnchorPos(endPos, _viewConfig.SwapMoveDuration)
                     .SetEase(_viewConfig.SwapFlatMoveEase);
+                return _cellViewTweeners[cellView];
             }
             else
                 cellView.Transform.anchoredPosition = endPos;
+
+            return null;
         }
 
         public void UpdateExchangerViewPos(GuardMatrixExchangerView exchangerView, bool animate = true)

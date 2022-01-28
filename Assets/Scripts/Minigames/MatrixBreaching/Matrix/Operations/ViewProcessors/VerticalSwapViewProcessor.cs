@@ -53,7 +53,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
                 
                 _matrixPresenter.UpdateExchangerViewPos(_exchanger);
             }
-            _cells.ForEach(cell=>_matrixPresenter.UpdateCellViewPos(cell));
+            _cells.ForEach(cell => _matrixPresenter.UpdateCellViewPos(cell));
             _cells.Clear();
         }
 

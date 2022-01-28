@@ -16,27 +16,30 @@ namespace Minigames.MatrixBreaching.Config
         public CellType Type;
         public BaseCellView View;
     }
-    
-    [CreateAssetMenu(fileName = "MatrixBreachingViewConfig", menuName = "Configs/Matrix Breaching View", order = 0)]
+
+    [CreateAssetMenu(fileName = "MatrixBreachingViewConfig", menuName = "Configs/Matrix Breaching/View", order = 0)]
     public class MatrixBreachingViewConfig : ScriptableObject
     {
-        [Header("Settings/Guard Matrix")]
-        [SerializeField] private Vector2 _genericCellSize;
-        
-        [Header("Templates/Guard Matrix")]
-        [SerializeField] private GuardMatrixRowView _verticalRowViewTemplate;
+        [Header("Settings/Guard Matrix")] [SerializeField]
+        private Vector2 _genericCellSize;
+
+        [Header("Templates/Guard Matrix")] [SerializeField]
+        private GuardMatrixRowView _verticalRowViewTemplate;
+
         [SerializeField] private GuardMatrixRowView _horizontalRowViewTemplate;
-        
+
         [SerializeField] private GuardMatrixExchangerView _verticalExchangerViewTemplate;
         [SerializeField] private GuardMatrixExchangerView _horizontalExchangerViewTemplate;
         [SerializeField] private List<CellViewTemplateItem> _cellViewTemplates;
 
-        [Header("Templates/Vulnerability")]
-        [SerializeField] private VulnerabilityCellView _vulnerabilityCellViewTemplate;
+        [Header("Templates/Vulnerability")] [SerializeField]
+        private VulnerabilityCellView _vulnerabilityCellViewTemplate;
+
         [SerializeField] private VulnerabilityView _vulnerabilityViewTemplate;
-        
-        [Header("Animation/Guard Matrix")]
-        [SerializeField] private Ease _swapFlatMoveEase;
+
+        [Header("Animation/Guard Matrix")] [SerializeField]
+        private Ease _swapFlatMoveEase;
+
         [SerializeField] private float _swapMoveDuration;
         private Dictionary<CellType, BaseCellView> _cachedCellViewDictionary;
 

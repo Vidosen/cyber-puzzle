@@ -3,6 +3,9 @@
     public enum OperationType
     {
         Swap,
-        Scroll
+        Scroll,
+        Glitch,
+        Shuffle,
+        Lock
     }
 }

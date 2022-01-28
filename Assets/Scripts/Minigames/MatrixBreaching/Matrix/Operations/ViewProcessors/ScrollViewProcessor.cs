@@ -125,7 +125,7 @@ namespace Minigames.MatrixBreaching.Matrix.Operations.ViewProcessors
 
         private void OnFinishedScroll()
         {
-            _cells.ForEach(cell=>_matrixPresenter.UpdateCellViewPos(cell));
+            _cells.ForEach(cell => _matrixPresenter.UpdateCellViewPos(cell));
             _srollDisposable.Clear();
             _cells.Clear();
         }

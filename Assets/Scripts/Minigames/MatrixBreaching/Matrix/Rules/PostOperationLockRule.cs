@@ -55,6 +55,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
         {
             await lockCellView.PlayUnlockAnimation(0.25f);
             _guardMatrix.ReplaceCell(lockCellView.Model);
+            _signalBus.AbstractFire(new MatrixOperationsSignals.PostOperationOccured(OperationType.Lock));
         }
     }
 }

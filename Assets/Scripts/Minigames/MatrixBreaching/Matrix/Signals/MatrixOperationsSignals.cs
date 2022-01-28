@@ -11,6 +11,17 @@ namespace Minigames.MatrixBreaching.Matrix.Signals
         {
             OperationType OperationType { get; }
         }
+
+        public class PostOperationOccured : IOperationSignal
+        {
+            public PostOperationOccured(OperationType operationType)
+            {
+                OperationType = operationType;
+            }
+
+            public OperationType OperationType { get; }
+        }
+
         public class SwapOperationOccured : IOperationSignal
         {
             public OperationType OperationType => OperationType.Swap;

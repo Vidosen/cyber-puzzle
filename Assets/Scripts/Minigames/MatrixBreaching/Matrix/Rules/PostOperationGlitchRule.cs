@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Linq;
 using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Interfaces;
 using Minigames.MatrixBreaching.Matrix.Models.Cells;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using Utils;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix.Models
+namespace Minigames.MatrixBreaching.Matrix.Rules
 {
-    public class PostOperationGlitchRule : IInitializable
+    public class PostOperationGlitchRule : IInitializable, IReqiureRandomSeed
     {
         private readonly SignalBus _signalBus;
         private Random _random;
@@ -35,6 +36,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
                 var newValue = CoreExtensions.GetRandomEnum<CellValueType>(_random);
                 glitchCell.ChangeValue(newValue);
             }
+            _signalBus.AbstractFire(new MatrixOperationsSignals.PostOperationOccured(OperationType.Glitch));
         }
     }
 }
