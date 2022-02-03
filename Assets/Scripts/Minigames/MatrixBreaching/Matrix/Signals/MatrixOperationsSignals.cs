@@ -1,4 +1,7 @@
-﻿using Minigames.MatrixBreaching.Matrix.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Minigames.MatrixBreaching.Matrix.Data;
+using Minigames.MatrixBreaching.Matrix.Interfaces;
 
 namespace Minigames.MatrixBreaching.Matrix.Signals
 {
@@ -8,6 +11,17 @@ namespace Minigames.MatrixBreaching.Matrix.Signals
         {
             OperationType OperationType { get; }
         }
+
+        public class PostOperationOccured : IOperationSignal
+        {
+            public PostOperationOccured(OperationType operationType)
+            {
+                OperationType = operationType;
+            }
+
+            public OperationType OperationType { get; }
+        }
+
         public class SwapOperationOccured : IOperationSignal
         {
             public OperationType OperationType => OperationType.Swap;
@@ -37,6 +51,13 @@ namespace Minigames.MatrixBreaching.Matrix.Signals
         }
 
         public class OperationApplied
-        { }
+        {
+            public List<ICell> InvolvedCells { get; }
+
+            public OperationApplied(params ICell[] involvedCells)
+            {
+                InvolvedCells = involvedCells.ToList();
+            }
+        }
     }
 }

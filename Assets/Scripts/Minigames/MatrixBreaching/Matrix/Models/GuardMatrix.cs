@@ -45,6 +45,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
             return _cells.ToList();
         }
 
+
         public IList<ICell> GetHorizontalCells(int verticalId)
         {
             return _cells.Where(cell => cell.VerticalId.Equals(verticalId)).OrderBy(cell=>cell.HorizontalId).ToList();
@@ -76,7 +77,7 @@ namespace Minigames.MatrixBreaching.Matrix.Models
                 return null;
             }
 
-            var newCell = _cellProvider.GetNewCell();
+            var newCell = _cellProvider.GetNewCell(_cells);
             newCell.Move(cell.HorizontalId, cell.VerticalId);
             
             _cells.Remove(cell);

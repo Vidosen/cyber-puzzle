@@ -1,6 +1,6 @@
 ﻿using Minigames.MatrixBreaching.Matrix.Interfaces;
 
-namespace Minigames.MatrixBreaching.Matrix.Commands
+namespace Minigames.MatrixBreaching.Matrix.Operations.Commands
 {
     public abstract class BaseRowsSwapCommand : IMatrixCommand
     {

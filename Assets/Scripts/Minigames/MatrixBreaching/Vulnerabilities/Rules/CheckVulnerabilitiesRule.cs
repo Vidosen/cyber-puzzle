@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Models.Cells;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using Minigames.MatrixBreaching.Vulnerabilities.Models;
 using Minigames.MatrixBreaching.Vulnerabilities.Services;

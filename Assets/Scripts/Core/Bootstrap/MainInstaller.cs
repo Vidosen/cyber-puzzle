@@ -1,4 +1,5 @@
-﻿using Zenject;
+﻿using Minigames.MatrixBreaching.Core.Services;
+using Zenject;
 
 namespace Core.Bootstrap
 {
@@ -7,6 +8,7 @@ namespace Core.Bootstrap
         public override void InstallBindings()
         {
             SignalBusInstaller.Install(Container);
+            Container.BindInterfacesAndSelfTo<MatrixBreachingService>().AsSingle();
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Minigames.MatrixBreaching.Matrix.Data;
 using Minigames.MatrixBreaching.Matrix.Interfaces;
-using Minigames.MatrixBreaching.Matrix.Models;
+using Minigames.MatrixBreaching.Matrix.Models.Cells;
 using Utils;
 using Zenject;
 
@@ -27,12 +27,12 @@ namespace Minigames.MatrixBreaching.Matrix.Providers
             var cellsList = new List<ICell>();
             for (int i = 0; i < size; i++)
             {
-                cellsList.Add(GetNewCell());
+                cellsList.Add(GetNewCell(cellsList));
             }
             return cellsList;
         }
 
-        public ICell GetNewCell()
+        public ICell GetNewCell(List<ICell> existingCells)
         {
             var enumIndex = _random.Next(0, CoreExtensions.GetEnumSize<CellValueType>());
             var cellValue =

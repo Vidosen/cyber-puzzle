@@ -4,7 +4,7 @@ using Minigames.MatrixBreaching.Matrix.Models;
 using Minigames.MatrixBreaching.Matrix.Signals;
 using Zenject;
 
-namespace Minigames.MatrixBreaching.Matrix.Commands
+namespace Minigames.MatrixBreaching.Matrix.Operations.Commands
 {
     public class HorizontalRowsSwapCommand : BaseRowsSwapCommand
     {

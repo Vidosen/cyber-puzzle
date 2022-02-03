@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _matrixBreachingViewConfig: {fileID: 11400000, guid: 7a0743791f98ee94bb159963318dd834,
     type: 2}
+  _matrixBreachingGeneralConfig: {fileID: 11400000, guid: 564f1df71cde2174c9c3b01da26585a1,
+    type: 2}
