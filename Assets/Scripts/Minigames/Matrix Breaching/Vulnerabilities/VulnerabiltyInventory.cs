@@ -24,11 +24,5 @@ namespace Minigames.MatrixBreaching.Vulnerabilities
             _models.Add(model);
             return model;
         }
-        public override VulnerabilityModel CreateModelById(string modelId)
-        {
-            var newModel = _factory.Create(modelId);
-            _models.Add(newModel);
-            return newModel;
-        }
     }
 }

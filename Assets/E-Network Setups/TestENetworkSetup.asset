@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fe4e62861174ae1b804b1da865a4638, type: 3}
+  m_Name: TestENetworkSetup
+  m_EditorClassIdentifier: 
+  id: test
+  nodesData:
+  - DataId: 0
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00000000
+  - DataId: 1
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00010203
+  - DataId: 2
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00010203
+  - DataId: 3
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00010203
+  - DataId: 4
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00010203
+  - DataId: 5
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00010203
+  - DataId: 6
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00010203
+  - DataId: 7
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00010203
+  - DataId: 8
+    NodeType: 0
+    UpgradeType: 0
+    UpgradeValue: 0
+    AccessCode: 00010203
+  connectionsData:
+  - Node1_DataId: 0
+    Node2_DataId: 1
+    InjectTarget: 100
+  - Node1_DataId: 1
+    Node2_DataId: 3
+    InjectTarget: 100
+  - Node1_DataId: 1
+    Node2_DataId: 2
+    InjectTarget: 100
+  - Node1_DataId: 1
+    Node2_DataId: 3
+    InjectTarget: 100
+  - Node1_DataId: 1
+    Node2_DataId: 4
+    InjectTarget: 100
+  - Node1_DataId: 4
+    Node2_DataId: 5
+    InjectTarget: 100
+  - Node1_DataId: 4
+    Node2_DataId: 6
+    InjectTarget: 100
+  - Node1_DataId: 5
+    Node2_DataId: 6
+    InjectTarget: 100
+  - Node1_DataId: 6
+    Node2_DataId: 7
+    InjectTarget: 100
+  - Node1_DataId: 6
+    Node2_DataId: 8
+    InjectTarget: 100
+  - Node1_DataId: 7
+    Node2_DataId: 8
+    InjectTarget: 100

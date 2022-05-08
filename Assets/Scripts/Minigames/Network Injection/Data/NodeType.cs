@@ -7,4 +7,10 @@
         Firewall,
         Core
     }
+
+    public enum UpgradeType
+    {
+        Inject,
+        Breach
+    }
 }

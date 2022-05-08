@@ -16,9 +16,7 @@ namespace Utils.Inventory
         public IObservable<CollectionRemoveEvent<TModel>> ModelRemoved => _models.ObserveRemove();
         public IObservable<int> CountChanged => _models.ObserveCountChanged();
         public int Count => _models.Count;
-        
-        public abstract TModel CreateModelById(TIndex modelId);
-        
+
         public bool Contains(TModel model)
         {
             return _models.Contains(model);
