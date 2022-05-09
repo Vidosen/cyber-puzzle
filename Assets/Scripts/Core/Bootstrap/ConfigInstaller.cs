@@ -1,5 +1,5 @@
 ﻿using Minigames.MatrixBreaching.Config;
-using Minigames.Network_Injection.Configs;
+using Minigames.NetworkInjection.Configs;
 using UnityEngine;
 using Zenject;
 
